@@ -18,6 +18,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,9 +74,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private View focusView;
 
     private static final String LOGIN_URL = "http://10.0.2.2:5000/login";
-    private boolean isReturnTrue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,29 +85,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        isReturnTrue = false;
-
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 //        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
+//        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+//                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+//                    attemptLogin(1);
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         Button mStudentSignInButton = (Button) findViewById(R.id.student_sign_in_button);
         mStudentSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(2);
             }
         });
 
@@ -114,9 +113,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         mTeacherSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showProgress(true);
-                startActivity(new Intent(LoginActivity.this, TeacherWelcomeActivity.class));
-                finish();
+                attemptLogin(1);
             }
         });
 
@@ -169,63 +166,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    private void attemptLogin(int role) {
 
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String userId = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(userId)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
+            focusView.requestFocus();
+        } else if (!TextUtils.isEmpty(userId) && TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            focusView.requestFocus();
+        } else if (!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(password)) {
+            checkAccountCorrect(userId, password, role);
         }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
-            startActivity(new Intent(this, StudentWelcomeActivity.class));
-            finish();
-        }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-//        return email.contains("@");
+    private void checkAccountCorrect(String userId, String password, final int role) {
         JSONObject userInfoObject = new JSONObject();
         try {
-            userInfoObject.put("uid", email);
-            userInfoObject.put("pwd", mPasswordView.getText().toString());
-            userInfoObject.put("role", 2);
+            userInfoObject.put("uid", userId);
+            userInfoObject.put("pwd", password);
+            userInfoObject.put("role", role);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -233,28 +204,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), LOGIN_URL, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-
+                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                if (s.contains("error_code")) {
+                    if (jsonByGson.getValue("error_code").equals("701")) {
+                        mEmailView.setError(getString(R.string.error_invalid_email));
+                        focusView = mEmailView;
+                        focusView.requestFocus();
+                    } else {
+                        if (jsonByGson.getValue("error_code").equals("602")) {
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                            focusView = mPasswordView;
+                            focusView.requestFocus();
+                        }
+                    }
+                }
             }
-
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                if (jsonByGson.getValue("error_code").equals("702")) {
-                    isReturnTrue = false;
-                } else {
-                    isReturnTrue = true;
+                if (s.contains("token")) {
+//                    String token = jsonByGson.getValue("token");
+                    mEmailView.setError(null);
+                    mPasswordView.setError(null);
+                    if (role == 1) {
+                        showProgress(true);
+                        startActivity(new Intent(LoginActivity.this, TeacherWelcomeActivity.class));
+                        finish();
+                    } else if (role == 2) {
+                        showProgress(true);
+                        startActivity(new Intent(LoginActivity.this, StudentWelcomeActivity.class));
+                        finish();
+                    }
                 }
             }
         });
-        if (!isReturnTrue) {
-            return false;
-        } else
-            return true;
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
