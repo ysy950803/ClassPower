@@ -69,7 +69,13 @@ public class StudentHomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_student_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         isSeatChooseOpen = false;
+
+        //通知、测试、选座页面
+        notificationLayout = (LinearLayout) findViewById(R.id.notification_layout);
+        testLayout = (LinearLayout) findViewById(R.id.test_layout);
+        seatChooseLayout = (RelativeLayout) findViewById(R.id.seat_choose_layout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -99,28 +105,6 @@ public class StudentHomeActivity extends AppCompatActivity
                 finish();
             }
         });
-
-        //通知、测试、选座页面
-        notificationLayout = (LinearLayout) findViewById(R.id.notification_layout);
-        testLayout = (LinearLayout) findViewById(R.id.test_layout);
-        seatChooseLayout = (RelativeLayout) findViewById(R.id.seat_choose_layout);
-
-        //确定选座按钮
-        Button confirmSeatChooseButton = (Button) findViewById(R.id.confirm_seat_choose_button);
-        confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isSeatChooseEmpty) {
-                    Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
-                } else if (!isSeatChooseEmpty) {
-                    //若已选座，则提交数据至服务器
-
-                }
-            }
-        });
-
-        //初始化选座
-        init();
 
         //加载测试页面的RecyclerView（代替ListView）
         initData();
@@ -184,10 +168,26 @@ public class StudentHomeActivity extends AppCompatActivity
             }
         });
 
+        //初始化选座
+        init();
         //点击座位出现的学生信息
         studentSeatTextView = (TextView) findViewById(R.id.student_seat_text_view);
         studentNameTextView = (TextView) findViewById(R.id.student_name_text_view);
         studentSexTextView = (TextView) findViewById(R.id.student_sex_text_view);
+        //确定选座按钮
+        Button confirmSeatChooseButton = (Button) findViewById(R.id.confirm_seat_choose_button);
+        confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isSeatChooseEmpty) {
+                    Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
+                } else {
+                    //若已选座，则提交数据至服务器
+
+                }
+            }
+        });
+
     }
 
     //初始化List数据（离线Demo）
@@ -219,6 +219,7 @@ public class StudentHomeActivity extends AppCompatActivity
     //自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
+
         void onItemLongClick(View view, int position);
     }
 
