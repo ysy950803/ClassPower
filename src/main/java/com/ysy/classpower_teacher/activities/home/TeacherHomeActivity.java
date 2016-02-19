@@ -58,9 +58,8 @@ public class TeacherHomeActivity extends AppCompatActivity
     private ImageView studentHeadImageView;
 
     public static String TEACHER_TEST_STATE = null; //DOING, WILL, DONE
-    public static final int ROW_Teacher = 12;
-    public static final int EACH_ROW_COUNT_Teacher = 12;
-    private SSThumbView mSSThumbView;
+    private static final int ROW = 12;
+    private static final int COL = 12;
     private ArrayList<SeatInfo> list_seatInfo = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> list_seat_conditions = new ArrayList<>();
 
@@ -370,17 +369,17 @@ public class TeacherHomeActivity extends AppCompatActivity
 
     //加载选座数据模块
     private void init() {
+
         SSView mSSView = (SSView) this.findViewById(R.id.mSSView_teacher);
         //显示缩略图
         SSView.a(mSSView, true);
         mSSView.invalidate();
 
-        mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview_teacher);
+        final SSThumbView mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview_teacher);
 //		mSSView.setXOffset(20);
         setSeatInfo();
-        mSSView.init(EACH_ROW_COUNT_Teacher, ROW_Teacher, list_seatInfo, list_seat_conditions, mSSThumbView, 5);
+        mSSView.init(COL, ROW, list_seatInfo, list_seat_conditions, mSSThumbView, 5);
         mSSView.setOnSeatClickListener(new OnSeatClickListener() {
-
             @Override
             public boolean b(int column_num, int row_num, boolean paramBoolean) {
                 if (row_num + 1 == 4 && column_num + 1 == 4) {
@@ -398,25 +397,18 @@ public class TeacherHomeActivity extends AppCompatActivity
                     studentNumberTextView.setText("        ");
                     studentHeadImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
                 }
-//                String desc = "您选择了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
-//                Toast.makeText(StudentHomeActivity.this, desc.toString(), Toast.LENGTH_SHORT).show();
                 return false;
             }
-
             @Override
             public boolean a(int column_num, int row_num, boolean paramBoolean) {
-//              String desc = "您取消了第" + (row_num + 1) + "排" + " 第" + (column_num - 2) + "列";
-//				Toast.makeText(MainActivity.this,desc.toString(), Toast.LENGTH_SHORT).show();
                 return false;
             }
-
             @Override
             public void a() {
                 // TODO Auto-generated method stub
 
             }
         });
-
         mSSView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -437,13 +429,12 @@ public class TeacherHomeActivity extends AppCompatActivity
     }
 
     private void setSeatInfo() {
-        for (int i = 0; i < ROW_Teacher; i++) {//12行
+        for (int i = 0; i < ROW; i++) {//12行
             SeatInfo mSeatInfo = new SeatInfo();
             ArrayList<Seat> mSeatList = new ArrayList<>();
             ArrayList<Integer> mConditionList = new ArrayList<>();
-            for (int j = 0; j < EACH_ROW_COUNT_Teacher; j++) {//每排12个座位
+            for (int j = 0; j < COL; j++) {//每排12个座位
                 Seat mSeat = new Seat();
-
                 if (j < 8 && j > 3 && i < 3) {
                     mSeat.setN("Z");
                     mConditionList.add(0); //设置无座位
@@ -457,7 +448,6 @@ public class TeacherHomeActivity extends AppCompatActivity
                         mConditionList.add(2); //设置有人坐
                     else mConditionList.add(1); //设置无人坐
                 }
-
                 mSeat.setDamagedFlg("");
                 mSeat.setLoveInd("0");
                 mSeatList.add(mSeat);

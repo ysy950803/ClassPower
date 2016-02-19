@@ -1,7 +1,8 @@
 package com.ysy.classpower_student.activities.home;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -28,8 +29,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.activities.LoginActivity;
+import com.ysy.classpower_constant.ServerUrlConstant;
 import com.ysy.classpower_seatchoose.OnSeatClickListener;
 import com.ysy.classpower_seatchoose.model.Seat;
 import com.ysy.classpower_seatchoose.model.SeatInfo;
@@ -37,6 +41,12 @@ import com.ysy.classpower_seatchoose.view.SSThumbView;
 import com.ysy.classpower_seatchoose.view.SSView;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_utils.DividerItemDecoration;
+import com.ysy.classpower_utils.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.ReadJsonByGson;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +63,8 @@ public class StudentHomeActivity extends AppCompatActivity
     private TextView studentNameTextView;
     private TextView studentSexTextView;
 
-    public static final int ROW = 12;
-    public static final int EACH_ROW_COUNT = 12;
+    private static final int Row = 0;
+    private static final int Col = 0;
     private ArrayList<SeatInfo> list_seatInfo = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> list_seat_conditions = new ArrayList<>();
 
@@ -62,6 +72,8 @@ public class StudentHomeActivity extends AppCompatActivity
     public static boolean isSeatChooseOpen;
     public static boolean isDirectlyCheckResult = false;
     public static String STUDENT_TEST_STATE = null; // DOING, DONE, WILL
+
+    private static final String SEAT_GETSEATMAP_URL = ServerUrlConstant.SEAT_GETSEATMAP_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -393,20 +405,19 @@ public class StudentHomeActivity extends AppCompatActivity
 
     //加载选座数据模块
     private void init() {
-        SSView mSSView = (SSView) this.findViewById(R.id.mSSView);
+
+        final SSView mSSView = (SSView) this.findViewById(R.id.mSSView);
         //显示缩略图
         SSView.a(mSSView, true);
         mSSView.invalidate();
 
-        SSThumbView mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview);
-//		mSSView.setXOffset(20);
-        setSeatInfo();
-        mSSView.init(EACH_ROW_COUNT, ROW, list_seatInfo, list_seat_conditions, mSSThumbView, 5);
+        final SSThumbView mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview);
+//		mSSView.setXOffset(10);
+        mSSView.init(Col, Row, new ArrayList<SeatInfo>(), new ArrayList<ArrayList<Integer>>(), mSSThumbView, 5);
         mSSView.setOnSeatClickListener(new OnSeatClickListener() {
-
             @Override
             public boolean b(int column_num, int row_num, boolean paramBoolean) {
-                if (row_num + 1 == 4 && column_num + 1 == 4) {
+                if (row_num + 1 == 1 && column_num + 1 == 1) {
                     studentSeatTextView.setText((row_num + 1) + "排" + (column_num + 1) + "列");
                     studentNameTextView.setText("郑智予");
                     studentSexTextView.setText("女");
@@ -415,50 +426,94 @@ public class StudentHomeActivity extends AppCompatActivity
                     studentNameTextView.setText("        ");
                     studentSexTextView.setText("        ");
                 }
-//                String desc = "您选择了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
-//                Toast.makeText(StudentHomeActivity.this, desc.toString(), Toast.LENGTH_SHORT).show();
                 return false;
             }
-
             @Override
             public boolean a(int column_num, int row_num, boolean paramBoolean) {
 //              String desc = "您取消了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
 //				Toast.makeText(StudentHomeActivity.this,desc.toString(), Toast.LENGTH_SHORT).show();
                 return false;
             }
-
             @Override
             public void a() {
                 // TODO Auto-generated method stub
 
             }
         });
+
+        SharedPreferences seat_map_token_sp = getSharedPreferences("seat_map_token", Context.MODE_PRIVATE);
+        String token = seat_map_token_sp.getString("seat_map_token", "");
+        JSONObject object = new JSONObject();
+        try {
+            object.put("seat_map_token", token);
+            object.put("check_final", false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String json = object.toString();
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_GETSEATMAP_URL, json, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+
+            }
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                int COL = jsonByGson.getIntValue("col_num");
+                int ROW = jsonByGson.getIntValue("row_num");
+                setSeatInfo(COL, ROW, jsonByGson);
+                mSSView.init(COL, ROW, list_seatInfo, list_seat_conditions, mSSThumbView, 5);
+                mSSView.setOnSeatClickListener(new OnSeatClickListener() {
+                    @Override
+                    public boolean b(int column_num, int row_num, boolean paramBoolean) {
+                        if (row_num + 1 == 2 && column_num + 1 == 2) {
+                            studentSeatTextView.setText((row_num + 1) + "排" + (column_num + 1) + "列");
+                            studentNameTextView.setText("郑智予");
+                            studentSexTextView.setText("女");
+                        } else {
+                            studentSeatTextView.setText("        ");
+                            studentNameTextView.setText("        ");
+                            studentSexTextView.setText("        ");
+                        }
+                        return false;
+                    }
+                    @Override
+                    public boolean a(int column_num, int row_num, boolean paramBoolean) {
+//              String desc = "您取消了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
+//				Toast.makeText(StudentHomeActivity.this,desc.toString(), Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    @Override
+                    public void a() {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+            }
+        });
+
     }
 
-    private void setSeatInfo() {
-        for (int i = 0; i < ROW; i++) {//12行
+    private void setSeatInfo(int COL, int ROW, ReadJsonByGson jsonByGson) {
+        int seat_state[][] = jsonByGson.getSeatState(COL, ROW);
+        for (int i = 0; i < ROW; ++i) { //行
             SeatInfo mSeatInfo = new SeatInfo();
             ArrayList<Seat> mSeatList = new ArrayList<>();
             ArrayList<Integer> mConditionList = new ArrayList<>();
-            for (int j = 0; j < EACH_ROW_COUNT; j++) {//每排12个座位
+            for (int j = 0; j < COL; ++j) { //列
                 Seat mSeat = new Seat();
-
-                if (j < 8 && j > 3 && i < 3) {
+                if (seat_state[j][i] == 0) {
                     mSeat.setN("Z");
                     mConditionList.add(0); //设置无座位
-                } else if (j > 4 && j < 7 && i > 2) {
-                    mSeat.setN("Z");
-                    mConditionList.add(0); //设置无座位
-                } else {
-                    mSeat.setN(String.valueOf(j - 2));
-//                    mSeat.setN(String.valueOf(j));
-                    if (i > 2 && i < 6 && j < 9 && j > 2)
-                        mConditionList.add(2); //设置有人坐
-                    else mConditionList.add(1); //设置无人坐
+                } else if (seat_state[j][i] == 1) {
+                    mSeat.setN(String.valueOf(j));
+                    mConditionList.add(1); //设置无人坐
+                } else if (seat_state[j][i] == 2) {
+                    mSeat.setN(String.valueOf(j));
+                    mConditionList.add(2); //设置有人坐（暂时也包括坏座）
                 }
-
-                mSeat.setDamagedFlg("");
-                mSeat.setLoveInd("0");
+//                mSeat.setDamagedFlg("");
+//                mSeat.setLoveInd("0");
                 mSeatList.add(mSeat);
             }
             mSeatInfo.setDesc(String.valueOf(i + 1));

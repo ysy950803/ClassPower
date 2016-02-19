@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
+import com.ysy.classpower_constant.ServerUrlConstant;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
 
@@ -43,7 +44,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private int sexNumber;
     private JSONObject registerObject;
-    private static final String REGISTER_URL = "http://10.0.2.2:5000/register";
+    private static final String USER_REGISTER_STUDENT_URL = ServerUrlConstant.USER_REGISTER_STUDENT_URL;
+    private static final String USER_REGISTER_TEACHER_URL = ServerUrlConstant.USER_REGISTER_TEACHER_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +90,10 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-
                 case R.id.student_register_button:
                     registerInfoAsJson(2);
                     String studentInfoJson = registerObject.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), REGISTER_URL, studentInfoJson, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_STUDENT_URL, studentInfoJson, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 
@@ -110,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                 case R.id.teacher_register_button:
                     registerInfoAsJson(1);
                     String teacherInfoJson = registerObject.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), REGISTER_URL, teacherInfoJson, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_TEACHER_URL, teacherInfoJson, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 
@@ -141,6 +142,8 @@ public class RegisterActivity extends AppCompatActivity {
                     finish();
                     break;
 
+                default:
+                    break;
             }
         }
     };

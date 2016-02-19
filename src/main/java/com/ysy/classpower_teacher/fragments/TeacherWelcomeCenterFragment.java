@@ -21,6 +21,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.activities.LoginActivity;
+import com.ysy.classpower_constant.ServerUrlConstant;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
 
@@ -34,7 +35,7 @@ import org.json.JSONObject;
 public class TeacherWelcomeCenterFragment extends Fragment {
 
     View view;
-    private static final String USER_GETUSER_URL = "http://10.0.2.2:5000/user/getUser";
+    private static final String USER_GETUSER_URL = ServerUrlConstant.USER_GETUSER_URL;
 
     public TeacherWelcomeCenterFragment() {
 

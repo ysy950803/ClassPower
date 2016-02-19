@@ -2,7 +2,9 @@ package com.ysy.classpower_seatchoose.view;
 
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
+
 import java.util.ArrayList;
 
 class GestureListener extends GestureDetector.SimpleOnGestureListener {

@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
+import com.ysy.classpower_constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.StudentWelcomeActivity;
 import com.ysy.classpower_teacher.activities.home.TeacherHomeActivity;
 import com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity;
@@ -79,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
     private View mLoginFormView;
     private View focusView;
 
-    private static final String LOGIN_URL = "http://10.0.2.2:5000/login";
+    private static final String LOGIN_URL = ServerUrlConstant.LOGIN_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

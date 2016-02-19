@@ -1,37 +1,27 @@
 package com.ysy.classpower_student.activities.home;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.adapters.StudentWelcomeFragmentAdapter;
 import com.ysy.classpower_student.fragments.StudentWelcomeCenterFragment;
 import com.ysy.classpower_student.fragments.StudentWelcomeListFragment;
-import com.ysy.classpower_utils.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +30,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
     private long exitTime;
     private static boolean isCenterOpen;
+    public static boolean isUpAvatarOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +41,10 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        final FloatingActionButton refreshFab = (FloatingActionButton) findViewById(R.id.student_welcome_refresh_fab);
+
+        isCenterOpen = true;
+        isUpAvatarOpen = false;
 
         List<Fragment> fragments = new ArrayList<>();
         Fragment list_fragment = new StudentWelcomeListFragment();
@@ -57,7 +52,6 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         fragments.add(center_fragment);
         fragments.add(list_fragment);
 
-        isCenterOpen = false;
         final ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         StudentWelcomeFragmentAdapter fragmentAdapter = new StudentWelcomeFragmentAdapter(getSupportFragmentManager(), fragments);
         mViewPager.setAdapter(fragmentAdapter);
@@ -68,10 +62,13 @@ public class StudentWelcomeActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 1) {
-                    isCenterOpen = true;
+                    isCenterOpen = false;
+                    refreshFab.setVisibility(View.GONE);
                     invalidateOptionsMenu();
                 } else if (tab.getPosition() == 0) {
-                    isCenterOpen = false;
+                    isCenterOpen = true;
+                    if (!isUpAvatarOpen)
+                        refreshFab.setVisibility(View.VISIBLE);
                     invalidateOptionsMenu();
                 }
             }
@@ -119,7 +116,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                 return true;
             }
         });
-        if (isCenterOpen) {
+        if (!isCenterOpen) {
             menuItem.setVisible(true);
         } else
             menuItem.setVisible(false);
