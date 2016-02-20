@@ -9,13 +9,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,21 +29,19 @@ import com.loopj.android.http.Base64;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
-import com.ysy.classpower_common.activities.LoginActivity;
-import com.ysy.classpower_constant.ServerUrlConstant;
+import com.ysy.classpower_student.activities.base.StudentLoginActivity;
+import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.StudentWelcomeActivity;
 import com.ysy.classpower_utils.CardTurnAnimation;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
 
 import org.apache.http.Header;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -76,43 +71,39 @@ public class StudentWelcomeCenterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         SharedPreferences token_sp = getContext().getSharedPreferences("token", Context.MODE_PRIVATE);
-        SharedPreferences name_sp = getContext().getSharedPreferences("name", Context.MODE_PRIVATE);
         SharedPreferences userId_sp = getContext().getSharedPreferences("userId", Context.MODE_PRIVATE);
+        SharedPreferences name_sp = getContext().getSharedPreferences("name", Context.MODE_PRIVATE);
         SharedPreferences gender_sp = getContext().getSharedPreferences("gender", Context.MODE_PRIVATE);
-        SharedPreferences major_sp = getContext().getSharedPreferences("major", Context.MODE_PRIVATE);
-        SharedPreferences classNo_sp = getContext().getSharedPreferences("classNo", Context.MODE_PRIVATE);
+        SharedPreferences className_sp = getContext().getSharedPreferences("className", Context.MODE_PRIVATE);
+        SharedPreferences email_sp = getContext().getSharedPreferences("email", Context.MODE_PRIVATE);
+        SharedPreferences tel_sp = getContext().getSharedPreferences("tel", Context.MODE_PRIVATE);
         token = token_sp.getString("token", "");
-        final String name = name_sp.getString("name", "");
         userId = userId_sp.getString("userId", "");
-        final String gender = gender_sp.getString("gender", "");
-        final String major = major_sp.getString("major", "");
-        final String classNo = classNo_sp.getString("classNo", "");
+        String name = name_sp.getString("name", "");
+        boolean gender = gender_sp.getBoolean("gender", true);
+        String className = className_sp.getString("className", "");
+        String email = email_sp.getString("email", "");
+        String tel = tel_sp.getString("tel", "");
 
         view = inflater.inflate(R.layout.fragment_student_welcome_center, container, false);
 
-        Button logoutButton = (Button) view.findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogoutTips();
-            }
-        });
-
-        RelativeLayout studentAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_avatar_layout);
-        final RelativeLayout studentWelcomeCenterLayout = (RelativeLayout) view.findViewById(R.id.student_welcome_center_layout);
-        final RelativeLayout studentUpAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_up_avatar_layout);
         studentAvatar = (ImageView) view.findViewById(R.id.student_avatar_imageView);
         studentUpAvatar = (ImageView) view.findViewById(R.id.student_up_avatar_imageView);
+        final RelativeLayout studentWelcomeCenterLayout = (RelativeLayout) view.findViewById(R.id.student_welcome_center_layout);
+        final RelativeLayout studentUpAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_up_avatar_layout);
         final TextView studentNameContentTextView = (TextView) view.findViewById(R.id.student_name_content_text_view);
         final TextView studentNumberContentTextView = (TextView) view.findViewById(R.id.student_number_content_text_view);
         final TextView studentSexContentTextView = (TextView) view.findViewById(R.id.student_sex_content_text_view);
         final TextView studentClassContentTextView = (TextView) view.findViewById(R.id.student_class_content_text_view);
+        final TextView studentEmailContentTextView = (TextView) view.findViewById(R.id.student_email_content_textView);
+        final TextView studentTelContentTextView = (TextView) view.findViewById(R.id.student_tel_content_textView);
         final TextView studentLessonContentTextView = (TextView) view.findViewById(R.id.student_lesson_content_text_view);
+        final FloatingActionButton refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_refresh_fab);
+        RelativeLayout studentAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_avatar_layout);
         Button giveUpAvatarButton = (Button) view.findViewById(R.id.give_up_avatar_btn);
         Button choosePicAsAvatarBtn = (Button) view.findViewById(R.id.choose_pic_as_avatar_btn);
         Button takePhotoAsAvatarBtn = (Button) view.findViewById(R.id.take_photo_as_avatar_btn);
         Button confirmUpAvatarBtn = (Button) view.findViewById(R.id.confirm_up_avatar_btn);
-        final FloatingActionButton refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_refresh_fab);
 
         new AsyncHttpClient().get(USER_AVATAR_URL + userId + ".jpg", new FileAsyncHttpResponseHandler(getContext()) {
             @Override
@@ -127,12 +118,14 @@ public class StudentWelcomeCenterFragment extends Fragment {
         });
         studentNameContentTextView.setText(name);
         studentNumberContentTextView.setText(userId);
-        if (gender.equals("0"))
+        if (gender)
             studentSexContentTextView.setText("男");
-        else if (gender.equals("1"))
+        else if (!gender)
             studentSexContentTextView.setText("女");
-        studentClassContentTextView.setText(major);
-        studentLessonContentTextView.setText(classNo);
+        studentClassContentTextView.setText(className);
+        studentEmailContentTextView.setText(email);
+        studentTelContentTextView.setText(tel);
+        studentLessonContentTextView.setText("");
 
         JSONObject token_obj = new JSONObject();
         try {
@@ -154,14 +147,16 @@ public class StudentWelcomeCenterFragment extends Fragment {
                     @Override
                     public void onSuccess(int i, Header[] headers, String s) {
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                        studentNameContentTextView.setText(jsonByGson.getValue("name"));
-                        studentNumberContentTextView.setText(jsonByGson.getValue("student_id"));
-                        if (jsonByGson.getValue("gender").equals("0"))
+                        if (jsonByGson.getBoolValue("gender"))
                             studentSexContentTextView.setText("男");
-                        else if (jsonByGson.getValue("gender").equals("1"))
+                        else if (!jsonByGson.getBoolValue("gender"))
                             studentSexContentTextView.setText("女");
-                        studentClassContentTextView.setText(jsonByGson.getValue("major"));
-                        studentLessonContentTextView.setText(jsonByGson.getValue("class_no"));
+                        studentNameContentTextView.setText(jsonByGson.getValue("name"));
+                        studentNumberContentTextView.setText(jsonByGson.getValue("user_id"));
+                        studentEmailContentTextView.setText(jsonByGson.getValue("email"));
+                        studentTelContentTextView.setText(jsonByGson.getValue("tel"));
+                        studentClassContentTextView.setText(jsonByGson.getValue("class_name"));
+                        studentLessonContentTextView.setText(jsonByGson.getValue(""));
                     }
                 });
                 new AsyncHttpClient().get(USER_AVATAR_URL + userId + ".jpg", new FileAsyncHttpResponseHandler(getContext()) {
@@ -175,6 +170,14 @@ public class StudentWelcomeCenterFragment extends Fragment {
 
                     }
                 });
+            }
+        });
+
+        Button logoutButton = (Button) view.findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogoutTips();
             }
         });
 
@@ -266,7 +269,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 if (extras != null) {
                     Bitmap photo = extras.getParcelable("data");
                     ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
-                    photo.compress(Bitmap.CompressFormat.JPEG, 100, bAOS); // (0-100)压缩文件
+                    photo.compress(Bitmap.CompressFormat.JPEG, 100, bAOS); // 百分比（0-100）压缩文件
                     studentAvatarBytes = bAOS.toByteArray();
                     try {
                         bAOS.close();
@@ -288,7 +291,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                        startActivity(new Intent(getActivity(), StudentLoginActivity.class));
                         getActivity().finish();
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {

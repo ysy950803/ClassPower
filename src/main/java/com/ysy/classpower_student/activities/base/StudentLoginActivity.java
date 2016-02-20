@@ -1,10 +1,9 @@
-package com.ysy.classpower_common.activities;
+package com.ysy.classpower_student.activities.base;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -20,7 +19,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,9 +34,9 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
-import com.ysy.classpower_constant.ServerUrlConstant;
+import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.StudentWelcomeActivity;
-import com.ysy.classpower_teacher.activities.home.TeacherHomeActivity;
+import com.ysy.classpower_teacher.activities.base.TeacherRegisterActivity;
 import com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
@@ -54,7 +52,7 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class StudentLoginActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -80,14 +78,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
     private View mLoginFormView;
     private View focusView;
 
-    private static final String LOGIN_URL = ServerUrlConstant.LOGIN_URL;
+    private static final String USER_LOGIN_URL = ServerUrlConstant.USER_LOGIN_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_student_login);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -98,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin(2); // or 1
+                    attemptLogin(2);
                     return true;
                 }
                 return false;
@@ -110,14 +108,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
             @Override
             public void onClick(View view) {
                 attemptLogin(2);
-            }
-        });
-
-        Button mTeacherSignInButton = (Button) findViewById(R.id.teacher_sign_in_button);
-        mTeacherSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptLogin(1);
             }
         });
 
@@ -133,17 +123,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
             }
         });
 
-        Button registerButton = (Button) findViewById(R.id.register_button);
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        Button studentRegisterButton = (Button) findViewById(R.id.student_register_button);
+        studentRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
                 if (cd.isConnectingToInternet())
-                    startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                    startActivity(new Intent(StudentLoginActivity.this, StudentRegisterActivity.class));
                 else
-                    Toast.makeText(LoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StudentLoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     @Override
@@ -184,6 +175,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
         String userId = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        focusView = null;
+
         // Check for a valid email address.
         if (TextUtils.isEmpty(userId)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -199,24 +192,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
 
     }
 
-    private void checkAccountCorrect(String userId, String password, final int role) {
-        JSONObject userInfoObject = new JSONObject();
-        try {
-            userInfoObject.put("uid", userId);
-            userInfoObject.put("pwd", password);
-            userInfoObject.put("role", role);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String json = userInfoObject.toString();
-
+    private void checkAccountCorrect(String userId, String password, int role) {
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         if (cd.isConnectingToInternet()) {
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), LOGIN_URL, json, new TextHttpResponseHandler() {
+            JSONObject userInfoObject = new JSONObject();
+            try {
+                userInfoObject.put("user_id", userId);
+                userInfoObject.put("password", password);
+                userInfoObject.put("role", role);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String json = userInfoObject.toString();
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_LOGIN_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0) {
-                        Toast.makeText(LoginActivity.this, "服务器连接超时！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StudentLoginActivity.this, "服务器连接超时！", Toast.LENGTH_SHORT).show();
                     } else if (i == 400) {
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                         if (s.contains("error_code")) {
@@ -239,66 +231,76 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
                 public void onSuccess(int i, Header[] headers, String s) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (s.contains("token")) {
-                        String token = jsonByGson.getValue("token");
+                        // 共有属性
+                        String email = jsonByGson.getValue("email");
+                        boolean gender = jsonByGson.getBoolValue("gender");
                         String name = jsonByGson.getValue("name");
-                        String userId = "";
-                        String major = "";
-                        String classNo = "";
-                        String gender = jsonByGson.getValue("gender");
-                        if (role == 2) {
-                            userId = jsonByGson.getValue("student_id");
-                            major = jsonByGson.getValue("major");
-                            classNo = jsonByGson.getValue("class_no");
-                        } else if (role == 1) {
-                            userId = jsonByGson.getValue("teacher_id");
-                        }
+                        String tel = jsonByGson.getValue("tel");
+                        String token = jsonByGson.getValue("token");
+                        String userId = jsonByGson.getValue("user_id");
+                        // 学生属性
+                        String className = jsonByGson.getValue("class_name");
+                        String majorName = jsonByGson.getValue("major_name");
+                        // 特殊属性（待定：courses对象数组处理）
 
-                        storeCallBakOfLogin(token, name, userId, gender, major, classNo);
+                        saveCallBakOfLogin(email, gender, name, tel, token, userId, className, majorName);
 
                         mEmailView.setError(null);
                         mPasswordView.setError(null);
-                        if (role == 1) {
-                            showProgress(true);
-                            startActivity(new Intent(LoginActivity.this, TeacherWelcomeActivity.class));
-                            finish();
-                        } else if (role == 2) {
-                            showProgress(true);
-                            startActivity(new Intent(LoginActivity.this, StudentWelcomeActivity.class));
-                            finish();
-                        }
-                    }
+                        showProgress(true);
+                        startActivity(new Intent(StudentLoginActivity.this, StudentWelcomeActivity.class));
+                        finish();
+                    } else
+                        Toast.makeText(StudentLoginActivity.this, "未知错误，请重试！", Toast.LENGTH_SHORT).show();
                 }
             });
         } else
-            Toast.makeText(LoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(StudentLoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
 
     }
 
-    private void storeCallBakOfLogin(String token, String name, String userId, String gender, String major, String classNo) {
-        SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
-        SharedPreferences name_sp = getSharedPreferences("name", MODE_PRIVATE);
-        SharedPreferences userId_sp = getSharedPreferences("userId", MODE_PRIVATE);
+    private void saveCallBakOfLogin(String email, boolean gender, String name, String tel, String token, String userId,
+                                    String className, String majorName) {
+        // 共有属性
+        SharedPreferences email_sp = getSharedPreferences("email", MODE_PRIVATE);
         SharedPreferences gender_sp = getSharedPreferences("gender", MODE_PRIVATE);
-        SharedPreferences major_sp = getSharedPreferences("major", MODE_PRIVATE);
-        SharedPreferences classNo_sp = getSharedPreferences("classNo", MODE_PRIVATE);
-        SharedPreferences.Editor token_editor = token_sp.edit();
-        SharedPreferences.Editor name_editor = name_sp.edit();
-        SharedPreferences.Editor userId_editor = userId_sp.edit();
+        SharedPreferences name_sp = getSharedPreferences("name", MODE_PRIVATE);
+        SharedPreferences tel_sp = getSharedPreferences("tel", MODE_PRIVATE);
+        SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
+        SharedPreferences userId_sp = getSharedPreferences("userId", MODE_PRIVATE);
+        // 学生属性
+        SharedPreferences className_sp = getSharedPreferences("className", MODE_PRIVATE);
+        SharedPreferences majorName_sp = getSharedPreferences("majorName", MODE_PRIVATE);
+
+        SharedPreferences.Editor email_editor = email_sp.edit();
         SharedPreferences.Editor gender_editor = gender_sp.edit();
-        SharedPreferences.Editor major_editor = major_sp.edit();
-        SharedPreferences.Editor classNo_editor = classNo_sp.edit();
-        token_editor.putString("token", token);
+        SharedPreferences.Editor name_editor = name_sp.edit();
+        SharedPreferences.Editor tel_editor = tel_sp.edit();
+        SharedPreferences.Editor token_editor = token_sp.edit();
+        SharedPreferences.Editor userId_editor = userId_sp.edit();
+
+        SharedPreferences.Editor className_editor = className_sp.edit();
+        SharedPreferences.Editor majorName_editor = majorName_sp.edit();
+
+        email_editor.putString("email", email);
+        gender_editor.putBoolean("gender", gender);
         name_editor.putString("name", name);
+        tel_editor.putString("tel", tel);
+        token_editor.putString("token", token);
         userId_editor.putString("userId", userId);
-        gender_editor.putString("gender", gender);
-        major_editor.putString("major", major);
-        classNo_editor.putString("classNo", classNo);
-        token_editor.apply();
-        name_editor.apply();
-        userId_editor.apply();
+
+        className_editor.putString("className", className);
+        majorName_editor.putString("majorName", majorName);
+
+        email_editor.apply();
         gender_editor.apply();
-        major_editor.apply();
-        classNo_editor.apply();
+        name_editor.apply();
+        tel_editor.apply();
+        token_editor.apply();
+        userId_editor.apply();
+
+        className_editor.apply();
+        majorName_editor.apply();
     }
 
     /**
@@ -374,12 +376,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderManager.Lo
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(StudentLoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
     }
-
 
     private interface ProfileQuery {
         String[] PROJECTION = {

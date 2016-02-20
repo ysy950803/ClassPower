@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ysy.classpower.R;
-import com.ysy.classpower_common.activities.LoginActivity;
+import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_seatchoose.OnSeatClickListener;
 import com.ysy.classpower_seatchoose.model.Seat;
 import com.ysy.classpower_seatchoose.model.SeatInfo;
@@ -356,7 +356,7 @@ public class TeacherHomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_solve) {
 
         } else if (id == R.id.nav_logout) {
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, StudentLoginActivity.class));
             this.finish();
         } else if (id == R.id.nav_exit) {
             this.finish();

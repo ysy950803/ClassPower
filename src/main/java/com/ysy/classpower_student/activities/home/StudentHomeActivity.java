@@ -32,8 +32,8 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
-import com.ysy.classpower_common.activities.LoginActivity;
-import com.ysy.classpower_constant.ServerUrlConstant;
+import com.ysy.classpower_student.activities.base.StudentLoginActivity;
+import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_seatchoose.OnSeatClickListener;
 import com.ysy.classpower_seatchoose.model.Seat;
 import com.ysy.classpower_seatchoose.model.SeatInfo;
@@ -390,7 +390,7 @@ public class StudentHomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             isSeatChooseOpen = false;
             invalidateOptionsMenu();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, StudentLoginActivity.class));
             this.finish();
         } else if (id == R.id.nav_exit) {
             isSeatChooseOpen = false;

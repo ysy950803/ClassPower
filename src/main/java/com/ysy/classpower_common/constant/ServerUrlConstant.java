@@ -1,4 +1,4 @@
-package com.ysy.classpower_constant;
+package com.ysy.classpower_common.constant;
 
 /**
  * Created by 姚圣禹 on 2016/2/18.

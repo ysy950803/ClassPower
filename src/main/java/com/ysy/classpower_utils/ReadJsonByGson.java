@@ -23,6 +23,24 @@ public class ReadJsonByGson {
         object = (JsonObject) parser.parse(json);
     }
 
+    public String[] getSchoolsInfo(String school_details) {
+        JsonObject school_object;
+        JsonArray schools_array = object.getAsJsonArray("schools");
+        String[] details = new String[schools_array.size()];
+        if (school_details.equals("school_id")) {
+            for (int i = 0; i < schools_array.size(); ++i) {
+                school_object = (JsonObject) schools_array.get(i);
+                details[i] = school_object.get("school_id").getAsString();
+            }
+        } else if (school_details.equals("school_name")) {
+            for (int i = 0; i < schools_array.size(); ++i) {
+                school_object = (JsonObject) schools_array.get(i);
+                details[i] = school_object.get("school_name").getAsString();
+            }
+        }
+        return details;
+    }
+
     public int[][] getSeatState(int col, int row) {
         int seat_state[][] = new int[col][row]; // 0无座 1好座无人 2好座有人或者坏座
         JsonObject seat_object;
@@ -56,6 +74,10 @@ public class ReadJsonByGson {
 
     public int getIntValue(String key) {
         return object.get(key).getAsInt();
+    }
+
+    public boolean getBoolValue(String key) {
+        return object.get(key).getAsBoolean();
     }
 
     public String getArrayValue(String key, String array_key) {

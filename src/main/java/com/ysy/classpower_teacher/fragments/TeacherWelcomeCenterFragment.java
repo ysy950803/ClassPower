@@ -20,8 +20,8 @@ import android.widget.TextView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
-import com.ysy.classpower_common.activities.LoginActivity;
-import com.ysy.classpower_constant.ServerUrlConstant;
+import com.ysy.classpower_student.activities.base.StudentLoginActivity;
+import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
 
@@ -52,7 +52,7 @@ public class TeacherWelcomeCenterFragment extends Fragment {
         String token = token_sp.getString("token", "");
         final String name = name_sp.getString("name", "");
         final String userId = userId_sp.getString("userId", "");
-        final String gender = gender_sp.getString("gender", "");
+        final boolean gender = gender_sp.getBoolean("gender", true);
 
         view = inflater.inflate(R.layout.fragment_teacher_welcome_center, container, false);
         Button logoutButton = (Button) view.findViewById(R.id.logout_button);
@@ -71,9 +71,9 @@ public class TeacherWelcomeCenterFragment extends Fragment {
 
         teacherNameContentTextView.setText(name);
         teacherNumberContentTextView.setText(userId);
-        if (gender.equals("0"))
+        if (gender)
             teacherSexContentTextView.setText("男");
-        else if (gender.equals("1"))
+        else if (!gender)
             teacherSexContentTextView.setText("女");
         teacherOfficeContentTextView.setText("");
         teacherPlatformContentTextView.setText("");
@@ -100,9 +100,9 @@ public class TeacherWelcomeCenterFragment extends Fragment {
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                         teacherNameContentTextView.setText(jsonByGson.getValue("name"));
                         teacherNumberContentTextView.setText(jsonByGson.getValue("teacher_id"));
-                        if (jsonByGson.getValue("gender").equals("0"))
+                        if (jsonByGson.getBoolValue("gender"))
                             teacherSexContentTextView.setText("男");
-                        else if (jsonByGson.getValue("gender").equals("1"))
+                        else if (jsonByGson.getBoolValue("gender"))
                             teacherSexContentTextView.setText("女");
                         teacherOfficeContentTextView.setText("");
                         teacherPlatformContentTextView.setText("");
@@ -120,7 +120,7 @@ public class TeacherWelcomeCenterFragment extends Fragment {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                        startActivity(new Intent(getActivity(), StudentLoginActivity.class));
                         getActivity().finish();
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
