@@ -17,8 +17,8 @@ import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,9 +35,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
-import com.ysy.classpower_student.activities.home.StudentWelcomeActivity;
-import com.ysy.classpower_teacher.activities.base.TeacherRegisterActivity;
-import com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
@@ -118,8 +115,13 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "若需要帮助，请点击查看。", Snackbar.LENGTH_LONG)
+                        .setAction("更多", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        }).show();
             }
         });
 
@@ -208,7 +210,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0) {
-                        Toast.makeText(StudentLoginActivity.this, "服务器连接超时！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StudentLoginActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
                     } else if (i == 400) {
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                         if (s.contains("error_code")) {
@@ -241,9 +243,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                         // 学生属性
                         String className = jsonByGson.getValue("class_name");
                         String majorName = jsonByGson.getValue("major_name");
-                        // 特殊属性（待定：courses对象数组处理）
 
-                        saveCallBakOfLogin(email, gender, name, tel, token, userId, className, majorName);
+                        saveCallBakOfLogin(s, email, gender, name, tel, token, userId, className, majorName);
 
                         mEmailView.setError(null);
                         mPasswordView.setError(null);
@@ -255,11 +256,11 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                 }
             });
         } else
-            Toast.makeText(StudentLoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(StudentLoginActivity.this, "登录失败，请检查网络连接！", Toast.LENGTH_SHORT).show();
 
     }
 
-    private void saveCallBakOfLogin(String email, boolean gender, String name, String tel, String token, String userId,
+    private void saveCallBakOfLogin(String loginJson, String email, boolean gender, String name, String tel, String token, String userId,
                                     String className, String majorName) {
         // 共有属性
         SharedPreferences email_sp = getSharedPreferences("email", MODE_PRIVATE);
@@ -271,6 +272,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         // 学生属性
         SharedPreferences className_sp = getSharedPreferences("className", MODE_PRIVATE);
         SharedPreferences majorName_sp = getSharedPreferences("majorName", MODE_PRIVATE);
+        // 登录返回大量信息（包括课程和时间）
+        SharedPreferences loginJson_sp = getSharedPreferences("loginJson", MODE_PRIVATE);
 
         SharedPreferences.Editor email_editor = email_sp.edit();
         SharedPreferences.Editor gender_editor = gender_sp.edit();
@@ -282,6 +285,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         SharedPreferences.Editor className_editor = className_sp.edit();
         SharedPreferences.Editor majorName_editor = majorName_sp.edit();
 
+        SharedPreferences.Editor loginJson_editor = loginJson_sp.edit();
+
         email_editor.putString("email", email);
         gender_editor.putBoolean("gender", gender);
         name_editor.putString("name", name);
@@ -292,6 +297,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         className_editor.putString("className", className);
         majorName_editor.putString("majorName", majorName);
 
+        loginJson_editor.putString("loginJson", loginJson);
+
         email_editor.apply();
         gender_editor.apply();
         name_editor.apply();
@@ -301,6 +308,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
         className_editor.apply();
         majorName_editor.apply();
+
+        loginJson_editor.apply();
     }
 
     /**

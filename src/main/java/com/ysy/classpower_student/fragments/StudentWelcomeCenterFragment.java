@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +28,13 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.Base64;
+import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
-import com.ysy.classpower_student.activities.home.StudentWelcomeActivity;
+import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_utils.CardTurnAnimation;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
@@ -50,17 +53,18 @@ import java.io.IOException;
 public class StudentWelcomeCenterFragment extends Fragment {
 
     View view;
-    private static final String USER_GETUSER_URL = ServerUrlConstant.USER_GETUSER_URL;
+    private static final String USER_ME_URL = ServerUrlConstant.USER_ME_URL;
     private static final String USER_AVATAR_URL = ServerUrlConstant.USER_AVATAR_URL;
     private static final String IMAGE_UNSPECIFIED = "image/*";
     private static final int ALBUM_REQUEST_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
-    private static final int CROP_REQUEST_CODE = 3;
+    private static final int CROP_REQUEST_CODE = 4;
     private ImageView studentAvatar;
     private ImageView studentUpAvatar;
     private String userId;
     private String token;
     private byte[] studentAvatarBytes = null;
+    private Bitmap photo = null;
 
     public StudentWelcomeCenterFragment() {
 
@@ -105,14 +109,15 @@ public class StudentWelcomeCenterFragment extends Fragment {
         Button takePhotoAsAvatarBtn = (Button) view.findViewById(R.id.take_photo_as_avatar_btn);
         Button confirmUpAvatarBtn = (Button) view.findViewById(R.id.confirm_up_avatar_btn);
 
-        new AsyncHttpClient().get(USER_AVATAR_URL + userId + ".jpg", new FileAsyncHttpResponseHandler(getContext()) {
+        new AsyncHttpClient().get(USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
             @Override
-            public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
-                studentAvatar.setImageResource(R.drawable.ic_account_circle_black_48dp);
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                studentAvatar.setImageBitmap(bm);
             }
 
             @Override
-            public void onSuccess(int i, Header[] headers, File file) {
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
 
             }
         });
@@ -134,42 +139,52 @@ public class StudentWelcomeCenterFragment extends Fragment {
             e.printStackTrace();
         }
         final String json = token_obj.toString();
-
+        // 刷新按钮
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_GETUSER_URL, json, new TextHttpResponseHandler() {
+                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_ME_URL, json, new TextHttpResponseHandler() {
                     @Override
                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-
+                        Toast.makeText(getContext(), "网络错误，刷新失败！", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onSuccess(int i, Header[] headers, String s) {
+                        Toast.makeText(getContext(), "个人信息刷新成功！", Toast.LENGTH_SHORT).show();
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                        if (jsonByGson.getBoolValue("gender"))
+                        if (jsonByGson.getArrayBoolValue("info", "gender"))
                             studentSexContentTextView.setText("男");
-                        else if (!jsonByGson.getBoolValue("gender"))
+                        else
                             studentSexContentTextView.setText("女");
-                        studentNameContentTextView.setText(jsonByGson.getValue("name"));
-                        studentNumberContentTextView.setText(jsonByGson.getValue("user_id"));
-                        studentEmailContentTextView.setText(jsonByGson.getValue("email"));
-                        studentTelContentTextView.setText(jsonByGson.getValue("tel"));
-                        studentClassContentTextView.setText(jsonByGson.getValue("class_name"));
-                        studentLessonContentTextView.setText(jsonByGson.getValue(""));
+                        studentNameContentTextView.setText(jsonByGson.getArrayValue("info", "name"));
+                        studentNumberContentTextView.setText(jsonByGson.getArrayValue("info", "user_id"));
+                        studentEmailContentTextView.setText(jsonByGson.getArrayValue("info", "email"));
+                        studentTelContentTextView.setText(jsonByGson.getArrayValue("info", "tel"));
+                        studentClassContentTextView.setText(jsonByGson.getArrayValue("info", "class_name"));
+                        studentLessonContentTextView.setText(""); // 当前课堂获取方法待定
                     }
                 });
-                new AsyncHttpClient().get(USER_AVATAR_URL + userId + ".jpg", new FileAsyncHttpResponseHandler(getContext()) {
+                new AsyncHttpClient().get(USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
                     @Override
-                    public void onFailure(int i, Header[] headers, Throwable throwable, File file) {
-
+                    public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        studentAvatar.setImageBitmap(bm);
                     }
 
                     @Override
-                    public void onSuccess(int i, Header[] headers, File file) {
+                    public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
 
                     }
                 });
+            }
+        });
+
+        Button updateInfoButton = (Button) view.findViewById(R.id.update_info_button);
+        updateInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
@@ -267,7 +282,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 }
                 Bundle extras = data.getExtras();
                 if (extras != null) {
-                    Bitmap photo = extras.getParcelable("data");
+                    photo = extras.getParcelable("data");
                     ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
                     photo.compress(Bitmap.CompressFormat.JPEG, 100, bAOS); // 百分比（0-100）压缩文件
                     studentAvatarBytes = bAOS.toByteArray();
@@ -313,7 +328,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
         if (studentAvatarBytes == null) {
             Toast.makeText(getContext(), "未设置头像！", Toast.LENGTH_SHORT).show();
         } else {
-            String base64_code = Base64.encodeToString(studentAvatarBytes, Base64.DEFAULT);
+            String base64_code = Base64.encodeToString(studentAvatarBytes, 0, studentAvatarBytes.length, Base64.DEFAULT);
             JSONObject up_avatar_obj = new JSONObject();
             try {
                 up_avatar_obj.put("token", token);
@@ -322,6 +337,8 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 e.printStackTrace();
             }
             String json = up_avatar_obj.toString();
+            Log.d("TEST", json);
+            System.out.println(json);
             new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_AVATAR_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
@@ -330,6 +347,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    studentAvatar.setImageBitmap(photo);
                     Toast.makeText(getContext(), "头像上传成功！", Toast.LENGTH_SHORT).show();
                 }
             });

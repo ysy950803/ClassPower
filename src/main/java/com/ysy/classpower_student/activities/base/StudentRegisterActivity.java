@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StudentRegisterActivity extends AppCompatActivity {
@@ -45,17 +46,25 @@ public class StudentRegisterActivity extends AppCompatActivity {
     private TextView userIdTextView;
     private TextView nameTextView;
     private TextView sexTextView;
-    private TextView emailTextView;
+    private TextView classTextView;
     private TextView roleTextView;
 
     private RelativeLayout registerLayout;
     private RelativeLayout registerSuccessLayout;
 
+    private TextView schoolsTextView;
+    private TextView majorsTextView;
+    private TextView classesTextView;
     private Spinner schoolsSpinner;
     private Spinner majorsSpinner;
     private Spinner classesSpinner;
+    private List<String> schools_list = new ArrayList<>();
+    private List<String> majors_list = new ArrayList<>();
+    private List<String> classes_list = new ArrayList<>();
+    private String schoolId = "";
     private String majorId = "";
     private String classId = "";
+    private String className = "";
 
     private boolean isMale;
     private JSONObject registerObject;
@@ -87,10 +96,13 @@ public class StudentRegisterActivity extends AppCompatActivity {
         userIdTextView = (TextView) findViewById(R.id.user_id_text_view);
         nameTextView = (TextView) findViewById(R.id.name_text_view);
         sexTextView = (TextView) findViewById(R.id.sex_text_view);
-        emailTextView = (TextView) findViewById(R.id.email_text_view);
+        classTextView = (TextView) findViewById(R.id.class_text_view);
         roleTextView = (TextView) findViewById(R.id.role_text_view);
         backToLoginButton = (Button) findViewById(R.id.back_to_login_button);
 
+        schoolsTextView = (TextView) findViewById(R.id.schools_textView);
+        majorsTextView = (TextView) findViewById(R.id.majors_textView);
+        classesTextView = (TextView) findViewById(R.id.classes_textView);
         schoolsSpinner = (Spinner) findViewById(R.id.schools_spinner);
         majorsSpinner = (Spinner) findViewById(R.id.majors_spinner);
         classesSpinner = (Spinner) findViewById(R.id.classes_spinner);
@@ -106,18 +118,20 @@ public class StudentRegisterActivity extends AppCompatActivity {
         registerLayout.setVisibility(View.VISIBLE);
         registerSuccessLayout.setVisibility(View.GONE);
 
-        final List<String> list = new ArrayList<>();
-        list.add(0, "<---请选择学院--->");
-        ArrayAdapter<String> schoolsSpinnerAdapter = new ArrayAdapter<>(StudentRegisterActivity.this, android.R.layout.simple_spinner_item, list);
-        schoolsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        schoolsSpinner.setAdapter(schoolsSpinnerAdapter);
+        schools_list.add(0, "<---请选择学院--->");
+        majors_list.add(0, "<---请选择专业--->");
+        classes_list.add(0, "<---请选择班级--->");
+        spinnerAdapter(schools_list, schoolsSpinner);
+        spinnerAdapter(majors_list, majorsSpinner);
+        spinnerAdapter(classes_list, classesSpinner);
+
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         if (cd.isConnectingToInternet()) {
             new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETSCHOOLS_URL, "{}", new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0)
-                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，院校信息获取失败！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取学院，请退出重试！", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -125,20 +139,26 @@ public class StudentRegisterActivity extends AppCompatActivity {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     String school_name_array[] = jsonByGson.getSchoolsInfo("school_name");
                     final String school_id_array[] = jsonByGson.getSchoolsInfo("school_id");
-                    for (int j = 0; j < school_name_array.length; ++j) {
-                        list.add(school_name_array[j]);
-                    }
-                    ArrayAdapter<String> schoolsSpinnerAdapter = new ArrayAdapter<>(StudentRegisterActivity.this, android.R.layout.simple_spinner_item, list);
-                    schoolsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    schoolsSpinner.setAdapter(schoolsSpinnerAdapter);
+                    schools_list.clear();
+                    schools_list.add(0, "<---请选择学院--->");
+                    Collections.addAll(schools_list, school_name_array);
+                    spinnerAdapter(schools_list, schoolsSpinner);
                     schoolsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            String school_id;
                             if (position == 0) {
-                                school_id = "";
+                                schoolId = "";
+                                majorsTextView.setVisibility(View.INVISIBLE);
+                                majorsSpinner.setVisibility(View.INVISIBLE);
+                                classesTextView.setVisibility(View.INVISIBLE);
+                                classesSpinner.setVisibility(View.INVISIBLE);
                             } else if (position > 0) {
-                                school_id = school_id_array[position - 1];
+                                majorsTextView.setVisibility(View.VISIBLE);
+                                majorsSpinner.setVisibility(View.VISIBLE);
+                                classesTextView.setVisibility(View.INVISIBLE);
+                                classesSpinner.setVisibility(View.INVISIBLE);
+                                schoolId = school_id_array[position - 1];
+                                getMajorsToSpinner(schoolId);
                             }
                         }
 
@@ -151,8 +171,119 @@ public class StudentRegisterActivity extends AppCompatActivity {
             });
 
         } else
-            Toast.makeText(StudentRegisterActivity.this, "院校信息获取失败，请检查网络连接！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(StudentRegisterActivity.this, "网络未连接，获取学院失败，请退出重试！", Toast.LENGTH_SHORT).show();
 
+    }
+
+    private void spinnerAdapter(List<String> list, Spinner spinner) {
+        ArrayAdapter<String> schoolsSpinnerAdapter = new ArrayAdapter<>(StudentRegisterActivity.this, android.R.layout.simple_spinner_item, list);
+        schoolsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(schoolsSpinnerAdapter);
+    }
+
+    private void getMajorsToSpinner(String schoolId) {
+        ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
+        if (cd.isConnectingToInternet()) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("school_id", schoolId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String json = object.toString();
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETMAJORS_URL, json, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    schoolsSpinner.setSelection(0);
+                    if (i == 0) {
+                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取专业，请重选学院！", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onSuccess(int i, Header[] headers, String s) {
+                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                    String major_name_array[] = jsonByGson.getMajorsInfo("major_name");
+                    final String major_id_array[] = jsonByGson.getMajorsInfo("major_id");
+                    majors_list.clear();
+                    majors_list.add(0, "<---请选择专业--->");
+                    Collections.addAll(majors_list, major_name_array);
+                    spinnerAdapter(majors_list, majorsSpinner);
+                    majorsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            if (position == 0) {
+                                majorId = "";
+                                classesSpinner.setVisibility(View.INVISIBLE);
+                                classesTextView.setVisibility(View.INVISIBLE);
+                            } else if (position > 0) {
+                                majorId = major_id_array[position - 1];
+                                classesSpinner.setVisibility(View.VISIBLE);
+                                classesTextView.setVisibility(View.VISIBLE);
+                                getClassesToSpinner(majorId);
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            });
+        } else
+            Toast.makeText(StudentRegisterActivity.this, "网络未连接，获取专业失败，请重选学院！", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void getClassesToSpinner(String majorId) {
+        ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
+        if (cd.isConnectingToInternet()) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("major_id", majorId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String json = object.toString();
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETCLASSES_URL, json, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    majorsSpinner.setSelection(0);
+                    if (i == 0) {
+                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取班级，请重选专业！", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onSuccess(int i, Header[] headers, String s) {
+                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                    final String class_name_array[] = jsonByGson.getClassesInfo("class_name");
+                    final String class_id_array[] = jsonByGson.getClassesInfo("class_id");
+                    classes_list.clear();
+                    classes_list.add(0, "<---请选择班级--->");
+                    Collections.addAll(classes_list, class_name_array);
+                    spinnerAdapter(classes_list, classesSpinner);
+                    classesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            if (position == 0) {
+                                classId = "";
+                            } else if (position > 0) {
+                                classId = class_id_array[position - 1];
+                                className = class_name_array[position - 1];
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                }
+            });
+        } else
+            Toast.makeText(StudentRegisterActivity.this, "网络未连接，获取班级失败，请重选专业！", Toast.LENGTH_SHORT).show();
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -168,9 +299,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                                 if (i == 0)
-                                    Toast.makeText(StudentRegisterActivity.this, "服务器连接超时！", Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(StudentRegisterActivity.this, "提交失败，请完整填写必要信息！", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(StudentRegisterActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -212,14 +341,24 @@ public class StudentRegisterActivity extends AppCompatActivity {
 
     private void registerInfoAsJson() {
         try {
-            registerObject.put("user_id", userIdEditText.getText().toString());
-            registerObject.put("password", passWordEditText.getText().toString());
-            registerObject.put("name", nameEditText.getText().toString());
-            registerObject.put("email", emailEditText.getText().toString());
-            registerObject.put("tel", telEditText.getText().toString());
-            registerObject.put("gender", isMale);
-            registerObject.put("major_id", "");
-            registerObject.put("class_id", "");
+            if (userIdEditText.getText().toString().equals(""))
+                Toast.makeText(StudentRegisterActivity.this, "用户名不能为空！", Toast.LENGTH_SHORT).show();
+            else if (passWordEditText.getText().toString().equals(""))
+                Toast.makeText(StudentRegisterActivity.this, "密码不能为空！", Toast.LENGTH_SHORT).show();
+            else if (nameEditText.getText().toString().equals(""))
+                Toast.makeText(StudentRegisterActivity.this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
+            else if (majorId.equals("") || classId.equals(""))
+                Toast.makeText(StudentRegisterActivity.this, "请选择完整的院校信息！", Toast.LENGTH_SHORT).show();
+            else {
+                registerObject.put("user_id", userIdEditText.getText().toString());
+                registerObject.put("password", passWordEditText.getText().toString());
+                registerObject.put("name", nameEditText.getText().toString());
+                registerObject.put("email", emailEditText.getText().toString());
+                registerObject.put("tel", telEditText.getText().toString());
+                registerObject.put("gender", isMale);
+                registerObject.put("major_id", majorId);
+                registerObject.put("class_id", classId);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -234,7 +373,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
         }
         userIdTextView.setText(jsonByGson.getValue("user_id"));
         nameTextView.setText(jsonByGson.getValue("name"));
-        emailTextView.setText(jsonByGson.getValue("email"));
+        classTextView.setText(className);
         roleTextView.setText("学生");
     }
 

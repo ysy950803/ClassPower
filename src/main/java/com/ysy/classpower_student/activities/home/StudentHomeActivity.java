@@ -39,6 +39,7 @@ import com.ysy.classpower_seatchoose.model.Seat;
 import com.ysy.classpower_seatchoose.model.SeatInfo;
 import com.ysy.classpower_seatchoose.view.SSThumbView;
 import com.ysy.classpower_seatchoose.view.SSView;
+import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;

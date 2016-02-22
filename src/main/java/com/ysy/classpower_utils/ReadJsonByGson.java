@@ -1,6 +1,7 @@
 package com.ysy.classpower_utils;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -36,6 +37,42 @@ public class ReadJsonByGson {
             for (int i = 0; i < schools_array.size(); ++i) {
                 school_object = (JsonObject) schools_array.get(i);
                 details[i] = school_object.get("school_name").getAsString();
+            }
+        }
+        return details;
+    }
+
+    public String[] getMajorsInfo(String major_details) {
+        JsonObject major_object;
+        JsonArray majors_array = object.getAsJsonArray("majors");
+        String[] details = new String[majors_array.size()];
+        if (major_details.equals("major_id")) {
+            for (int i = 0; i < majors_array.size(); ++i) {
+                major_object = (JsonObject) majors_array.get(i);
+                details[i] = major_object.get("major_id").getAsString();
+            }
+        } else if (major_details.equals("major_name")) {
+            for (int i = 0; i < majors_array.size(); ++i) {
+                major_object = (JsonObject) majors_array.get(i);
+                details[i] = major_object.get("major_name").getAsString();
+            }
+        }
+        return details;
+    }
+
+    public String[] getClassesInfo(String class_details) {
+        JsonObject class_object;
+        JsonArray classes_array = object.getAsJsonArray("classes");
+        String[] details = new String[classes_array.size()];
+        if (class_details.equals("class_id")) {
+            for (int i = 0; i < classes_array.size(); ++i) {
+                class_object = (JsonObject) classes_array.get(i);
+                details[i] = class_object.get("class_id").getAsString();
+            }
+        } else if (class_details.equals("class_name")) {
+            for (int i = 0; i < classes_array.size(); ++i) {
+                class_object = (JsonObject) classes_array.get(i);
+                details[i] = class_object.get("class_name").getAsString();
             }
         }
         return details;
@@ -85,10 +122,19 @@ public class ReadJsonByGson {
             return "";
         else {
             JsonObject arrayObject = object.get(key).getAsJsonObject();
-            if (arrayObject.get(key).isJsonNull())
+            if (arrayObject.get(array_key).isJsonNull())
                 return "";
             else
                 return arrayObject.get(array_key).getAsString();
+        }
+    }
+
+    public boolean getArrayBoolValue(String key, String array_key) {
+        if (object.get(key).isJsonNull())
+            return false;
+        else {
+            JsonObject arrayObject = object.get(key).getAsJsonObject();
+            return arrayObject.get(array_key).getAsBoolean();
         }
     }
 

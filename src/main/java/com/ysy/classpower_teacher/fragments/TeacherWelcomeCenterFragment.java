@@ -35,7 +35,7 @@ import org.json.JSONObject;
 public class TeacherWelcomeCenterFragment extends Fragment {
 
     View view;
-    private static final String USER_GETUSER_URL = ServerUrlConstant.USER_GETUSER_URL;
+    private static final String USER_ME_URL = ServerUrlConstant.USER_ME_URL;
 
     public TeacherWelcomeCenterFragment() {
 
@@ -90,7 +90,7 @@ public class TeacherWelcomeCenterFragment extends Fragment {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_GETUSER_URL, json, new TextHttpResponseHandler() {
+                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_ME_URL, json, new TextHttpResponseHandler() {
                     @Override
                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 
