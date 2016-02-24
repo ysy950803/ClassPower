@@ -1,6 +1,7 @@
 package com.ysy.classpower_student.fragments;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,6 +66,18 @@ public class StudentWelcomeCenterFragment extends Fragment {
     private String token;
     private byte[] studentAvatarBytes = null;
     private Bitmap photo = null;
+    private FloatingActionButton refreshFab;
+
+    private RelativeLayout studentWelcomeCenterLayout;
+    private RelativeLayout studentUpAvatarLayout;
+
+    private TextView studentNameContentTextView;
+    private TextView studentNumberContentTextView;
+    private TextView studentSexContentTextView;
+    private TextView studentClassContentTextView;
+    private TextView studentEmailContentTextView;
+    private TextView studentTelContentTextView;
+    private TextView studentLessonContentTextView;
 
     public StudentWelcomeCenterFragment() {
 
@@ -93,16 +106,15 @@ public class StudentWelcomeCenterFragment extends Fragment {
 
         studentAvatar = (ImageView) view.findViewById(R.id.student_avatar_imageView);
         studentUpAvatar = (ImageView) view.findViewById(R.id.student_up_avatar_imageView);
-        final RelativeLayout studentWelcomeCenterLayout = (RelativeLayout) view.findViewById(R.id.student_welcome_center_layout);
-        final RelativeLayout studentUpAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_up_avatar_layout);
-        final TextView studentNameContentTextView = (TextView) view.findViewById(R.id.student_name_content_text_view);
-        final TextView studentNumberContentTextView = (TextView) view.findViewById(R.id.student_number_content_text_view);
-        final TextView studentSexContentTextView = (TextView) view.findViewById(R.id.student_sex_content_text_view);
-        final TextView studentClassContentTextView = (TextView) view.findViewById(R.id.student_class_content_text_view);
-        final TextView studentEmailContentTextView = (TextView) view.findViewById(R.id.student_email_content_textView);
-        final TextView studentTelContentTextView = (TextView) view.findViewById(R.id.student_tel_content_textView);
-        final TextView studentLessonContentTextView = (TextView) view.findViewById(R.id.student_lesson_content_text_view);
-        final FloatingActionButton refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_refresh_fab);
+        studentWelcomeCenterLayout = (RelativeLayout) view.findViewById(R.id.student_welcome_center_layout);
+        studentUpAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_up_avatar_layout);
+        studentNameContentTextView = (TextView) view.findViewById(R.id.student_name_content_text_view);
+        studentNumberContentTextView = (TextView) view.findViewById(R.id.student_number_content_text_view);
+        studentSexContentTextView = (TextView) view.findViewById(R.id.student_sex_content_text_view);
+        studentClassContentTextView = (TextView) view.findViewById(R.id.student_class_content_text_view);
+        studentEmailContentTextView = (TextView) view.findViewById(R.id.student_email_content_textView);
+        studentTelContentTextView = (TextView) view.findViewById(R.id.student_tel_content_textView);
+        studentLessonContentTextView = (TextView) view.findViewById(R.id.student_lesson_content_text_view);
         RelativeLayout studentAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_avatar_layout);
         Button giveUpAvatarButton = (Button) view.findViewById(R.id.give_up_avatar_btn);
         Button choosePicAsAvatarBtn = (Button) view.findViewById(R.id.choose_pic_as_avatar_btn);
@@ -132,6 +144,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
         studentTelContentTextView.setText(tel);
         studentLessonContentTextView.setText("");
 
+        refreshFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_refresh_fab);
         JSONObject token_obj = new JSONObject();
         try {
             token_obj.put("token", token);
@@ -220,7 +233,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.
-                        getExternalStorageDirectory(), "/student_" + userId + "avatar_temp.jpg")));
+                        getExternalStorageDirectory(), "/student_" + userId + "_avatar_temp.jpg")));
                 startActivityForResult(intent, CAMERA_REQUEST_CODE);
             }
         });
@@ -272,7 +285,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 break;
             case CAMERA_REQUEST_CODE:
                 File picture = new File(Environment.getExternalStorageDirectory()
-                        + "/student_" + userId + "avatar_temp.jpg");
+                        + "/student_" + userId + "_avatar_temp.jpg");
                 startCrop(Uri.fromFile(picture));
                 break;
             case CROP_REQUEST_CODE:

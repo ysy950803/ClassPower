@@ -1,5 +1,7 @@
 package com.ysy.classpower_utils;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,6 +24,98 @@ public class ReadJsonByGson {
     public ReadJsonByGson(InputStreamReader json) {
         JsonParser parser = new JsonParser();
         object = (JsonObject) parser.parse(json);
+    }
+
+    public String[] getCoursesTimesWeeksInfo() {
+        return null;
+    }
+
+    public String[] getCoursesTimesRoomNameInfo() {
+        return null;
+    }
+
+    public String[] getCoursesTimesRoomIdInfo() {
+        return null;
+    }
+
+    public String[] getCoursesTimesPeriodInfo() {
+        return null;
+    }
+
+    // 根据传递当前周数week来获取是否有课并且是星期几上课
+    public String[] getCoursesTimesDaysInfo(String week) {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_times_array;
+        JsonObject courses_time_object;
+        String[] details = new String[courses_array.size()];
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_times_array = course_object.getAsJsonArray("times");
+            for (int j = 0; j < courses_times_array.size(); ++j) {
+                courses_time_object = courses_times_array.get(j).getAsJsonObject();
+                String weeks_str = courses_time_object.get("weeks").toString(); // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+                if (weeks_str.contains(week + ",") || weeks_str.contains(week + "]")) {
+                    String days_str = courses_time_object.get("days").toString().replace("[", "");
+                    days_str = days_str.replace("]", "");
+                    if (details[i] == null)
+                        details[i] = days_str + ",";
+                    else
+                        details[i] += (days_str + ",");
+                    details[i] = details[i].substring(0, details[i].length() - 1);
+                } else
+                    details[i] = "";
+            }
+        }
+        return details;
+    }
+
+    public String[] getCoursesTeachersInfo() {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_teachers_array;
+        String[] details = new String[courses_array.size()];
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_teachers_array = course_object.getAsJsonArray("teachers");
+            for (int j = 0; j < courses_teachers_array.size(); ++j) {
+                if (j == courses_teachers_array.size() - 1) {
+                    if (details[i] == null)
+                        details[i] = courses_teachers_array.get(j).getAsString();
+                    else
+                        details[i] += courses_teachers_array.get(j).getAsString();
+                } else {
+                    if (details[i] == null)
+                        details[i] = (courses_teachers_array.get(j).getAsString() + "/");
+                    else
+                        details[i] += (courses_teachers_array.get(j).getAsString() + "/");
+                }
+            }
+        }
+        return details;
+    }
+
+    public String[] getCoursesBasicInfo(String course_details) {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        String[] details = new String[courses_array.size()];
+        if (course_details.equals("course_id")) {
+            for (int i = 0; i < courses_array.size(); ++i) {
+                course_object = (JsonObject) courses_array.get(i);
+                details[i] = course_object.get("course_id").getAsString();
+            }
+        } else if (course_details.equals("course_name")) {
+            for (int i = 0; i < courses_array.size(); ++i) {
+                course_object = (JsonObject) courses_array.get(i);
+                details[i] = course_object.get("course_name").getAsString();
+            }
+        } else if (course_details.equals("sub_id")) {
+            for (int i = 0; i < courses_array.size(); ++i) {
+                course_object = (JsonObject) courses_array.get(i);
+                details[i] = course_object.get("sub_id").getAsString();
+            }
+        }
+        return details;
     }
 
     public String[] getSchoolsInfo(String school_details) {

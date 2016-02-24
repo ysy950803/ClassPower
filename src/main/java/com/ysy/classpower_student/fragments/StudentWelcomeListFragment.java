@@ -1,24 +1,29 @@
 package com.ysy.classpower_student.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
+import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
-import com.ysy.classpower_utils.DividerItemDecoration;
+import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
+import com.ysy.classpower_utils.ReadJsonByGson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,8 +32,14 @@ import java.util.List;
 public class StudentWelcomeListFragment extends Fragment {
 
     View view;
-    private List<String> mDatas;
-    private HomeAdapter mAdapter;
+    private FloatingActionButton addFab;
+    private List<String> courseNameData;
+    private List<String> teacherData;
+    private List<String> dayData;
+    private StudentWelcomeListAdapter listAdapter = null;
+    private LinearLayoutManager linearLayoutManager;
+    private UltimateRecyclerView ultimateRecyclerView;
+    private ItemTouchHelper mItemTouchHelper;
 
     public StudentWelcomeListFragment() {
 
@@ -40,149 +51,78 @@ public class StudentWelcomeListFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_student_welcome_list, container, false);
 
-        LinearLayout classListLayout = (LinearLayout) view.findViewById(R.id.class_list_layout);
-
-        //加载测试页面的RecyclerView（代替ListView）
         initData();
-        final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.class_recycle_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        mRecyclerView.setAdapter(mAdapter = new HomeAdapter());
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this.getActivity(), //注意此处getActivity()的使用，因为是在Fragment里
-                DividerItemDecoration.VERTICAL_LIST));
-        //List当中Item的监听
-        mAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position == 0) {
-                    //待定
-                    startActivity(new Intent(getActivity(), StudentHomeActivity.class));
-                    getActivity().finish();
-                }
-            }
 
-            @Override
-            public void onItemLongClick(View view, int position) {
+        listAdapter = new StudentWelcomeListAdapter(courseNameData, teacherData, dayData);
+        linearLayoutManager = new LinearLayoutManager(getContext());
 
-            }
-        });
-
-        final SwipeRefreshLayout studentWelcomeListSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.student_welcome_list_swipe_refresh_layout);
-        studentWelcomeListSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-        studentWelcomeListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.student_welcome_list_urv);
+        ultimateRecyclerView.setLayoutManager(linearLayoutManager);
+        ultimateRecyclerView.setAdapter(listAdapter);
+        ultimateRecyclerView.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        changedData();
-                        HomeAdapter mAdapter = new HomeAdapter();
-                        mRecyclerView.setAdapter(mAdapter);
-                        //List当中Item的监听
-                        mAdapter.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                if (position == 0) {
-                                    //待定
-                                    startActivity(new Intent(getActivity(), StudentHomeActivity.class));
-                                    getActivity().finish();
-                                }
-                            }
-
-                            @Override
-                            public void onItemLongClick(View view, int position) {
-                            }
-                        });
-                        studentWelcomeListSwipeRefreshLayout.setRefreshing(false);
+//                        RVAdapter.insert(moreNum++ + "  Refresh things", 0);
+                        ultimateRecyclerView.setRefreshing(false);
+                        //   ultimateRecyclerView.scrollBy(0, -50);
+//                        linearLayoutManager.scrollToPosition(0);
+//                        ultimateRecyclerView.setAdapter(RVAdapter);
+//                        RVAdapter.notifyDataSetChanged();
                     }
                 }, 1000);
+            }
+        });
+        ultimateRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                view.setBackgroundResource(R.drawable.item_list_press);
+                startActivity(new Intent(getActivity(), StudentHomeActivity.class));
+                getActivity().finish();
+            }
+        }));
+
+//        // 设置ListHeader装饰，相关内容在Adapter的onBindHeaderViewHolder方法中
+//        StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(listAdapter);
+//        ultimateRecyclerView.addItemDecoration(headersDecor);
+//
+//        // 设置item的滑动消除、移动效果
+//        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(listAdapter);
+//        mItemTouchHelper = new ItemTouchHelper(callback);
+//        mItemTouchHelper.attachToRecyclerView(ultimateRecyclerView.mRecyclerView);
+//        listAdapter.setOnDragStartListener(new StudentWelcomeListAdapter.OnStartDragListener() {
+//            @Override
+//            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+//                mItemTouchHelper.startDrag(viewHolder);
+//            }
+//        });
+
+        addFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
         return view;
     }
 
-    //初始化List数据（离线Demo）
+    //初始化List数据
     protected void initData() {
-        mDatas = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            if (i == 0)
-                mDatas.add("13:30    复变函数与积分变换    何庆辉");
-            else
-                mDatas.add("15:05    概率论与数理统计    徐尔");
-        }
-    }
-
-    //刷新后的List数据（离线Demo）
-    protected void changedData() {
-        mDatas = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            if (i == 0)
-                mDatas.add("13:30    离散数学    洪源");
-            else
-                mDatas.add("15:05    模拟电子技术    史雪飞");
-        }
-    }
-
-    //自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-        void onItemLongClick(View view, int position);
-    }
-
-    class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new MyViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.item_test_student_home, parent,
-                    false));
-        }
-
-        private OnItemClickListener mOnItemClickListener;
-
-        public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
-            this.mOnItemClickListener = mOnItemClickListener;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            holder.tv.setText(mDatas.get(position));
-            if (position == 0)
-                holder.tv.setBackgroundResource(R.drawable.item_doing_press);
-            else
-                holder.tv.setBackgroundResource(R.drawable.item_done_press);
-
-            // 如果设置了回调，则设置点击事件
-            if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int pos = holder.getLayoutPosition();
-                        mOnItemClickListener.onItemClick(holder.itemView, pos);
-                    }
-                });
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        int pos = holder.getLayoutPosition();
-                        mOnItemClickListener.onItemLongClick(holder.itemView, pos);
-                        return false;
-                    }
-                });
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mDatas.size();
-        }
-
-        class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tv;
-            public MyViewHolder(View view) {
-                super(view);
-                tv = (TextView) view.findViewById(R.id.id_num);
-            }
-        }
+        SharedPreferences loginJson_sp = getContext().getSharedPreferences("loginJson", Context.MODE_PRIVATE);
+        ReadJsonByGson jsonByGson = new ReadJsonByGson(loginJson_sp.getString("loginJson", "{}"));
+        courseNameData = new ArrayList<>();
+        teacherData = new ArrayList<>();
+        dayData = new ArrayList<>();
+        String[] courseNameInfo = jsonByGson.getCoursesBasicInfo("course_name");
+        String[] teacherInfo = jsonByGson.getCoursesTeachersInfo();
+        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo("1");
+        Collections.addAll(courseNameData, courseNameInfo);
+        Collections.addAll(teacherData, teacherInfo);
+        Collections.addAll(dayData, dayInfo);
     }
 
 }

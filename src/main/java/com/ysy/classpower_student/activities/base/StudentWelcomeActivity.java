@@ -42,6 +42,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         final FloatingActionButton refreshFab = (FloatingActionButton) findViewById(R.id.student_welcome_refresh_fab);
+        final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.student_welcome_add_fab);
 
         isCenterOpen = true;
         isUpAvatarOpen = false;
@@ -63,16 +64,15 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                 mViewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 1) {
                     isCenterOpen = false;
-                    refreshFab.setImageResource(R.drawable.ic_add_white_24dp);
-                    refreshFab.setVisibility(View.VISIBLE);
+                    refreshFab.setVisibility(View.GONE);
+                    addFab.setVisibility(View.VISIBLE);
                     invalidateOptionsMenu();
                 } else if (tab.getPosition() == 0) {
                     isCenterOpen = true;
+                    addFab.setVisibility(View.GONE);
                     if (!isUpAvatarOpen) {
-                        refreshFab.setImageResource(R.drawable.ic_refresh_white_24dp);
                         refreshFab.setVisibility(View.VISIBLE);
                     } else {
-                        refreshFab.setImageResource(R.drawable.ic_refresh_white_24dp);
                         refreshFab.setVisibility(View.GONE);
                     }
                     invalidateOptionsMenu();

@@ -231,6 +231,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (s.contains("token")) {
                         // 共有属性
@@ -299,6 +300,8 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
         loginJson_editor.putString("loginJson", loginJson);
 
+        loginJson_editor.commit();
+
         email_editor.apply();
         gender_editor.apply();
         name_editor.apply();
@@ -308,8 +311,6 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
         className_editor.apply();
         majorName_editor.apply();
-
-        loginJson_editor.apply();
     }
 
     /**
