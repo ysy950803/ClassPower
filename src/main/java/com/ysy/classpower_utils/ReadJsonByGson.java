@@ -27,23 +27,52 @@ public class ReadJsonByGson {
     }
 
     public String[] getCoursesTimesWeeksInfo() {
-        return null;
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_times_array;
+        JsonObject courses_time_object;
+        String[] details = new String[courses_array.size()];
+        String[] details_temp = new String[courses_array.size()];
+        int temp_count = 0;
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_times_array = course_object.getAsJsonArray("times");
+            for (int j = 0; j < courses_times_array.size(); ++j) {
+                courses_time_object = courses_times_array.get(j).getAsJsonObject();
+                String week_str = courses_time_object.get("weeks").toString();
+                if (week_str.contains(",")) {
+                    week_str = week_str.replace("[", "");
+                    week_str = week_str.replace("]", "");
+                    if (details[i] == null) {
+                        details[i] = week_str + ",";
+                    } else
+                        details[i] += (week_str + ",");
+                } else
+                    details[i] = "";
+                // 从上至下到此步得到形如1,2,3,4,5,6,7,8,
+            }
+            for (int k = 1; k <= 16; ++k) { // 剔除重复week，并且自然形成升序排序，使用for循环减少contains函数的调用次数
+                if (details[i].contains(k + ",")) {
+                    if (details_temp[i] == null)
+                        details_temp[i] = k + ",";
+                    else
+                        details_temp[i] += (k + ",");
+                    temp_count = temp_count + 1;
+                }
+            }
+            if (temp_count == 16)
+                details[i] = "1-16周";
+            else if (temp_count == 8 && details_temp[i].contains("8,"))
+                details[i] = "1-8周";
+            else if (temp_count == 8 && details_temp[i].contains("16,"))
+                details[i] = "9-16周";
+            else
+                details[i] = details_temp[i].substring(0, details_temp[i].length() - 1); // substring覆盖
+        }
+        return details;
     }
 
-    public String[] getCoursesTimesRoomNameInfo() {
-        return null;
-    }
-
-    public String[] getCoursesTimesRoomIdInfo() {
-        return null;
-    }
-
-    public String[] getCoursesTimesPeriodInfo() {
-        return null;
-    }
-
-    // 根据传递当前周数week来获取是否有课并且是星期几上课
-    public String[] getCoursesTimesDaysInfo(String week) {
+    public String[] getCoursesTimesRoomNameInfo(String current_week, String current_day) {
         JsonObject course_object;
         JsonArray courses_array = object.getAsJsonArray("courses");
         JsonArray courses_times_array;
@@ -55,17 +84,74 @@ public class ReadJsonByGson {
             for (int j = 0; j < courses_times_array.size(); ++j) {
                 courses_time_object = courses_times_array.get(j).getAsJsonObject();
                 String weeks_str = courses_time_object.get("weeks").toString(); // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
-                if (weeks_str.contains(week + ",") || weeks_str.contains(week + "]")) {
+                if (weeks_str.contains(current_week + ",") || weeks_str.contains(current_week + "]")) {
+                    String days_str = courses_time_object.get("days").toString();
+                    if (days_str.contains(current_day + ",") || days_str.contains(current_day + "]")) {
+                        details[i] = courses_time_object.get("room_name").getAsString();
+                    }
+                    else
+                        details[i] = "";
+                } else
+                    details[i] = "";
+            }
+        }
+        return details;
+    }
+
+    public String[] getCoursesTimesRoomIdInfo() {
+        return null;
+    }
+
+    public String[] getCoursesTimesPeriodInfo(String current_week, String current_day) {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_times_array;
+        JsonObject courses_time_object;
+        String[] details = new String[courses_array.size()];
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_times_array = course_object.getAsJsonArray("times");
+            for (int j = 0; j < courses_times_array.size(); ++j) {
+                courses_time_object = courses_times_array.get(j).getAsJsonObject();
+                String weeks_str = courses_time_object.get("weeks").toString(); // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+                if (weeks_str.contains(current_week + ",") || weeks_str.contains(current_week + "]")) {
+                    String days_str = courses_time_object.get("days").toString();
+                    if (days_str.contains(current_day + ",") || days_str.contains(current_day + "]")) {
+                        details[i] = courses_time_object.get("period").toString();
+                    }
+                    else
+                        details[i] = "";
+                } else
+                    details[i] = "";
+            }
+        }
+        return details;
+    }
+
+    // 根据传递当前周数week来获取是否有课并且是星期几上课
+    public String[] getCoursesTimesDaysInfo(String current_week) {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_times_array;
+        JsonObject courses_time_object;
+        String[] details = new String[courses_array.size()];
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_times_array = course_object.getAsJsonArray("times");
+            for (int j = 0; j < courses_times_array.size(); ++j) {
+                courses_time_object = courses_times_array.get(j).getAsJsonObject();
+                String weeks_str = courses_time_object.get("weeks").toString(); // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+                if (weeks_str.contains(current_week + ",") || weeks_str.contains(current_week + "]")) {
                     String days_str = courses_time_object.get("days").toString().replace("[", "");
                     days_str = days_str.replace("]", "");
                     if (details[i] == null)
                         details[i] = days_str + ",";
                     else
                         details[i] += (days_str + ",");
-                    details[i] = details[i].substring(0, details[i].length() - 1);
                 } else
                     details[i] = "";
             }
+            details[i] = details[i].substring(0, details[i].length() - 1); // substring覆盖
         }
         return details;
     }

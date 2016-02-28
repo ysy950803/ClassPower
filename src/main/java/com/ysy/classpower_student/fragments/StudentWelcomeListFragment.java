@@ -36,6 +36,10 @@ public class StudentWelcomeListFragment extends Fragment {
     private List<String> courseNameData;
     private List<String> teacherData;
     private List<String> dayData;
+    private List<String> weekData;
+    private List<String> periodData;
+    private List<String> roomNameData;
+
     private StudentWelcomeListAdapter listAdapter = null;
     private LinearLayoutManager linearLayoutManager;
     private UltimateRecyclerView ultimateRecyclerView;
@@ -53,7 +57,7 @@ public class StudentWelcomeListFragment extends Fragment {
 
         initData();
 
-        listAdapter = new StudentWelcomeListAdapter(courseNameData, teacherData, dayData);
+        listAdapter = new StudentWelcomeListAdapter(courseNameData, teacherData, dayData, weekData, periodData, roomNameData);
         linearLayoutManager = new LinearLayoutManager(getContext());
 
         ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.student_welcome_list_urv);
@@ -117,12 +121,21 @@ public class StudentWelcomeListFragment extends Fragment {
         courseNameData = new ArrayList<>();
         teacherData = new ArrayList<>();
         dayData = new ArrayList<>();
+        weekData = new ArrayList<>();
+        periodData = new ArrayList<>();
+        roomNameData = new ArrayList<>();
         String[] courseNameInfo = jsonByGson.getCoursesBasicInfo("course_name");
         String[] teacherInfo = jsonByGson.getCoursesTeachersInfo();
-        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo("1");
+        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo("1"); // 参数：week
+        String[] weekInfo = jsonByGson.getCoursesTimesWeeksInfo();
+        String[] periodInfo = jsonByGson.getCoursesTimesPeriodInfo("1", "1");
+        String[] roomNameInfo = jsonByGson.getCoursesTimesRoomNameInfo("1", "1");
         Collections.addAll(courseNameData, courseNameInfo);
         Collections.addAll(teacherData, teacherInfo);
         Collections.addAll(dayData, dayInfo);
+        Collections.addAll(weekData, weekInfo);
+        Collections.addAll(periodData, periodInfo);
+        Collections.addAll(roomNameData, roomNameInfo);
     }
 
 }

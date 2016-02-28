@@ -26,11 +26,18 @@ public class StudentWelcomeListAdapter extends UltimateViewAdapter<StudentWelcom
     private List<String> courseNameList;
     private List<String> teacherList;
     private List<String> dayList;
+    private List<String> weekList;
+    private List<String> periodList;
+    private List<String> roomNameList;
 
-    public StudentWelcomeListAdapter(List<String> courseNameList, List<String> teacherList, List<String> dayList) {
+    public StudentWelcomeListAdapter(List<String> courseNameList, List<String> teacherList, List<String> dayList,
+                                     List<String> weekList, List<String> periodList, List<String> roomNameList) {
         this.courseNameList = courseNameList;
         this.teacherList = teacherList;
         this.dayList = dayList;
+        this.weekList = weekList;
+        this.periodList = periodList;
+        this.roomNameList = roomNameList;
     }
 
     @Override
@@ -40,7 +47,10 @@ public class StudentWelcomeListAdapter extends UltimateViewAdapter<StudentWelcom
             holder.listItemDetailsLayout.setBackgroundColor(getRandomColor());
             holder.courseNameTextView.setText(courseNameList.get(customHeaderView != null ? position - 1 : position));
             holder.teachersTextView.setText(teacherList.get(customHeaderView != null ? position - 1 : position));
-            holder.daysTextView.setText(dayList.get(customHeaderView != null ? position - 1 : position));
+            holder.daysTextView.setText("星期" + dayList.get(customHeaderView != null ? position - 1 : position));
+            holder.weeksTextView.setText(weekList.get(customHeaderView != null ? position - 1 : position));
+            holder.periodTextView.setText(periodList.get(customHeaderView != null ? position - 1 : position));
+            holder.roomNameTextView.setText(roomNameList.get(customHeaderView != null ? position - 1 : position));
 
             // ((ViewHolder) holder).itemView.setActivated(selectedItems.get(position, false));
             if (mDragStartListener != null) {
