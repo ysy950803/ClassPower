@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
+import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
@@ -41,6 +43,7 @@ import com.ysy.classpower_seatchoose.view.SSThumbView;
 import com.ysy.classpower_seatchoose.view.SSView;
 import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
+import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.ReadJsonByGson;
@@ -50,6 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StudentHomeActivity extends AppCompatActivity
@@ -60,6 +64,14 @@ public class StudentHomeActivity extends AppCompatActivity
     private LinearLayout testLayout;
     private RelativeLayout seatChooseLayout;
     private List<String> mData;
+
+    private List<String> ntfcsListByData;
+    private List<String> ntfcsListContentData;
+    private List<String> ntfcsListCreatedOnData;
+    private List<String> ntfcsListIdData;
+    private List<String> ntfcsListTitleData;
+    private int ntfcsListOnTopCount;
+
     private TextView studentSeatTextView;
     private TextView studentNameTextView;
     private TextView studentSexTextView;
@@ -85,7 +97,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
         isSeatChooseOpen = false;
 
-        //通知、测试、选座页面
+        // 通知、测试、选座页面
         notificationLayout = (LinearLayout) findViewById(R.id.notification_layout);
         testLayout = (LinearLayout) findViewById(R.id.test_layout);
         seatChooseLayout = (RelativeLayout) findViewById(R.id.seat_choose_layout);
@@ -108,7 +120,7 @@ public class StudentHomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //为抽屉里的头部Layout添加监听（注意先获取父级容器）
+        // 为抽屉里的头部Layout添加监听（注意先获取父级容器）
         View navHeaderStudentHomeView = navigationView.getHeaderView(0);
         LinearLayout navHeaderStudentHomeLayout = (LinearLayout) navHeaderStudentHomeView.findViewById(R.id.nav_header_student_home_layout);
         navHeaderStudentHomeLayout.setOnClickListener(new View.OnClickListener() {
@@ -119,15 +131,18 @@ public class StudentHomeActivity extends AppCompatActivity
             }
         });
 
-        //加载测试页面的RecyclerView（代替ListView）
-        initData();
+        // 获取通知List模块
+        initNotifications();
+
+        // 加载测试页面的RecyclerView（代替ListView）
+        initTestsData();
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.id_recyclerview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         HomeAdapter mAdapter = new HomeAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(StudentHomeActivity.this,
                 DividerItemDecoration.VERTICAL_LIST));
-        //List当中Item的监听
+        // List当中Item的监听
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -154,7 +169,7 @@ public class StudentHomeActivity extends AppCompatActivity
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        changedData();
+                        changedTestsData();
                         HomeAdapter mAdapter = new HomeAdapter();
                         mRecyclerView.setAdapter(mAdapter);
                         //List当中Item的监听
@@ -181,13 +196,13 @@ public class StudentHomeActivity extends AppCompatActivity
             }
         });
 
-        //初始化选座
-        init();
-        //点击座位出现的学生信息
+        // 初始化选座
+        initSeatsData();
+        // 点击座位出现的学生信息
         studentSeatTextView = (TextView) findViewById(R.id.student_seat_text_view);
         studentNameTextView = (TextView) findViewById(R.id.student_name_text_view);
         studentSexTextView = (TextView) findViewById(R.id.student_sex_text_view);
-        //确定选座按钮
+        // 确定选座按钮
         Button confirmSeatChooseButton = (Button) findViewById(R.id.confirm_seat_choose_button);
         confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,7 +210,7 @@ public class StudentHomeActivity extends AppCompatActivity
                 if (isSeatChooseEmpty) {
                     Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
                 } else {
-                    //若已选座，则提交数据至服务器
+                    // 若已选座，则提交数据至服务器
 
                 }
             }
@@ -203,8 +218,66 @@ public class StudentHomeActivity extends AppCompatActivity
 
     }
 
-    //初始化List数据（离线Demo）
-    protected void initData() {
+    // 初始化通知List模块
+    private void initNotifications() {
+        initNotificationsData();
+        StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
+                ntfcsListCreatedOnData, ntfcsListTitleData, ntfcsListOnTopCount);
+        LinearLayoutManager notificationsLM = new LinearLayoutManager(this);
+        final UltimateRecyclerView notificationsURV = (UltimateRecyclerView) findViewById(R.id.student_home_notifications_list_urv);
+        notificationsURV.setLayoutManager(notificationsLM);
+        notificationsURV.setAdapter(notificationsListAdapter);
+        notificationsURV.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+//                        RVAdapter.insert(moreNum++ + "  Refresh things", 0);
+                        notificationsURV.setRefreshing(false);
+                        //   ultimateRecyclerView.scrollBy(0, -50);
+//                        linearLayoutManager.scrollToPosition(0);
+//                        ultimateRecyclerView.setAdapter(RVAdapter);
+//                        RVAdapter.notifyDataSetChanged();
+                    }
+                }, 1000);
+            }
+        });
+        notificationsURV.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+            }
+        }));
+
+    }
+
+    private void initNotificationsData() {
+        SharedPreferences notificationsList_sp = getSharedPreferences("notifications_list", MODE_PRIVATE);
+        ReadJsonByGson jsonByGson = new ReadJsonByGson(notificationsList_sp.getString("notifications_list", "{}"));
+        ntfcsListByData = new ArrayList<>();
+        ntfcsListContentData = new ArrayList<>();
+        ntfcsListCreatedOnData = new ArrayList<>();
+        ntfcsListIdData = new ArrayList<>();
+        ntfcsListTitleData = new ArrayList<>();
+        ntfcsListOnTopCount = 0;
+        String[] ntfcListByInfo = jsonByGson.getNotificationsInfo("by");
+        String[] ntfcListContentInfo = jsonByGson.getNotificationsInfo("content");
+        String[] ntfcListCreatedOnInfo = jsonByGson.getNotificationsInfo("created_on");
+        String[] ntfcListIdInfo = jsonByGson.getNotificationsInfo("ntfc_id");
+        String[] ntfcListTitleInfo = jsonByGson.getNotificationsInfo("title");
+        if (jsonByGson.getNotificationsInfo("on_top_count")[0].equals("on_top_count")) {
+            ntfcsListOnTopCount = Integer.valueOf(jsonByGson.getNotificationsInfo("on_top_count")[1]);
+        }
+        Collections.addAll(ntfcsListByData, ntfcListByInfo);
+        Collections.addAll(ntfcsListContentData, ntfcListContentInfo);
+        Collections.addAll(ntfcsListCreatedOnData, ntfcListCreatedOnInfo);
+        Collections.addAll(ntfcsListIdData, ntfcListIdInfo);
+        Collections.addAll(ntfcsListTitleData, ntfcListTitleInfo);
+    }
+
+    // 初始化List数据（离线Demo）
+    protected void initTestsData() {
         mData = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             if (i == 0)
@@ -216,8 +289,8 @@ public class StudentHomeActivity extends AppCompatActivity
         }
     }
 
-    //刷新后的List数据（离线Demo）
-    protected void changedData() {
+    // 刷新后的List数据（离线Demo）
+    protected void changedTestsData() {
         mData = new ArrayList<>();
         for (int i = 0; i < 17; i++) {
             if (i == 0)
@@ -229,7 +302,7 @@ public class StudentHomeActivity extends AppCompatActivity
         }
     }
 
-    //自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
+    // 自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
 
@@ -379,7 +452,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_choose_seat) {
             isSeatChooseOpen = true;
-            invalidateOptionsMenu(); //更新Toolbar上的控件排布
+            invalidateOptionsMenu(); // 更新Toolbar上的控件排布
             notificationLayout.setVisibility(View.GONE);
             testLayout.setVisibility(View.GONE);
             seatChooseLayout.setVisibility(View.VISIBLE);
@@ -404,8 +477,8 @@ public class StudentHomeActivity extends AppCompatActivity
         return true;
     }
 
-    //加载选座数据模块
-    private void init() {
+    // 加载选座数据模块
+    private void initSeatsData() {
 
         final SSView mSSView = (SSView) this.findViewById(R.id.mSSView);
         //显示缩略图
@@ -429,12 +502,14 @@ public class StudentHomeActivity extends AppCompatActivity
                 }
                 return false;
             }
+
             @Override
             public boolean a(int column_num, int row_num, boolean paramBoolean) {
 //              String desc = "您取消了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
 //				Toast.makeText(StudentHomeActivity.this,desc.toString(), Toast.LENGTH_SHORT).show();
                 return false;
             }
+
             @Override
             public void a() {
                 // TODO Auto-generated method stub
@@ -457,6 +532,7 @@ public class StudentHomeActivity extends AppCompatActivity
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 
             }
+
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
@@ -478,12 +554,14 @@ public class StudentHomeActivity extends AppCompatActivity
                         }
                         return false;
                     }
+
                     @Override
                     public boolean a(int column_num, int row_num, boolean paramBoolean) {
 //              String desc = "您取消了第" + (row_num + 1) + "排" + " 第" + (column_num + 1) + "列";
 //				Toast.makeText(StudentHomeActivity.this,desc.toString(), Toast.LENGTH_SHORT).show();
                         return false;
                     }
+
                     @Override
                     public void a() {
                         // TODO Auto-generated method stub

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/student_welcome_list_item_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/student_welcome_list_textView_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:text="第"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/student_welcome_list_imageView"
+        android:layout_width="96dp"
+        android:layout_height="128dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/student_welcome_list_textView_1"
+        android:scaleType="centerCrop"
+        android:src="@drawable/item_done_press" />
+
+    <ProgressBar
+        android:id="@+id/student_welcome_list_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/student_welcome_list_textView_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/student_welcome_list_textView_1"
+        android:layout_toRightOf="@+id/student_welcome_list_textView_1"
+        android:text="1"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/student_welcome_list_textView_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_toEndOf="@+id/student_welcome_list_textView_period"
+        android:layout_toRightOf="@+id/student_welcome_list_textView_period"
+        android:text="节"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/student_welcome_list_textView_teachers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Teachers"
+        android:textSize="18sp" />
+
+    <FrameLayout
+        android:id="@+id/student_welcome_list_item_details_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/student_welcome_list_imageView"
+        android:layout_alignLeft="@+id/student_welcome_list_textView_1"
+        android:layout_alignStart="@+id/student_welcome_list_textView_1"
+        android:layout_alignTop="@+id/student_welcome_list_imageView"
+        android:layout_toLeftOf="@+id/student_welcome_list_imageView"
+        android:layout_toStartOf="@+id/student_welcome_list_imageView">
+
+        <TextView
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:id="@+id/student_welcome_list_textView_room_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|bottom"
+            android:text="ClassRoomName" />
+
+        <TextView
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:id="@+id/student_welcome_list_textView_weeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:text="Weeks" />
+
+        <TextView
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:id="@+id/student_welcome_list_textView_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|top"
+            android:text="Days" />
+
+        <TextView
+            android:id="@+id/student_welcome_list_textView_course_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="CourseName"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:layout_gravity="right|top" />
+
+    </FrameLayout>
+
+</RelativeLayout>

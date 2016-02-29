@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_notification"
+            android:icon="@drawable/ic_notifications_black_24dp"
+            android:checked="true"
+            android:title="通知" />
+        <item
+            android:id="@+id/nav_test"
+            android:icon="@drawable/ic_school_black_24dp"
+            android:title="测试" />
+        <item
+            android:id="@+id/nav_choose_seat"
+            android:icon="@drawable/ic_event_seat_black_24dp"
+            android:title="选座" />
+    </group>
+
+    <item android:title="交流互动">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="分享" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="讨论" />
+        </menu>
+    </item>
+
+    <item android:title="其它操作">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_arrow_back_black_24dp"
+                android:title="注销" />
+            <item
+                android:id="@+id/nav_exit"
+                android:icon="@drawable/ic_close_black_24dp"
+                android:title="退出" />
+        </menu>
+    </item>
+
+</menu>

@@ -12,6 +12,7 @@ public class ServerUrlConstant {
     public static final String USER_REGISTER_GETSCHOOLS_URL = URL + "user/register/getSchools";
     public static final String USER_REGISTER_GETMAJORS_URL = URL + "user/register/getMajors";
     public static final String USER_REGISTER_GETCLASSES_URL = URL + "user/register/getClasses";
+    public static final String COURSE_NTFC_GETNTFCS_URL = URL + "course/notification/getNotifications";
     public static final String SEAT_GETSEATTOKEN_URL = URL + "seat/getSeatToken";
     public static final String SEAT_GETSEATMAP_URL = URL + "seat/getSeatMap";
     public static final String SEAT_CHOOSESEAT_URL = URL + "seat/chooseSeat";

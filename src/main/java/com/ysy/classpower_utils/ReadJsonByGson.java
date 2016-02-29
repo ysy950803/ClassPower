@@ -8,6 +8,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by 姚圣禹 on 2016/2/4.
@@ -24,6 +27,51 @@ public class ReadJsonByGson {
     public ReadJsonByGson(InputStreamReader json) {
         JsonParser parser = new JsonParser();
         object = (JsonObject) parser.parse(json);
+    }
+
+    public String[] getNotificationsInfo(String notification_details) {
+        JsonObject notifications_object;
+        JsonArray notifications_array = object.getAsJsonArray("notifications");
+        List<JsonObject> objectList = new ArrayList<>();
+        int on_top_count = 0;
+        // Gson/Json操作待定，暂时使用List泛型来操作
+        for (int i = 0; i < notifications_array.size(); ++i) {
+            objectList.add(i, (JsonObject) notifications_array.get(i));
+        }
+        // 置顶冒泡排序 true > false，把on_top值为true的排头
+        for (int i = notifications_array.size() - 1; i > 0; --i) {
+            JsonObject notifications_object_temp;
+            // 获取置顶数目
+            if (objectList.get(i).getAsJsonObject().get("on_top").toString().equals("true")) {
+                on_top_count = on_top_count + 1;
+            }
+            for (int j = 0; j < i; ++j) {
+                if (objectList.get(j + 1).getAsJsonObject().get("on_top").toString().equals("true") &&
+                        objectList.get(j).getAsJsonObject().get("on_top").toString().equals("false")) {
+                    notifications_object_temp = objectList.get(j);
+                    objectList.set(j, objectList.get(j + 1));
+                    objectList.set(j + 1, notifications_object_temp);
+                }
+            }
+        }
+        String[] details = new String[notifications_array.size()];
+        if (notification_details.equals("on_top_count")) { // 传递特定参数获取置顶数目，待优化
+            details[0] = "on_top_count";
+            details[1] = "" + on_top_count;
+        } else if (notification_details.equals("on_top")) {
+            for (int i = 0; i < notifications_array.size(); ++i) {
+//                notifications_object = (JsonObject) notifications_array.get(i);
+                notifications_object = objectList.get(i);
+                details[i] = notifications_object.get(notification_details).toString();
+            }
+        } else {
+            for (int i = 0; i < notifications_array.size(); ++i) {
+//                notifications_object = (JsonObject) notifications_array.get(i);
+                notifications_object = objectList.get(i);
+                details[i] = notifications_object.get(notification_details).getAsString();
+            }
+        }
+        return details;
     }
 
     public String[] getCoursesTimesWeeksInfo() {
@@ -88,8 +136,7 @@ public class ReadJsonByGson {
                     String days_str = courses_time_object.get("days").toString();
                     if (days_str.contains(current_day + ",") || days_str.contains(current_day + "]")) {
                         details[i] = courses_time_object.get("room_name").getAsString();
-                    }
-                    else
+                    } else
                         details[i] = "";
                 } else
                     details[i] = "";
@@ -98,8 +145,29 @@ public class ReadJsonByGson {
         return details;
     }
 
-    public String[] getCoursesTimesRoomIdInfo() {
-        return null;
+    public String[] getCoursesTimesRoomIdInfo(String current_week, String current_day) {
+        JsonObject course_object;
+        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_times_array;
+        JsonObject courses_time_object;
+        String[] details = new String[courses_array.size()];
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            courses_times_array = course_object.getAsJsonArray("times");
+            for (int j = 0; j < courses_times_array.size(); ++j) {
+                courses_time_object = courses_times_array.get(j).getAsJsonObject();
+                String weeks_str = courses_time_object.get("weeks").toString(); // [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+                if (weeks_str.contains(current_week + ",") || weeks_str.contains(current_week + "]")) {
+                    String days_str = courses_time_object.get("days").toString();
+                    if (days_str.contains(current_day + ",") || days_str.contains(current_day + "]")) {
+                        details[i] = courses_time_object.get("room_id").getAsString();
+                    } else
+                        details[i] = "";
+                } else
+                    details[i] = "";
+            }
+        }
+        return details;
     }
 
     public String[] getCoursesTimesPeriodInfo(String current_week, String current_day) {
@@ -118,8 +186,7 @@ public class ReadJsonByGson {
                     String days_str = courses_time_object.get("days").toString();
                     if (days_str.contains(current_day + ",") || days_str.contains(current_day + "]")) {
                         details[i] = courses_time_object.get("period").toString();
-                    }
-                    else
+                    } else
                         details[i] = "";
                 } else
                     details[i] = "";
@@ -185,21 +252,9 @@ public class ReadJsonByGson {
         JsonObject course_object;
         JsonArray courses_array = object.getAsJsonArray("courses");
         String[] details = new String[courses_array.size()];
-        if (course_details.equals("course_id")) {
-            for (int i = 0; i < courses_array.size(); ++i) {
-                course_object = (JsonObject) courses_array.get(i);
-                details[i] = course_object.get("course_id").getAsString();
-            }
-        } else if (course_details.equals("course_name")) {
-            for (int i = 0; i < courses_array.size(); ++i) {
-                course_object = (JsonObject) courses_array.get(i);
-                details[i] = course_object.get("course_name").getAsString();
-            }
-        } else if (course_details.equals("sub_id")) {
-            for (int i = 0; i < courses_array.size(); ++i) {
-                course_object = (JsonObject) courses_array.get(i);
-                details[i] = course_object.get("sub_id").getAsString();
-            }
+        for (int i = 0; i < courses_array.size(); ++i) {
+            course_object = (JsonObject) courses_array.get(i);
+            details[i] = course_object.get(course_details).getAsString();
         }
         return details;
     }
@@ -208,16 +263,9 @@ public class ReadJsonByGson {
         JsonObject school_object;
         JsonArray schools_array = object.getAsJsonArray("schools");
         String[] details = new String[schools_array.size()];
-        if (school_details.equals("school_id")) {
-            for (int i = 0; i < schools_array.size(); ++i) {
-                school_object = (JsonObject) schools_array.get(i);
-                details[i] = school_object.get("school_id").getAsString();
-            }
-        } else if (school_details.equals("school_name")) {
-            for (int i = 0; i < schools_array.size(); ++i) {
-                school_object = (JsonObject) schools_array.get(i);
-                details[i] = school_object.get("school_name").getAsString();
-            }
+        for (int i = 0; i < schools_array.size(); ++i) {
+            school_object = (JsonObject) schools_array.get(i);
+            details[i] = school_object.get(school_details).getAsString();
         }
         return details;
     }
@@ -226,16 +274,9 @@ public class ReadJsonByGson {
         JsonObject major_object;
         JsonArray majors_array = object.getAsJsonArray("majors");
         String[] details = new String[majors_array.size()];
-        if (major_details.equals("major_id")) {
-            for (int i = 0; i < majors_array.size(); ++i) {
-                major_object = (JsonObject) majors_array.get(i);
-                details[i] = major_object.get("major_id").getAsString();
-            }
-        } else if (major_details.equals("major_name")) {
-            for (int i = 0; i < majors_array.size(); ++i) {
-                major_object = (JsonObject) majors_array.get(i);
-                details[i] = major_object.get("major_name").getAsString();
-            }
+        for (int i = 0; i < majors_array.size(); ++i) {
+            major_object = (JsonObject) majors_array.get(i);
+            details[i] = major_object.get(major_details).getAsString();
         }
         return details;
     }
@@ -244,16 +285,9 @@ public class ReadJsonByGson {
         JsonObject class_object;
         JsonArray classes_array = object.getAsJsonArray("classes");
         String[] details = new String[classes_array.size()];
-        if (class_details.equals("class_id")) {
-            for (int i = 0; i < classes_array.size(); ++i) {
-                class_object = (JsonObject) classes_array.get(i);
-                details[i] = class_object.get("class_id").getAsString();
-            }
-        } else if (class_details.equals("class_name")) {
-            for (int i = 0; i < classes_array.size(); ++i) {
-                class_object = (JsonObject) classes_array.get(i);
-                details[i] = class_object.get("class_name").getAsString();
-            }
+        for (int i = 0; i < classes_array.size(); ++i) {
+            class_object = (JsonObject) classes_array.get(i);
+            details[i] = class_object.get(class_details).getAsString();
         }
         return details;
     }
