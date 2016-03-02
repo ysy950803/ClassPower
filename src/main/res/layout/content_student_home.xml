@@ -25,6 +25,11 @@
             android:text="通知"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
         <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
             android:id="@+id/student_home_notifications_list_urv"
             android:layout_width="match_parent"
@@ -54,7 +59,6 @@
             android:id="@+id/View"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/test_title_textView"
             android:background="@android:color/darker_gray" />
 
         <android.support.v4.widget.SwipeRefreshLayout
@@ -81,131 +85,165 @@
         tools:context=".StudentHomeActivity">
 
         <RelativeLayout
-            android:id="@+id/rl_thum"
+            android:visibility="visible"
+            android:id="@+id/seat_choose_child_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/transparent"
-            android:paddingRight="4dp">
+            android:layout_height="match_parent">
 
-            <com.ysy.classpower_seatchoose.view.SSThumbView
-                android:id="@+id/ss_ssthumview"
-                android:layout_width="@dimen/ss_seat_thum_size_w"
-                android:layout_height="@dimen/ss_seat_thum_size_h"
-                android:layout_centerVertical="true" />
-
-            <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/rl_thum"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/ss_ssthumview"
-                android:layout_toRightOf="@+id/ss_ssthumview"
-                android:text="座位"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/holo_blue_dark" />
+                android:background="@android:color/transparent"
+                android:paddingRight="4dp">
 
-            <View
-                android:id="@+id/View1"
+                <com.ysy.classpower_seatchoose.view.SSThumbView
+                    android:id="@+id/ss_ssthumview"
+                    android:layout_width="@dimen/ss_seat_thum_size_w"
+                    android:layout_height="@dimen/ss_seat_thum_size_h"
+                    android:layout_centerVertical="true" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/ss_ssthumview"
+                    android:layout_toRightOf="@+id/ss_ssthumview"
+                    android:text="座位"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <View
+                    android:id="@+id/View1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/textView12"
+                    android:layout_toEndOf="@+id/ss_ssthumview"
+                    android:layout_toRightOf="@+id/ss_ssthumview"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/textView12"
+                    android:layout_alignStart="@+id/textView12"
+                    android:layout_below="@+id/View1"
+                    android:text="姓名"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/holo_red_light" />
+
+                <View
+                    android:id="@+id/View2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView11"
+                    android:layout_toEndOf="@+id/ss_ssthumview"
+                    android:layout_toRightOf="@+id/ss_ssthumview"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/View2"
+                    android:layout_toEndOf="@+id/ss_ssthumview"
+                    android:layout_toRightOf="@+id/ss_ssthumview"
+                    android:text="性别"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/holo_green_dark" />
+
+                <View
+                    android:id="@+id/View3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/textView13"
+                    android:layout_toEndOf="@+id/ss_ssthumview"
+                    android:layout_toRightOf="@+id/ss_ssthumview"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_seat_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/View1"
+                    android:layout_alignEnd="@+id/View1"
+                    android:layout_alignRight="@+id/View1"
+                    android:text="        "
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/student_name_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/View2"
+                    android:layout_alignEnd="@+id/View1"
+                    android:layout_alignRight="@+id/View1"
+                    android:text="        "
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/student_sex_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/View3"
+                    android:layout_alignEnd="@+id/View2"
+                    android:layout_alignRight="@+id/View2"
+                    android:text="        "
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </RelativeLayout>
+
+            <com.ysy.classpower_seatchoose.view.SSView
+                android:id="@+id/mSSView"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/textView12"
-                android:layout_toEndOf="@+id/ss_ssthumview"
-                android:layout_toRightOf="@+id/ss_ssthumview"
-                android:background="@android:color/darker_gray" />
+                android:layout_height="match_parent"
+                android:layout_above="@+id/confirm_seat_choose_button"
+                android:layout_below="@+id/rl_thum" />
 
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/textView12"
-                android:layout_alignStart="@+id/textView12"
-                android:layout_below="@+id/View1"
-                android:text="姓名"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/holo_red_light" />
-
-            <View
-                android:id="@+id/View2"
+            <Button
+                android:id="@+id/confirm_seat_choose_button"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/textView11"
-                android:layout_toEndOf="@+id/ss_ssthumview"
-                android:layout_toRightOf="@+id/ss_ssthumview"
-                android:background="@android:color/darker_gray" />
-
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/View2"
-                android:layout_toEndOf="@+id/ss_ssthumview"
-                android:layout_toRightOf="@+id/ss_ssthumview"
-                android:text="性别"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/holo_green_dark" />
-
-            <View
-                android:id="@+id/View3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/textView13"
-                android:layout_toEndOf="@+id/ss_ssthumview"
-                android:layout_toRightOf="@+id/ss_ssthumview"
-                android:background="@android:color/darker_gray" />
-
-            <TextView
-                android:id="@+id/student_seat_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/View1"
-                android:layout_alignEnd="@+id/View1"
-                android:layout_alignRight="@+id/View1"
-                android:text="        "
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/student_name_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/View2"
-                android:layout_alignEnd="@+id/View1"
-                android:layout_alignRight="@+id/View1"
-                android:text="        "
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/student_sex_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/View3"
-                android:layout_alignEnd="@+id/View2"
-                android:layout_alignRight="@+id/View2"
-                android:text="        "
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/item_done_press"
+                android:text="确认选座" />
 
         </RelativeLayout>
 
-        <com.ysy.classpower_seatchoose.view.SSView
-            android:id="@+id/mSSView"
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/student_home_refresh_tips_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/confirm_seat_choose_button"
-            android:layout_below="@+id/rl_thum" />
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/confirm_seat_choose_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/item_done_press"
-            android:text="确认选座" />
+            <TextView
+                android:id="@+id/student_home_click_to_refresh_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="点击刷新"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/student_home_refresh_tips_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/student_home_click_to_refresh_textView"
+                android:layout_centerHorizontal="true"
+                android:text="RefreshTips"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

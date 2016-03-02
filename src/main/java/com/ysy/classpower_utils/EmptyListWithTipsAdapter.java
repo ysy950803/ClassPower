@@ -1,16 +1,15 @@
-package com.ysy.classpower_student.adapters;
+package com.ysy.classpower_utils;
 
+import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
-import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import com.ysy.classpower.R;
 
 import java.security.SecureRandom;
@@ -19,35 +18,19 @@ import java.util.List;
 /**
  * Created by 姚圣禹 on 2016/2/29.
  */
-public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<StudentHomeNotificationsListAdapter.SimpleAdapterViewHolder> {
+public class EmptyListWithTipsAdapter extends UltimateViewAdapter<EmptyListWithTipsAdapter.SimpleAdapterViewHolder> {
 
     private List<String> byList;
-    private List<String> contentList;
-    private List<String> createdOnList;
-    private List<String> titleList;
-    private int onTopCount = 0;
 
-    public StudentHomeNotificationsListAdapter(List<String> byList, List<String> contentList, List<String> createdOnList,
-                                               List<String> titleList, int onTopCount) {
+    public EmptyListWithTipsAdapter(List<String> byList) {
         this.byList = byList;
-        this.contentList = contentList;
-        this.createdOnList = createdOnList;
-        this.titleList = titleList;
-        this.onTopCount = onTopCount;
     }
 
     @Override
     public void onBindViewHolder(final SimpleAdapterViewHolder holder, int position) {
         if (position < getItemCount() && (customHeaderView != null ? position <= byList.size() : position < byList.size()) && (customHeaderView != null ? position > 0 : true)) {
 
-            if (position <= onTopCount) {
-                holder.listItemDetailsLayout.setBackgroundResource(R.color.orangered);
-            } else
-                holder.listItemDetailsLayout.setBackgroundColor(getRandomColor());
             holder.byTextView.setText(byList.get(customHeaderView != null ? position - 1 : position));
-            holder.contentTextView.setText(contentList.get(customHeaderView != null ? position - 1 : position));
-            holder.createdOnTextView.setText(createdOnList.get(customHeaderView != null ? position - 1 : position));
-            holder.titleTextView.setText(titleList.get(customHeaderView != null ? position - 1 : position));
 
             // ((ViewHolder) holder).itemView.setActivated(selectedItems.get(position, false));
             if (mDragStartListener != null) {
@@ -85,7 +68,7 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
     @Override
     public SimpleAdapterViewHolder onCreateViewHolder(ViewGroup parent) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_student_home_notifications_list, parent, false);
+                .inflate(R.layout.item_empty_list, parent, false);
         SimpleAdapterViewHolder vh = new SimpleAdapterViewHolder(v, true);
         return vh;
     }
@@ -198,10 +181,6 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
 
     public class SimpleAdapterViewHolder extends UltimateRecyclerviewViewHolder {
         View item_view;
-        FrameLayout listItemDetailsLayout;
-        TextView titleTextView;
-        TextView contentTextView;
-        TextView createdOnTextView;
         TextView byTextView;
 
         public SimpleAdapterViewHolder(View itemView, boolean isItem) {
@@ -221,12 +200,8 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
 //                }
 //            }));
             if (isItem) {
-                item_view = itemView.findViewById(R.id.student_home_ntfcs_list_item_view);
-                listItemDetailsLayout = (FrameLayout) itemView.findViewById(R.id.student_home_ntfcs_list_item_layout);
-                titleTextView = (TextView) itemView.findViewById(R.id.student_home_ntfcs_list_title_textView);
-                contentTextView = (TextView) itemView.findViewById(R.id.student_home_ntfcs_list_content_textView);
-                createdOnTextView = (TextView) itemView.findViewById(R.id.student_home_ntfcs_list_created_on_textView);
-                byTextView = (TextView) itemView.findViewById(R.id.student_home_ntfcs_list_by_textView);
+                item_view = itemView.findViewById(R.id.empty_list_tips_layout);
+                byTextView = (TextView) itemView.findViewById(R.id.empty_list_tips_textView);
             }
 
         }

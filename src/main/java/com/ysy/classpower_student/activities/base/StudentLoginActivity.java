@@ -231,21 +231,21 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
-
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (s.contains("token")) {
                         // 共有属性
-                        String email = jsonByGson.getValue("email");
-                        boolean gender = jsonByGson.getBoolValue("gender");
-                        String name = jsonByGson.getValue("name");
-                        String tel = jsonByGson.getValue("tel");
+                        String currentWeek = jsonByGson.getValue("current_week");
+                        String email = jsonByGson.getArrayValue("user", "email");
+                        boolean gender = jsonByGson.getArrayBoolValue("user", "gender");
+                        String name = jsonByGson.getArrayValue("user", "name");
+                        String tel = jsonByGson.getArrayValue("user", "tel");
                         String token = jsonByGson.getValue("token");
-                        String userId = jsonByGson.getValue("user_id");
+                        String userId = jsonByGson.getArrayValue("user", "user_id");
                         // 学生属性
-                        String className = jsonByGson.getValue("class_name");
-                        String majorName = jsonByGson.getValue("major_name");
+                        String className = jsonByGson.getArrayValue("user", "class_name");
+                        String majorName = jsonByGson.getArrayValue("user", "major_name");
 
-                        saveCallBakOfLogin(s, email, gender, name, tel, token, userId, className, majorName);
+                        saveCallBakOfLogin(s, currentWeek, email, gender, name, tel, token, userId, className, majorName);
 
                         mEmailView.setError(null);
                         mPasswordView.setError(null);
@@ -261,45 +261,52 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
     }
 
-    private void saveCallBakOfLogin(String loginJson, String email, boolean gender, String name, String tel, String token, String userId,
+    private void saveCallBakOfLogin(String loginJson, String currentWeek, String email, boolean gender, String name, String tel, String token, String userId,
                                     String className, String majorName) {
         // 共有属性
+        SharedPreferences currentWeek_sp = getSharedPreferences("currentWeek", MODE_PRIVATE);
         SharedPreferences email_sp = getSharedPreferences("email", MODE_PRIVATE);
         SharedPreferences gender_sp = getSharedPreferences("gender", MODE_PRIVATE);
         SharedPreferences name_sp = getSharedPreferences("name", MODE_PRIVATE);
         SharedPreferences tel_sp = getSharedPreferences("tel", MODE_PRIVATE);
         SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
         SharedPreferences userId_sp = getSharedPreferences("userId", MODE_PRIVATE);
+        SharedPreferences password_sp = getSharedPreferences("password", MODE_PRIVATE);
         // 学生属性
         SharedPreferences className_sp = getSharedPreferences("className", MODE_PRIVATE);
         SharedPreferences majorName_sp = getSharedPreferences("majorName", MODE_PRIVATE);
         // 登录返回大量信息（包括课程和时间）
         SharedPreferences loginJson_sp = getSharedPreferences("loginJson", MODE_PRIVATE);
 
+        SharedPreferences.Editor currentWeek_editor = currentWeek_sp.edit();
         SharedPreferences.Editor email_editor = email_sp.edit();
         SharedPreferences.Editor gender_editor = gender_sp.edit();
         SharedPreferences.Editor name_editor = name_sp.edit();
         SharedPreferences.Editor tel_editor = tel_sp.edit();
         SharedPreferences.Editor token_editor = token_sp.edit();
         SharedPreferences.Editor userId_editor = userId_sp.edit();
+        SharedPreferences.Editor password_editor = password_sp.edit();
 
         SharedPreferences.Editor className_editor = className_sp.edit();
         SharedPreferences.Editor majorName_editor = majorName_sp.edit();
 
         SharedPreferences.Editor loginJson_editor = loginJson_sp.edit();
 
+        currentWeek_editor.putString("currentWeek", currentWeek);
         email_editor.putString("email", email);
         gender_editor.putBoolean("gender", gender);
         name_editor.putString("name", name);
         tel_editor.putString("tel", tel);
         token_editor.putString("token", token);
         userId_editor.putString("userId", userId);
+        password_editor.putString("password", mPasswordView.getText().toString());
 
         className_editor.putString("className", className);
         majorName_editor.putString("majorName", majorName);
 
         loginJson_editor.putString("loginJson", loginJson);
 
+        currentWeek_editor.commit();
         loginJson_editor.commit();
 
         email_editor.apply();
@@ -308,6 +315,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         tel_editor.apply();
         token_editor.apply();
         userId_editor.apply();
+        password_editor.apply();
 
         className_editor.apply();
         majorName_editor.apply();

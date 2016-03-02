@@ -76,7 +76,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesTimesWeeksInfo() {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_times_array;
         JsonObject courses_time_object;
         String[] details = new String[courses_array.size()];
@@ -122,7 +122,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesTimesRoomNameInfo(String current_week, String current_day) {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_times_array;
         JsonObject courses_time_object;
         String[] details = new String[courses_array.size()];
@@ -147,7 +147,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesTimesRoomIdInfo(String current_week, String current_day) {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_times_array;
         JsonObject courses_time_object;
         String[] details = new String[courses_array.size()];
@@ -172,7 +172,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesTimesPeriodInfo(String current_week, String current_day) {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_times_array;
         JsonObject courses_time_object;
         String[] details = new String[courses_array.size()];
@@ -198,7 +198,7 @@ public class ReadJsonByGson {
     // 根据传递当前周数week来获取是否有课并且是星期几上课
     public String[] getCoursesTimesDaysInfo(String current_week) {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_times_array;
         JsonObject courses_time_object;
         String[] details = new String[courses_array.size()];
@@ -225,7 +225,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesTeachersInfo() {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         JsonArray courses_teachers_array;
         String[] details = new String[courses_array.size()];
         for (int i = 0; i < courses_array.size(); ++i) {
@@ -250,7 +250,7 @@ public class ReadJsonByGson {
 
     public String[] getCoursesBasicInfo(String course_details) {
         JsonObject course_object;
-        JsonArray courses_array = object.getAsJsonArray("courses");
+        JsonArray courses_array = object.getAsJsonObject("user").getAsJsonArray("courses");
         String[] details = new String[courses_array.size()];
         for (int i = 0; i < courses_array.size(); ++i) {
             course_object = (JsonObject) courses_array.get(i);
@@ -293,27 +293,37 @@ public class ReadJsonByGson {
     }
 
     public int[][] getSeatState(int col, int row) {
-        int seat_state[][] = new int[col][row]; // 0无座 1好座无人 2好座有人或者坏座
+        int[][] seat_state = new int[col][row]; // 0无座 1好座无人 2好座有人或者坏座
         JsonObject seat_object;
         JsonArray seats_array = object.getAsJsonArray("seats");
         for (int i = 0; i < seats_array.size(); ++i) {
             seat_object = (JsonObject) seats_array.get(i);
             int col_num = seat_object.get("col").getAsInt() - 1;
             int row_num = seat_object.get("row").getAsInt() - 1;
-            boolean exists = seat_object.get("exists").getAsBoolean();
             int status = seat_object.get("status").getAsInt(); // 0好座 1坏座
             String cur_stu_str = seat_object.get("cur_stu").getAsString();
-            if (exists) {
-                if (status == 0 && cur_stu_str.equals("")) {
-                    seat_state[col_num][row_num] = 1;
-                } else if (status == 1 || (status == 0 && !cur_stu_str.equals(""))) {
-                    seat_state[col_num][row_num] = 2;
-                }
+            if (status == 0 && cur_stu_str.equals("")) {
+                seat_state[col_num][row_num] = 1;
+            } else if (status == 1 || (status == 0 && !cur_stu_str.equals(""))) {
+                seat_state[col_num][row_num] = 2;
+            } else {
+
             }
-//            else
-//                seat_state[col_num][row_num] = 0;
         }
         return seat_state;
+    }
+
+    public String[][] getSeatId(int col, int row) {
+        String[][] seat_id = new String[col][row];
+        JsonObject seat_object;
+        JsonArray seats_array = object.getAsJsonArray("seats");
+        for (int i = 0; i < seats_array.size(); ++i) {
+            seat_object = (JsonObject) seats_array.get(i);
+            int col_num = seat_object.get("col").getAsInt() - 1;
+            int row_num = seat_object.get("row").getAsInt() - 1;
+            seat_id[col_num][row_num] = seat_object.get("seat_id").getAsString();
+        }
+        return seat_id;
     }
 
     public String getValue(String key) {

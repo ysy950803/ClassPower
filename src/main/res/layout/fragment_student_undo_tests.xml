@@ -1,6 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.qnear.myapplication.ModifyActivity">
 
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/id_modify"
+            android:layout_alignParentTop="true">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="密        码"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/editText_Password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/textView21"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/editText2_Confirmpassword"
+                android:layout_toLeftOf="@+id/editText2_Confirmpassword"
+                android:layout_toStartOf="@+id/editText2_Confirmpassword"
+                android:text="确认密码"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/editText2_Confirmpassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editText_Password"
+                android:layout_alignLeft="@+id/editText_Password"
+                android:layout_alignRight="@+id/editText_Password"
+                android:layout_alignStart="@+id/editText_Password"
+                android:layout_below="@+id/editText_Password"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/editText2_Confirmpassword"
+                android:text="性        别"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <RadioButton
+                android:id="@+id/radioButton_Male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/textView11"
+                android:layout_centerHorizontal="true"
+                android:checked="false"
+                android:text="男" />
+
+            <RadioButton
+                android:id="@+id/radioButton2_Female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editText2_Confirmpassword"
+                android:layout_alignRight="@+id/editText2_Confirmpassword"
+                android:layout_alignTop="@+id/radioButton_Male"
+                android:layout_marginEnd="41dp"
+                android:layout_marginRight="41dp"
+                android:checked="false"
+                android:text="女" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/radioButton_Male"
+                android:text="地        址"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/editText4_Address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editText2_Confirmpassword"
+                android:layout_alignLeft="@+id/editText2_Confirmpassword"
+                android:layout_alignRight="@+id/editText2_Confirmpassword"
+                android:layout_alignStart="@+id/editText2_Confirmpassword"
+                android:layout_alignTop="@+id/textView13" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/editText4_Address"
+                android:text="电话号码"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/editText5_Telephone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editText4_Address"
+                android:layout_alignLeft="@+id/editText4_Address"
+                android:layout_alignRight="@+id/editText4_Address"
+                android:layout_alignStart="@+id/editText4_Address"
+                android:layout_alignTop="@+id/textView15" />
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/editText5_Telephone"
+                android:text="电子邮箱"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/editText6_Email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/editText5_Telephone"
+                android:layout_alignLeft="@+id/editText5_Telephone"
+                android:layout_alignRight="@+id/editText5_Telephone"
+                android:layout_alignStart="@+id/editText5_Telephone"
+                android:layout_below="@+id/editText5_Telephone" />
+        </RelativeLayout>
+
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/button_Modify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="确认修改"
+        android:layout_above="@+id/button2_Cancel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/button2_Cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="取消"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:id="@+id/head_sculpture"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/cute"
+        android:layout_above="@+id/button_Modify"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

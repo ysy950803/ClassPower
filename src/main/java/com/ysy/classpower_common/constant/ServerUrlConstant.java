@@ -12,15 +12,15 @@ public class ServerUrlConstant {
     public static final String USER_REGISTER_GETSCHOOLS_URL = URL + "user/register/getSchools";
     public static final String USER_REGISTER_GETMAJORS_URL = URL + "user/register/getMajors";
     public static final String USER_REGISTER_GETCLASSES_URL = URL + "user/register/getClasses";
+    public static final String USER_ME_URL = URL + "user/me";
+    public static final String USER_AVATAR_URL = URL + "user/avatar";
+    public static final String USER_REGISTERCOURSE_URL = URL + "user/registerCourse";
     public static final String COURSE_NTFC_GETNTFCS_URL = URL + "course/notification/getNotifications";
+    public static final String COURSE_QUESTION_GETALLQUESTIONS_URL = URL + "course/question/getAllQuestions";
     public static final String SEAT_GETSEATTOKEN_URL = URL + "seat/getSeatToken";
     public static final String SEAT_GETSEATMAP_URL = URL + "seat/getSeatMap";
     public static final String SEAT_CHOOSESEAT_URL = URL + "seat/chooseSeat";
     public static final String SEAT_FREESEAT = URL + "seat/freeSeat";
-    public static final String USER_ME_URL = URL + "user/me";
-    public static final String USER_AVATAR_URL = URL + "user/avatar";
-    public static final String USER_REGISTERCOURSE_URL = URL + "user/registerCourse";
     public static final String SEAT_CHECKIFOPEN_URL = URL + "seat/checkIfOpen";
-    public static final String COURSE_QUESTION_GETALLQUESTIONS_URL = URL + "course/question/getAllQuestions";
 
 }

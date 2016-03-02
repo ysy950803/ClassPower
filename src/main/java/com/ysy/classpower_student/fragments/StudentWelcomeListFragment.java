@@ -104,12 +104,12 @@ public class StudentWelcomeListFragment extends Fragment {
                 ConnectionDetector cd = new ConnectionDetector(getContext());
                 if (cd.isConnectingToInternet()) {
                     // 点击列表项时记录各种id，跳转后使用
-                    SharedPreferences courseId_sp = getContext().getSharedPreferences("course_id", Context.MODE_PRIVATE);
-                    SharedPreferences subId_sp = getContext().getSharedPreferences("sub_id", Context.MODE_PRIVATE);
+                    SharedPreferences courseId_sp = getContext().getSharedPreferences("courseId", Context.MODE_PRIVATE);
+                    SharedPreferences subId_sp = getContext().getSharedPreferences("subId", Context.MODE_PRIVATE);
                     SharedPreferences.Editor courseId_editor = courseId_sp.edit();
                     SharedPreferences.Editor subId_editor = subId_sp.edit();
-                    courseId_editor.putString("course_id", courseIdData.get(position));
-                    subId_editor.putString("sub_id", subIdData.get(position));
+                    courseId_editor.putString("courseId", courseIdData.get(position));
+                    subId_editor.putString("subId", subIdData.get(position));
                     courseId_editor.commit();
                     subId_editor.commit();
 
@@ -122,7 +122,6 @@ public class StudentWelcomeListFragment extends Fragment {
                         e.printStackTrace();
                     }
                     String json = obj.toString();
-
                     new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
@@ -132,9 +131,9 @@ public class StudentWelcomeListFragment extends Fragment {
 
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
-                            SharedPreferences notificationsList_sp = getContext().getSharedPreferences("notifications_list", Context.MODE_PRIVATE);
+                            SharedPreferences notificationsList_sp = getContext().getSharedPreferences("notificationsList", Context.MODE_PRIVATE);
                             SharedPreferences.Editor notificationsList_editor = notificationsList_sp.edit();
-                            notificationsList_editor.putString("notifications_list", s);
+                            notificationsList_editor.putString("notificationsList", s);
                             notificationsList_editor.commit();
                             view.setBackgroundResource(R.drawable.item_list_press);
                             startActivity(new Intent(getActivity(), StudentHomeActivity.class));
@@ -175,6 +174,8 @@ public class StudentWelcomeListFragment extends Fragment {
 
     // 初始化List数据
     protected void initData() {
+        SharedPreferences currentWeek_sp = getContext().getSharedPreferences("currentWeek", Context.MODE_PRIVATE);
+        String currentWeek = currentWeek_sp.getString("currentWeek", "1");
         SharedPreferences loginJson_sp = getContext().getSharedPreferences("loginJson", Context.MODE_PRIVATE);
         ReadJsonByGson jsonByGson = new ReadJsonByGson(loginJson_sp.getString("loginJson", "{}"));
         courseNameData = new ArrayList<>();
@@ -190,11 +191,11 @@ public class StudentWelcomeListFragment extends Fragment {
         String[] courseIdInfo = jsonByGson.getCoursesBasicInfo("course_id");
         String[] subIdInfo = jsonByGson.getCoursesBasicInfo("sub_id");
         String[] teacherInfo = jsonByGson.getCoursesTeachersInfo();
-        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo("1"); // 参数：week
+        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo(currentWeek); // 参数：week
         String[] weekInfo = jsonByGson.getCoursesTimesWeeksInfo();
-        String[] periodInfo = jsonByGson.getCoursesTimesPeriodInfo("1", "1");
-        String[] roomNameInfo = jsonByGson.getCoursesTimesRoomNameInfo("1", "1");
-        String[] roomIdInfo = jsonByGson.getCoursesTimesRoomIdInfo("1", "1");
+        String[] periodInfo = jsonByGson.getCoursesTimesPeriodInfo(currentWeek, "1");
+        String[] roomNameInfo = jsonByGson.getCoursesTimesRoomNameInfo(currentWeek, "1");
+        String[] roomIdInfo = jsonByGson.getCoursesTimesRoomIdInfo(currentWeek, "1");
         Collections.addAll(courseNameData, courseNameInfo);
         Collections.addAll(courseIdData, courseIdInfo);
         Collections.addAll(subIdData, subIdInfo);

@@ -350,8 +350,6 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 e.printStackTrace();
             }
             String json = up_avatar_obj.toString();
-            Log.d("TEST", json);
-            System.out.println(json);
             new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_AVATAR_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
