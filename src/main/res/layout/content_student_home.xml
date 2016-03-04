@@ -85,10 +85,10 @@
         tools:context=".StudentHomeActivity">
 
         <RelativeLayout
-            android:visibility="visible"
             android:id="@+id/seat_choose_child_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/rl_thum"
@@ -204,43 +204,60 @@
                 android:id="@+id/mSSView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@+id/confirm_seat_choose_button"
+                android:layout_above="@+id/clear_confirm_seat_choose_layout"
                 android:layout_below="@+id/rl_thum" />
 
-            <Button
-                android:id="@+id/confirm_seat_choose_button"
+            <LinearLayout
+                android:id="@+id/clear_confirm_seat_choose_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/item_done_press"
-                android:text="确认选座" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/clear_seat_choose_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_will_press"
+                    android:text="重新选座" />
+
+                <Button
+                    android:id="@+id/confirm_seat_choose_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_done_press"
+                    android:text="确认选座" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:visibility="gone"
             android:id="@+id/student_home_refresh_tips_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <TextView
-                android:id="@+id/student_home_click_to_refresh_textView"
+                android:id="@+id/student_home_refresh_little_tips_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:text="点击刷新"
+                android:text="加载中…"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/student_home_refresh_tips_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/student_home_click_to_refresh_textView"
+                android:layout_above="@+id/student_home_refresh_little_tips_textView"
                 android:layout_centerHorizontal="true"
-                android:text="RefreshTips"
+                android:text="加载中…"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
         </RelativeLayout>

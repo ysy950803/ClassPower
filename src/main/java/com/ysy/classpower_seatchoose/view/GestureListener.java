@@ -110,8 +110,6 @@ class GestureListener extends GestureDetector.SimpleOnGestureListener {
         return false;
     }
 
-    public static int previousI = -1, previousJ = -1;
-
     public boolean onSingleTapUp(MotionEvent paramMotionEvent) {
 //		Log.i("GestureDetector", "onSingleTapUp");
 //		if(!SSView.a(mSsView)){
@@ -133,7 +131,7 @@ class GestureListener extends GestureDetector.SimpleOnGestureListener {
                         if (StudentHomeActivity.isSeatChooseOpen)
                             StudentHomeActivity.isSeatChooseEmpty = true;
                         if (SSView.d(mSsView) != null) {
-                            SSView.d(mSsView).a(i, j, false);
+                            SSView.d(mSsView).a(i, j, false); // 反选
                         }
                         break;
                     case 1://可选
@@ -148,44 +146,46 @@ class GestureListener extends GestureDetector.SimpleOnGestureListener {
 //                        }
                         //这一句与switch之前那句并不冲突，是重新获取坐标位置，否则总是最后一排有响应
 //                        localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(j);
-                        if (previousI == -1 && previousJ == -1) {
+                        if (StudentHomeActivity.previousI == -1 && StudentHomeActivity.previousJ == -1) {
                             localArrayList.set(i, 3);
                             if (StudentHomeActivity.isSeatChooseOpen)
                                 StudentHomeActivity.isSeatChooseEmpty = false;
                             if (SSView.d(mSsView) != null) {
-                                SSView.d(mSsView).b(i, j, false);
-                                previousI = i;
-                                previousJ = j;
+                                SSView.d(mSsView).b(i, j, false); // 选中
+                                StudentHomeActivity.previousI = i;
+                                StudentHomeActivity.previousJ = j;
                             }
                         } else {
-                            localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(previousJ);
-                            localArrayList.set(previousI, 1);
+                            // 反选之前已选
+                            localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(StudentHomeActivity.previousJ);
+                            localArrayList.set(StudentHomeActivity.previousI, 1);
                             if (SSView.d(mSsView) != null) {
-                                SSView.d(mSsView).a(previousI, previousJ, false);
+                                SSView.d(mSsView).a(StudentHomeActivity.previousI, StudentHomeActivity.previousJ, false);
                             }
+                            // 选中当前选择
                             localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(j);
                             localArrayList.set(i, 3);
                             if (StudentHomeActivity.isSeatChooseOpen)
                                 StudentHomeActivity.isSeatChooseEmpty = false;
                             if (SSView.d(mSsView) != null) {
                                 SSView.d(mSsView).b(i, j, false);
-                                previousI = i;
-                                previousJ = j;
+                                StudentHomeActivity.previousI = i;
+                                StudentHomeActivity.previousJ = j;
                             }
                         }
                         break;
                     case 2://给已锁定（即已有人）的座位设置可点击监听
-                        if (previousI == -1 && previousJ == -1) {
+                        if (StudentHomeActivity.previousI == -1 && StudentHomeActivity.previousJ == -1) {
                             if (StudentHomeActivity.isSeatChooseOpen)
                                 StudentHomeActivity.isSeatChooseEmpty = false;
                             if (SSView.d(mSsView) != null) {
                                 SSView.d(mSsView).b(i, j, false);
                             }
                         } else {
-                            localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(previousJ);
-                            localArrayList.set(previousI, 1);
+                            localArrayList = (ArrayList<Integer>) SSView.b(mSsView).get(StudentHomeActivity.previousJ);
+                            localArrayList.set(StudentHomeActivity.previousI, 1);
                             if (SSView.d(mSsView) != null) {
-                                SSView.d(mSsView).a(previousI, previousJ, false);
+                                SSView.d(mSsView).a(StudentHomeActivity.previousI, StudentHomeActivity.previousJ, false);
                             }
                             if (StudentHomeActivity.isSeatChooseOpen)
                                 StudentHomeActivity.isSeatChooseEmpty = false;

@@ -1,5 +1,7 @@
 package com.ysy.classpower_student.activities.home;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,6 +26,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -62,6 +67,8 @@ import java.util.TimerTask;
 public class StudentHomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static int previousI = -1, previousJ = -1;
+
     private long exitTime;
     private LinearLayout notificationLayout;
     private LinearLayout testLayout;
@@ -81,16 +88,17 @@ public class StudentHomeActivity extends AppCompatActivity
     private TextView studentNameTextView;
     private TextView studentSexTextView;
     private TextView refreshTipsTextView;
+    private TextView refreshLittleTipsTextView;
     private RelativeLayout refreshTipsLayout;
     private RelativeLayout seatChooseChildLayout;
 
     private SSView mSSView;
     private SSThumbView mSSThumbView;
 
-    private static final int Row = 0;
-    private static final int Col = 0;
-    private ArrayList<SeatInfo> list_seatInfo = new ArrayList<>();
-    private ArrayList<ArrayList<Integer>> list_seat_conditions = new ArrayList<>();
+    private int RowNum = 0;
+    private int ColNum = 0;
+    private ArrayList<SeatInfo> list_seatInfo;
+    private ArrayList<ArrayList<Integer>> list_seat_conditions;
 
     public static boolean isSeatChooseEmpty = true;
     public static boolean isSeatChooseOpen;
@@ -102,6 +110,7 @@ public class StudentHomeActivity extends AppCompatActivity
     private static final String COURSE_NTFC_GETNTFCS_URL = ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL;
     private static final String USER_LOGIN_URL = ServerUrlConstant.USER_LOGIN_URL;
     private static final String SEAT_CHOOSESEAT = ServerUrlConstant.SEAT_CHOOSESEAT_URL;
+    private static final String SEAT_FREESEAT = ServerUrlConstant.SEAT_FREESEAT;
 
     private String userId = "";
     private String password = "";
@@ -249,15 +258,64 @@ public class StudentHomeActivity extends AppCompatActivity
         confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                String mSeatId = mSeatId_sp.getString("mSeat_id_" + subId + "_" + courseId, "");
                 if (isSeatChooseEmpty) {
                     Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
                 } else {
-                    // 若已选座，则提交数据至服务器
-                    handSeatConfirmInfo();
+                    if (seatId.equals("")) {
+                        Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
+                    }
+                    if (!mSeatId.equals("")) {
+                        Toast.makeText(StudentHomeActivity.this, "请先释放座位再重新选座哦！", Toast.LENGTH_SHORT).show();
+                    } else
+                        // 若已选座，则提交数据至服务器
+                        handSeatConfirmInfo();
                 }
             }
         });
+        // 重新选座按钮
+        Button clearSeatChooseButton = (Button) findViewById(R.id.clear_seat_choose_button);
+        clearSeatChooseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                String mSeatId = mSeatId_sp.getString("mSeat_id_" + subId + "_" + courseId, "");
+                if (mSeatId.equals("")) {
+                    Toast.makeText(StudentHomeActivity.this, "你还没选到座位哦，不能释放座位！", Toast.LENGTH_SHORT).show();
+                } else
+                    clearSeatChooseTips(mSeatId);
+            }
+        });
 
+    }
+
+    private void clearSeatChoose(String mSeatId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("token", token);
+            jsonObject.put("seat_token", seatToken);
+            jsonObject.put("seat_id", mSeatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json = jsonObject.toString();
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_FREESEAT, json, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Toast.makeText(StudentHomeActivity.this, "网络错误，请稍后重试！", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
+                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, "");
+                mSeatId_editor.commit();
+                Toast.makeText(StudentHomeActivity.this, "成功释放已选座位，你现在可以重新选座了！", Toast.LENGTH_SHORT).show();
+                refreshSeats(true);
+            }
+        });
     }
 
     private void handSeatConfirmInfo() {
@@ -277,6 +335,8 @@ public class StudentHomeActivity extends AppCompatActivity
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (jsonByGson.getValue("error_code").equals("605")) { // token过期
                         updateToken(3);
+                    } else if (jsonByGson.getValue("error_code").equals("901")) { // 座位已被选
+                        seatChooseTips();
                     }
                 }
             }
@@ -284,9 +344,60 @@ public class StudentHomeActivity extends AppCompatActivity
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
                 // 选座成功获取seat_id
-
+                Toast.makeText(StudentHomeActivity.this, "你已成功选座（座位号：" + seatId + "）！", Toast.LENGTH_SHORT).show();
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
+                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, seatId);
+                mSeatId_editor.commit();
+                refreshSeats(true);
             }
         });
+    }
+
+    private void clearSeatChooseTips(final String mSeatId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("即将释放之前已选座位").setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）").setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clearSeatChoose(mSeatId);
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
+    }
+
+    private void seatChooseTips() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("座位已被其他同学选了").setMessage("请另选座位吧！\n（点击确定可刷新座位）").setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        refreshSeats(true);
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
     }
 
     // 初始化通知List模块
@@ -667,38 +778,45 @@ public class StudentHomeActivity extends AppCompatActivity
         seatChooseChildLayout = (RelativeLayout) findViewById(R.id.seat_choose_child_layout);
         refreshTipsTextView = (TextView) findViewById(R.id.student_home_refresh_tips_textView);
         refreshTipsLayout = (RelativeLayout) findViewById(R.id.student_home_refresh_tips_layout);
+        refreshLittleTipsTextView = (TextView) findViewById(R.id.student_home_refresh_little_tips_textView);
 
         mSSView = (SSView) this.findViewById(R.id.mSSView);
+        mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview);
         //显示缩略图
         SSView.a(mSSView, true);
         mSSView.invalidate();
-
-        mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview);
 //		mSSView.setXOffset(10);
-        mSSView.init(Col, Row, new ArrayList<SeatInfo>(), new ArrayList<ArrayList<Integer>>(), mSSThumbView, 5);
-        mSSView.setOnSeatClickListener(new OnSeatClickListener() {
-            @Override
-            public boolean b(int column_num, int row_num, boolean paramBoolean) {
-
-                return false;
-            }
-
-            @Override
-            public boolean a(int column_num, int row_num, boolean paramBoolean) {
-
-                return false;
-            }
-
-            @Override
-            public void a() {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
+//        mSSView.init(Col, Row, new ArrayList<SeatInfo>(), new ArrayList<ArrayList<Integer>>(), mSSThumbView, 5);
+//        mSSView.setOnSeatClickListener(new OnSeatClickListener() {
+//            @Override
+//            public boolean b(int column_num, int row_num, boolean paramBoolean) {
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean a(int column_num, int row_num, boolean paramBoolean) {
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public void a() {
+//                // TODO Auto-generated method stub
+//
+//            }
+//        });
     }
 
     private void refreshSeats(final boolean isSetSeatsNap) {
+        seatId = "";
+        studentSeatTextView.setText("");
+        studentNameTextView.setText("");
+        studentSexTextView.setText("");
+        previousI = -1;
+        previousJ = -1;
+        list_seatInfo = new ArrayList<>();
+        list_seat_conditions = new ArrayList<>();
         JSONObject object = new JSONObject();
         try {
             object.put("token", token);
@@ -714,15 +832,26 @@ public class StudentHomeActivity extends AppCompatActivity
                 if (s.contains("error_code")) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (jsonByGson.getValue("error_code").equals("906")) { // 还没上课
+                        if (remainingSecsTimer != null)
+                            remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
                         refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshLittleTipsTextView.setText("请耐心等待…");
                         remainingSecs = Integer.valueOf(jsonByGson.getValue("remaining_secs"));
+                        startRemainingSecsTimer();
                         remainingSecsHandler = new Handler() {
                             public void handleMessage(Message msg) {
                                 refreshTipsTextView.setText("还有 " + msg.arg1 + " 秒才上课呢！");
                                 startRemainingSecsTimer();
                             }
                         };
+                    } else if (jsonByGson.getValue("error_code").equals("909")) { // 已经下课
+                        if (remainingSecsTimer != null)
+                            remainingSecsTimer.cancel();
+                        seatChooseChildLayout.setVisibility(View.GONE);
+                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsTextView.setText("已经下课啦，休息一下吧！");
+                        refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
                     } else if (jsonByGson.getValue("error_code").equals("605")) { // token过期，闭环处理
                         updateToken(2);
                     }
@@ -766,7 +895,8 @@ public class StudentHomeActivity extends AppCompatActivity
                             mSSView.setOnSeatClickListener(new OnSeatClickListener() {
                                 @Override
                                 public boolean b(int column_num, int row_num, boolean paramBoolean) {
-                                    seatId = seat_id[column_num][column_num];
+                                    seatId = seat_id[column_num][row_num];
+                                    studentSeatTextView.setText(seatId);
                                     return false;
                                 }
 
@@ -804,6 +934,9 @@ public class StudentHomeActivity extends AppCompatActivity
         remainingSecsTimer.schedule(task, 1000);
         if (remainingSecs == 0) { //由于有mHandler，所以此处可以动态判断
             remainingSecsTimer.cancel();
+            seatChooseChildLayout.setVisibility(View.VISIBLE);
+            refreshTipsLayout.setVisibility(View.GONE);
+            refreshSeats(true);
         }
     }
 
@@ -867,6 +1000,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         }
                     });
                     refreshTipsTextView.setText("网络错误，请刷新重试！");
+                    refreshLittleTipsTextView.setText("点击刷新");
                 } else if (whichLayout == 3) {
                     Toast.makeText(StudentHomeActivity.this, "网络错误，请重新提交试试！", Toast.LENGTH_SHORT).show();
                 }
