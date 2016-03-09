@@ -1,7 +1,6 @@
 package com.ysy.classpower_student.activities.base;
 
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +14,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
+import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
+import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -31,10 +33,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class StudentRegisterActivity extends AppCompatActivity {
+public class StudentRegisterActivity extends SwipeBackActivity {
 
     private EditText userIdEditText;
-    private EditText passWordEditText;
+    private EditText passwordEditText;
+    private EditText doublePasswordEditText;
     private EditText nameEditText;
     private EditText emailEditText;
     private EditText telEditText;
@@ -52,7 +55,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
     private RelativeLayout registerLayout;
     private RelativeLayout registerSuccessLayout;
 
-    private TextView schoolsTextView;
+    //    private TextView schoolsTextView;
     private TextView majorsTextView;
     private TextView classesTextView;
     private Spinner schoolsSpinner;
@@ -67,11 +70,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
     private String className = "";
 
     private boolean isMale;
-    private JSONObject registerObject;
-    private static final String USER_REGISTER_STUDENT_URL = ServerUrlConstant.USER_REGISTER_STUDENT_URL;
-    private static final String USER_REGISTER_GETSCHOOLS_URL = ServerUrlConstant.USER_REGISTER_GETSCHOOLS_URL;
-    private static final String USER_REGISTER_GETMAJORS_URL = ServerUrlConstant.USER_REGISTER_GETMAJORS_URL;
-    private static final String USER_REGISTER_GETCLASSES_URL = ServerUrlConstant.USER_REGISTER_GETCLASSES_URL;
+    private JsonObject registerObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,16 +78,17 @@ public class StudentRegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_register);
         setupActionBar();
 
-        registerObject = new JSONObject();
+        registerObject = new JsonObject();
 
         registerLayout = (RelativeLayout) findViewById(R.id.register_layout);
         registerSuccessLayout = (RelativeLayout) findViewById(R.id.register_success_layout);
 
-        userIdEditText = (EditText) findViewById(R.id.user_id_edit_text);
-        passWordEditText = (EditText) findViewById(R.id.password_edit_text);
-        nameEditText = (EditText) findViewById(R.id.name_edit_text);
-        emailEditText = (EditText) findViewById(R.id.email_edit_text);
-        telEditText = (EditText) findViewById(R.id.tel_editText);
+        userIdEditText = (EditText) findViewById(R.id.student_register_userId_editText);
+        passwordEditText = (EditText) findViewById(R.id.student_register_password_editText);
+        doublePasswordEditText = (EditText) findViewById(R.id.student_register_double_password_editText);
+        nameEditText = (EditText) findViewById(R.id.student_register_name_editText);
+        emailEditText = (EditText) findViewById(R.id.student_register_email_editText);
+        telEditText = (EditText) findViewById(R.id.student_register_tel_editText);
         maleRadioButton = (RadioButton) findViewById(R.id.male_radio_button);
         femaleRadioButton = (RadioButton) findViewById(R.id.female_radio_button);
         handleRegisterButton = (Button) findViewById(R.id.handle_register_button);
@@ -100,7 +100,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
         roleTextView = (TextView) findViewById(R.id.role_text_view);
         backToLoginButton = (Button) findViewById(R.id.back_to_login_button);
 
-        schoolsTextView = (TextView) findViewById(R.id.schools_textView);
+//        schoolsTextView = (TextView) findViewById(R.id.schools_textView);
         majorsTextView = (TextView) findViewById(R.id.majors_textView);
         classesTextView = (TextView) findViewById(R.id.classes_textView);
         schoolsSpinner = (Spinner) findViewById(R.id.schools_spinner);
@@ -127,7 +127,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
 
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         if (cd.isConnectingToInternet()) {
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETSCHOOLS_URL, "{}", new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETSCHOOLS_URL, "{}", new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0)
@@ -191,7 +191,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETMAJORS_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETMAJORS_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     schoolsSpinner.setSelection(0);
@@ -246,7 +246,7 @@ public class StudentRegisterActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_GETCLASSES_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETCLASSES_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     majorsSpinner.setSelection(0);
@@ -293,26 +293,34 @@ public class StudentRegisterActivity extends AppCompatActivity {
                 case R.id.handle_register_button:
                     ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
                     if (cd.isConnectingToInternet()) {
-                        registerInfoAsJson();
-                        final String studentInfoJson = registerObject.toString();
-                        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_STUDENT_URL, studentInfoJson, new TextHttpResponseHandler() {
-                            @Override
-                            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                                if (i == 0)
-                                    Toast.makeText(StudentRegisterActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
-                            }
+                        if (registerInfoAsJson()) {
+                            final String studentInfoJson = registerObject.toString();
+                            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_STUDENT_URL, studentInfoJson, new TextHttpResponseHandler() {
+                                @Override
+                                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                    if (i == 0)
+                                        Toast.makeText(StudentRegisterActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
+                                    else if (i == 400) {
+                                        ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                        if (s.contains("error_code")) {
+                                            if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.USER_ALREADY_EXISTS))
+                                                Toast.makeText(StudentRegisterActivity.this, "用户已存在，请重新注册！", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }
 
-                            @Override
-                            public void onSuccess(int i, Header[] headers, String s) {
-                                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                                if (jsonByGson.getValue("msg").equals("Success")) {
-                                    setRegisterSuccessInfoByJson(studentInfoJson);
-                                    registerLayout.setVisibility(View.GONE);
-                                    registerSuccessLayout.setVisibility(View.VISIBLE);
-                                } else
-                                    Toast.makeText(StudentRegisterActivity.this, "未知错误，请重试！", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                @Override
+                                public void onSuccess(int i, Header[] headers, String s) {
+                                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                    if (jsonByGson.getValue("msg").equals("Success")) {
+                                        setRegisterSuccessInfoByJson(studentInfoJson);
+                                        registerLayout.setVisibility(View.GONE);
+                                        registerSuccessLayout.setVisibility(View.VISIBLE);
+                                    } else
+                                        Toast.makeText(StudentRegisterActivity.this, "未知错误，请重试！", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
                     } else
                         Toast.makeText(StudentRegisterActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
                     break;
@@ -339,28 +347,35 @@ public class StudentRegisterActivity extends AppCompatActivity {
         }
     };
 
-    private void registerInfoAsJson() {
-        try {
-            if (userIdEditText.getText().toString().equals(""))
-                Toast.makeText(StudentRegisterActivity.this, "用户名不能为空！", Toast.LENGTH_SHORT).show();
-            else if (passWordEditText.getText().toString().equals(""))
-                Toast.makeText(StudentRegisterActivity.this, "密码不能为空！", Toast.LENGTH_SHORT).show();
-            else if (nameEditText.getText().toString().equals(""))
-                Toast.makeText(StudentRegisterActivity.this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
-            else if (majorId.equals("") || classId.equals(""))
-                Toast.makeText(StudentRegisterActivity.this, "请选择完整的院校信息！", Toast.LENGTH_SHORT).show();
-            else {
-                registerObject.put("user_id", userIdEditText.getText().toString());
-                registerObject.put("password", passWordEditText.getText().toString());
-                registerObject.put("name", nameEditText.getText().toString());
-                registerObject.put("email", emailEditText.getText().toString());
-                registerObject.put("tel", telEditText.getText().toString());
-                registerObject.put("gender", isMale);
-                registerObject.put("major_id", majorId);
-                registerObject.put("class_id", classId);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private boolean registerInfoAsJson() {
+        if (userIdEditText.getText().toString().equals("")) {
+            Toast.makeText(StudentRegisterActivity.this, "用户名不能为空！", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (passwordEditText.getText().toString().equals("")) {
+            Toast.makeText(StudentRegisterActivity.this, "密码不能为空！", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (passwordEditText.getText().toString().length() < 6) {
+            Toast.makeText(StudentRegisterActivity.this, "密码太短啦，不安全哦！", Toast.LENGTH_LONG).show();
+            return false;
+        } else if (!passwordEditText.getText().toString().equals(doublePasswordEditText.getText().toString())) {
+            Toast.makeText(StudentRegisterActivity.this, "两次密码输入不一致，请修改一下吧！", Toast.LENGTH_LONG).show();
+            return false;
+        } else if (nameEditText.getText().toString().equals("")) {
+            Toast.makeText(StudentRegisterActivity.this, "姓名不能为空！", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (majorId.equals("") || classId.equals("")) {
+            Toast.makeText(StudentRegisterActivity.this, "请选择完整的院校信息！", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            registerObject.addProperty("user_id", userIdEditText.getText().toString());
+            registerObject.addProperty("password", passwordEditText.getText().toString());
+            registerObject.addProperty("name", nameEditText.getText().toString());
+            registerObject.addProperty("email", emailEditText.getText().toString());
+            registerObject.addProperty("tel", telEditText.getText().toString());
+            registerObject.addProperty("gender", isMale);
+            registerObject.addProperty("major_id", majorId);
+            registerObject.addProperty("class_id", classId);
+            return true;
         }
     }
 
@@ -389,10 +404,17 @@ public class StudentRegisterActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //覆盖整个Activity的返回按钮
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            onBackPressed(); //调用onKeyDown内部方法
+//            onBackPressed(); //调用onKeyDown内部方法
+            scrollToFinishActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        scrollToFinishActivity();
     }
 
 }

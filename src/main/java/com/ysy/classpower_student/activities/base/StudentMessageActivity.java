@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,11 +20,12 @@ import com.ysy.classpower_student.activities.home.SettingsActivity;
 import com.ysy.classpower_student.adapters.StudentMessageFragmentAdapter;
 import com.ysy.classpower_student.fragments.StudentUndoTestsFragment;
 import com.ysy.classpower_student.fragments.StudentUnreadNotificationsFragment;
+import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentMessageActivity extends AppCompatActivity {
+public class StudentMessageActivity extends SwipeBackActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +104,16 @@ public class StudentMessageActivity extends AppCompatActivity {
             startActivity(new Intent(StudentMessageActivity.this, SettingsActivity.class));
             return true;
         } else if (id == android.R.id.home) {
-            onBackPressed(); //调用onKeyDown内部方法
+            scrollToFinishActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        scrollToFinishActivity();
     }
 
 }

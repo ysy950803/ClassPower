@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ysy.classpower_student.activities.base.StudentWelcomeActivity">
 
     <RelativeLayout
@@ -68,10 +69,14 @@
                         android:text="头像"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                    <ImageView
+                    <com.ysy.classpower_utils.CircularImageView
                         android:id="@+id/student_avatar_imageView"
                         android:layout_width="64dp"
+                        android:src="@drawable/ic_account_circle_black_48dp"
                         android:layout_height="64dp"
+                        app:civ_border="true"
+                        app:civ_borderWidth="2dp"
+                        app:civ_borderColor="@color/transparent"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true" />
@@ -309,10 +314,13 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:visibility="gone">
 
-        <ImageView
+        <com.ysy.classpower_utils.CircularImageView
             android:id="@+id/student_up_avatar_imageView"
             android:layout_width="128dp"
             android:layout_height="128dp"
+            app:civ_border="true"
+            app:civ_borderWidth="8dp"
+            app:civ_borderColor="@color/transparent"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_account_circle_black_48dp" />

@@ -28,7 +28,7 @@
             android:id="@+id/timer_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="180"
+            android:text="   "
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold" />
 

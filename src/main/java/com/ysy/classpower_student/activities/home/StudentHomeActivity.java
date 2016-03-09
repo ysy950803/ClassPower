@@ -1,9 +1,10 @@
 package com.ysy.classpower_student.activities.home;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,8 +15,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,10 +36,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
+import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_seatchoose.OnSeatClickListener;
@@ -49,10 +52,11 @@ import com.ysy.classpower_seatchoose.view.SSView;
 import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
+import com.ysy.classpower_utils.CircularImageView;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -87,6 +91,7 @@ public class StudentHomeActivity extends AppCompatActivity
     private TextView studentSeatTextView;
     private TextView studentNameTextView;
     private TextView studentSexTextView;
+    private CircularImageView studentAvatarImageView;
     private TextView refreshTipsTextView;
     private TextView refreshLittleTipsTextView;
     private RelativeLayout refreshTipsLayout;
@@ -105,15 +110,10 @@ public class StudentHomeActivity extends AppCompatActivity
     public static boolean isDirectlyCheckResult = false;
     public static String STUDENT_TEST_STATE = null; // DOING, DONE, WILL
 
-    private static final String SEAT_GETSEATTOKEN_URL = ServerUrlConstant.SEAT_GETSEATTOKEN_URL;
-    private static final String SEAT_GETSEATMAP_URL = ServerUrlConstant.SEAT_GETSEATMAP_URL;
-    private static final String COURSE_NTFC_GETNTFCS_URL = ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL;
-    private static final String USER_LOGIN_URL = ServerUrlConstant.USER_LOGIN_URL;
-    private static final String SEAT_CHOOSESEAT = ServerUrlConstant.SEAT_CHOOSESEAT_URL;
-    private static final String SEAT_FREESEAT = ServerUrlConstant.SEAT_FREESEAT;
-
     private String userId = "";
+    private String name = "";
     private String password = "";
+    private String email = "";
     private String token = "";
     private String courseId = "";
     private String subId = "";
@@ -136,12 +136,16 @@ public class StudentHomeActivity extends AppCompatActivity
 
         // 核心参数优先获取
         SharedPreferences userId_sp = getSharedPreferences("userId", MODE_PRIVATE);
+        SharedPreferences name_sp = getSharedPreferences("name", MODE_PRIVATE);
         SharedPreferences password_sp = getSharedPreferences("password", MODE_PRIVATE);
+        SharedPreferences email_sp = getSharedPreferences("email", MODE_PRIVATE);
         SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
         SharedPreferences courseId_sp = getSharedPreferences("courseId", MODE_PRIVATE);
         SharedPreferences subId_sp = getSharedPreferences("subId", MODE_PRIVATE);
         userId = userId_sp.getString("userId", "");
+        name = name_sp.getString("name", "");
         password = password_sp.getString("password", "");
+        email = email_sp.getString("email", "");
         token = token_sp.getString("token", "");
         courseId = courseId_sp.getString("courseId", "");
         subId = subId_sp.getString("subId", "");
@@ -180,6 +184,24 @@ public class StudentHomeActivity extends AppCompatActivity
                 startActivity(new Intent(StudentHomeActivity.this, StudentWelcomeActivity.class));
                 finish();
             }
+        });
+        TextView navHeaderName = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_name_textView);
+        TextView navHeaderEmail = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_email_textView);
+        final CircularImageView navHeaderAvatar = (CircularImageView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_avatar_imageView);
+        navHeaderName.setText(name);
+        navHeaderEmail.setText(email);
+        new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+            @Override
+            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                navHeaderAvatar.setImageBitmap(bm);
+            }
+
+            @Override
+            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                navHeaderAvatar.setImageResource(R.drawable.ic_account_circle_black_48dp);
+            }
+
         });
 
         // 获取通知List模块
@@ -249,10 +271,6 @@ public class StudentHomeActivity extends AppCompatActivity
 
         // 初始化选座
         initSeatsData();
-        // 点击座位出现的学生信息
-        studentSeatTextView = (TextView) findViewById(R.id.student_seat_text_view);
-        studentNameTextView = (TextView) findViewById(R.id.student_name_text_view);
-        studentSexTextView = (TextView) findViewById(R.id.student_sex_text_view);
         // 确定选座按钮
         Button confirmSeatChooseButton = (Button) findViewById(R.id.confirm_seat_choose_button);
         confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
@@ -263,9 +281,6 @@ public class StudentHomeActivity extends AppCompatActivity
                 if (isSeatChooseEmpty) {
                     Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (seatId.equals("")) {
-                        Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
-                    }
                     if (!mSeatId.equals("")) {
                         Toast.makeText(StudentHomeActivity.this, "请先释放座位再重新选座哦！", Toast.LENGTH_SHORT).show();
                     } else
@@ -300,7 +315,7 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_FREESEAT, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_FREESEAT, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 Toast.makeText(StudentHomeActivity.this, "网络错误，请稍后重试！", Toast.LENGTH_SHORT).show();
@@ -328,15 +343,24 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_CHOOSESEAT, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_CHOOSESEAT_URL, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                if (s.contains("error_code")) {
+                if (i == 0) {
+                    Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
+                } else if (s.contains("error_code")) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                    if (jsonByGson.getValue("error_code").equals("605")) { // token过期
+                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期
                         updateToken(3);
-                    } else if (jsonByGson.getValue("error_code").equals("901")) { // 座位已被选
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.SEAT_ALREADY_TAKEN)) { // 座位已被选
                         seatChooseTips();
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_ALREADY_OVER)) { // 已经下课
+                        if (remainingSecsTimer != null)
+                            remainingSecsTimer.cancel();
+                        seatChooseChildLayout.setVisibility(View.GONE);
+                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsTextView.setText("已经下课啦，休息一下吧！");
+                        refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
                     }
                 }
             }
@@ -344,7 +368,7 @@ public class StudentHomeActivity extends AppCompatActivity
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
                 // 选座成功获取seat_id
-                Toast.makeText(StudentHomeActivity.this, "你已成功选座（座位号：" + seatId + "）！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(StudentHomeActivity.this, "你已成功选座！\n（座位号：" + seatId + "）", Toast.LENGTH_SHORT).show();
                 SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
                 SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
                 mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, seatId);
@@ -355,7 +379,7 @@ public class StudentHomeActivity extends AppCompatActivity
     }
 
     private void clearSeatChooseTips(final String mSeatId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
         builder.setTitle("即将释放之前已选座位").setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）").setCancelable(false)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
@@ -367,7 +391,7 @@ public class StudentHomeActivity extends AppCompatActivity
                 dialog.cancel();
             }
         });
-        final AlertDialog alert = builder.create();
+        final android.support.v7.app.AlertDialog alert = builder.create();
         alert.show();
 
         //设置透明度
@@ -378,7 +402,7 @@ public class StudentHomeActivity extends AppCompatActivity
     }
 
     private void seatChooseTips() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
         builder.setTitle("座位已被其他同学选了").setMessage("请另选座位吧！\n（点击确定可刷新座位）").setCancelable(false)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
@@ -390,7 +414,7 @@ public class StudentHomeActivity extends AppCompatActivity
                 dialog.cancel();
             }
         });
-        final AlertDialog alert = builder.create();
+        final android.support.v7.app.AlertDialog alert = builder.create();
         alert.show();
 
         //设置透明度
@@ -442,12 +466,12 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 if (s.contains("error_code")) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                    if (jsonByGson.getValue("error_code").equals("605")) { // token过期，闭环处理
+                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
                         updateToken(0);
                     }
                 } else {
@@ -607,7 +631,7 @@ public class StudentHomeActivity extends AppCompatActivity
     class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new MyViewHolder(LayoutInflater.from(StudentHomeActivity.this).inflate(R.layout.item_test_student_home, parent,
+            return new MyViewHolder(LayoutInflater.from(StudentHomeActivity.this).inflate(R.layout.test_item_student_home, parent,
                     false));
         }
 
@@ -779,6 +803,11 @@ public class StudentHomeActivity extends AppCompatActivity
         refreshTipsTextView = (TextView) findViewById(R.id.student_home_refresh_tips_textView);
         refreshTipsLayout = (RelativeLayout) findViewById(R.id.student_home_refresh_tips_layout);
         refreshLittleTipsTextView = (TextView) findViewById(R.id.student_home_refresh_little_tips_textView);
+        // 点击座位出现的学生信息
+        studentSeatTextView = (TextView) findViewById(R.id.student_seat_text_view);
+        studentNameTextView = (TextView) findViewById(R.id.student_name_text_view);
+        studentSexTextView = (TextView) findViewById(R.id.student_sex_text_view);
+        studentAvatarImageView = (CircularImageView) findViewById(R.id.student_avatar_imageView);
 
         mSSView = (SSView) this.findViewById(R.id.mSSView);
         mSSThumbView = (SSThumbView) this.findViewById(R.id.ss_ssthumview);
@@ -806,13 +835,30 @@ public class StudentHomeActivity extends AppCompatActivity
 //
 //            }
 //        });
+        mSSView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        mSSThumbView.setVisibility(View.VISIBLE);
+                        studentAvatarImageView.setVisibility(View.INVISIBLE);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        mSSThumbView.setVisibility(View.INVISIBLE);
+                        studentAvatarImageView.setVisibility(View.VISIBLE);
+                        break;
+                }
+                return false; //此处必须返回false，否则View无法移动
+            }
+        });
     }
 
     private void refreshSeats(final boolean isSetSeatsNap) {
-        seatId = "";
+        isSeatChooseEmpty = true;
         studentSeatTextView.setText("");
         studentNameTextView.setText("");
         studentSexTextView.setText("");
+        studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
         previousI = -1;
         previousJ = -1;
         list_seatInfo = new ArrayList<>();
@@ -826,12 +872,14 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = object.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_GETSEATTOKEN_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_GETSEATTOKEN_URL, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                if (s.contains("error_code")) {
+                if (i == 0) {
+                    Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
+                } else if (s.contains("error_code")) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                    if (jsonByGson.getValue("error_code").equals("906")) { // 还没上课
+                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.SEAT_CHOOSING_NOT_AVAILABLE_YET)) { // 还没上课
                         if (remainingSecsTimer != null)
                             remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
@@ -845,14 +893,21 @@ public class StudentHomeActivity extends AppCompatActivity
                                 startRemainingSecsTimer();
                             }
                         };
-                    } else if (jsonByGson.getValue("error_code").equals("909")) { // 已经下课
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_ALREADY_OVER)) { // 已经下课
                         if (remainingSecsTimer != null)
                             remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
                         refreshTipsLayout.setVisibility(View.VISIBLE);
                         refreshTipsTextView.setText("已经下课啦，休息一下吧！");
                         refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
-                    } else if (jsonByGson.getValue("error_code").equals("605")) { // token过期，闭环处理
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_IS_NOT_ON_TODAY)) { // 不是今天上课
+                        if (remainingSecsTimer != null)
+                            remainingSecsTimer.cancel();
+                        seatChooseChildLayout.setVisibility(View.GONE);
+                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsTextView.setText("不是今天上这堂课哦！");
+                        refreshLittleTipsTextView.setText("返回课程列表可选择其它课");
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
                         updateToken(2);
                     }
                 }
@@ -875,7 +930,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     String json = object.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), SEAT_GETSEATMAP_URL, json, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_GETSEATMAP_URL, json, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             Toast.makeText(StudentHomeActivity.this, "获取座位图失败，请稍后刷新重试！", Toast.LENGTH_SHORT).show();
@@ -890,19 +945,39 @@ public class StudentHomeActivity extends AppCompatActivity
                             int COL = jsonByGson.getIntValue("col_num");
                             int ROW = jsonByGson.getIntValue("row_num");
                             setSeatInfo(COL, ROW, jsonByGson);
-                            final String seat_id[][] = jsonByGson.getSeatId(COL, ROW);
+                            final String seat_id[][] = jsonByGson.getSeatInfo(COL, ROW, "seat_id");
+                            final String seat_cur_stu[][] = jsonByGson.getSeatInfo(COL, ROW, "cur_stu");
                             mSSView.init(COL, ROW, list_seatInfo, list_seat_conditions, mSSThumbView, 5);
                             mSSView.setOnSeatClickListener(new OnSeatClickListener() {
                                 @Override
                                 public boolean b(int column_num, int row_num, boolean paramBoolean) {
                                     seatId = seat_id[column_num][row_num];
                                     studentSeatTextView.setText(seatId);
+                                    if (!seat_cur_stu[column_num][row_num].equals("")) {
+                                        new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + seat_cur_stu[column_num][row_num] + ".jpg", new BinaryHttpResponseHandler() {
+                                            @Override
+                                            public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                                                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                studentAvatarImageView.setImageBitmap(bm);
+                                            }
+
+                                            @Override
+                                            public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                                                studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
+                                            }
+                                        });
+                                    } else {
+                                        studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
+                                    }
                                     return false;
                                 }
 
                                 @Override
                                 public boolean a(int column_num, int row_num, boolean paramBoolean) {
-
+                                    studentNameTextView.setText("");
+                                    studentSexTextView.setText("");
+                                    studentSeatTextView.setText("");
+                                    studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
                                     return false;
                                 }
 
@@ -980,7 +1055,7 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = object.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_LOGIN_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_LOGIN_URL, json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 // 若token获取失败，提示用户手动刷新

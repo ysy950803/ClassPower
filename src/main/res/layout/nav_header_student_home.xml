@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -12,24 +13,29 @@
     android:id="@+id/nav_header_student_home_layout"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.ysy.classpower_utils.CircularImageView
+        app:civ_border="true"
+        app:civ_borderWidth="2dp"
+        app:civ_borderColor="@color/transparent"
+        android:id="@+id/student_home_nav_header_avatar_imageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/ic_user_head" />
+        android:src="@drawable/ic_account_circle_black_48dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="姚圣禹"
+        android:id="@+id/student_home_nav_header_name_textView"
+        android:paddingTop="8dp"
+        android:text="加载中…"
+        android:textSize="18dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/student_home_nav_header_email_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="632599008@qq.com" />
+        android:text="加载中…" />
 
 </LinearLayout>

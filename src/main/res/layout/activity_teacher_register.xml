@@ -36,7 +36,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <EditText
-                    android:id="@+id/user_id_edit_text"
+                    android:id="@+id/student_register_userId_editText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -51,17 +51,17 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/user_id_edit_text"
+                    android:layout_below="@+id/student_register_userId_editText"
                     android:text="密    码  "
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <EditText
-                    android:id="@+id/password_edit_text"
+                    android:id="@+id/student_register_password_editText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/user_id_edit_text"
-                    android:layout_alignRight="@+id/user_id_edit_text"
-                    android:layout_below="@+id/user_id_edit_text"
+                    android:layout_alignEnd="@+id/student_register_userId_editText"
+                    android:layout_alignRight="@+id/student_register_userId_editText"
+                    android:layout_below="@+id/student_register_userId_editText"
                     android:layout_toRightOf="@+id/teacher_number_text_view"
                     android:ems="10"
                     android:inputType="textPassword" />
@@ -72,17 +72,17 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/password_edit_text"
+                    android:layout_below="@+id/student_register_password_editText"
                     android:text="姓    名  "
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <EditText
-                    android:id="@+id/name_edit_text"
+                    android:id="@+id/student_register_double_password_editText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/password_edit_text"
-                    android:layout_alignRight="@+id/password_edit_text"
-                    android:layout_below="@+id/password_edit_text"
+                    android:layout_alignEnd="@+id/student_register_password_editText"
+                    android:layout_alignRight="@+id/student_register_password_editText"
+                    android:layout_below="@+id/student_register_password_editText"
                     android:layout_toEndOf="@+id/textView3"
                     android:layout_toRightOf="@+id/textView3" />
 
@@ -92,30 +92,30 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/name_edit_text"
+                    android:layout_below="@+id/student_register_double_password_editText"
                     android:text="邮    箱  "
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <EditText
-                    android:id="@+id/email_edit_text"
+                    android:id="@+id/student_register_name_editText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/name_edit_text"
-                    android:layout_alignLeft="@+id/user_id_edit_text"
-                    android:layout_alignRight="@+id/name_edit_text"
-                    android:layout_alignStart="@+id/user_id_edit_text"
-                    android:layout_below="@+id/name_edit_text"
+                    android:layout_alignEnd="@+id/student_register_double_password_editText"
+                    android:layout_alignLeft="@+id/student_register_userId_editText"
+                    android:layout_alignRight="@+id/student_register_double_password_editText"
+                    android:layout_alignStart="@+id/student_register_userId_editText"
+                    android:layout_below="@+id/student_register_double_password_editText"
                     android:inputType="textEmailAddress" />
 
                 <RelativeLayout
                     android:id="@+id/relativeLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/name_edit_text"
+                    android:layout_alignLeft="@+id/student_register_double_password_editText"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignStart="@+id/name_edit_text"
-                    android:layout_below="@+id/tel_editText">
+                    android:layout_alignStart="@+id/student_register_double_password_editText"
+                    android:layout_below="@+id/student_register_email_editText">
 
                     <RadioButton
                         android:id="@+id/male_radio_button"
@@ -149,12 +149,12 @@
                 </RelativeLayout>
 
                 <TextView
-                    android:id="@+id/tel_textView"
+                    android:id="@+id/student_register_email_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/email_edit_text"
+                    android:layout_below="@+id/student_register_name_editText"
                     android:text="电    话  "
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -164,19 +164,19 @@
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/textView38"
                     android:layout_alignRight="@+id/textView38"
-                    android:layout_below="@+id/tel_editText"
+                    android:layout_below="@+id/student_register_email_editText"
                     android:text="性    别  "
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <EditText
-                    android:id="@+id/tel_editText"
+                    android:id="@+id/student_register_email_editText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/email_edit_text"
+                    android:layout_alignEnd="@+id/student_register_name_editText"
                     android:layout_alignLeft="@+id/relativeLayout"
-                    android:layout_alignRight="@+id/email_edit_text"
+                    android:layout_alignRight="@+id/student_register_name_editText"
                     android:layout_alignStart="@+id/relativeLayout"
-                    android:layout_below="@+id/email_edit_text" />
+                    android:layout_below="@+id/student_register_name_editText" />
 
                 <View
                     android:id="@+id/View_sex"

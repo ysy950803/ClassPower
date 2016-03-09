@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,8 @@ import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
 import com.ysy.classpower_utils.ConnectionDetector;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -59,8 +58,6 @@ public class StudentWelcomeListFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private UltimateRecyclerView ultimateRecyclerView;
     private ItemTouchHelper mItemTouchHelper;
-
-    private static final String COURSE_NTFC_GETNTFCS_URL = ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL;
 
     public StudentWelcomeListFragment() {
 
@@ -122,7 +119,7 @@ public class StudentWelcomeListFragment extends Fragment {
                         e.printStackTrace();
                     }
                     String json = obj.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             view.setBackgroundResource(0);

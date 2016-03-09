@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,16 +11,12 @@ import android.widget.TextView;
 
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
+import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class TestResultActivity extends AppCompatActivity {
+public class TestResultActivity extends SwipeBackActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +82,20 @@ public class TestResultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //覆盖整个Activity的返回按钮
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            onBackPressed(); //调用onKeyDown内部方法
+            scrollToFinishActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        scrollToFinishActivity();
+    }
+
+    @Override
+    public void finish() {
+        TestPreviewActivity.isOpenFromTestResult = true;
+        super.finish();
+    }
 }

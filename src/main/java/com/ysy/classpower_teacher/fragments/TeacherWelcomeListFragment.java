@@ -132,7 +132,7 @@ public class TeacherWelcomeListFragment extends Fragment {
     class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new MyViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.item_test_student_home, parent,
+            return new MyViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.test_item_student_home, parent,
                     false));
         }
 

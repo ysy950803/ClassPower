@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,11 +30,12 @@ import com.ysy.classpower_common.fragments.TestDetailsListFragment;
 import com.ysy.classpower_common.fragments.TestDetailsStudentFragment;
 import com.ysy.classpower_common.fragments.TestDetailsSummaryFragment;
 import com.ysy.classpower_utils.DividerItemDecoration;
+import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestDetailsActivity extends AppCompatActivity {
+public class TestDetailsActivity extends SwipeBackActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +99,16 @@ public class TestDetailsActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         } else if (id == android.R.id.home) {
-            onBackPressed(); //调用onKeyDown内部方法
+            scrollToFinishActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        scrollToFinishActivity();
     }
 
 }

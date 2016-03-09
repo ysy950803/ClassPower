@@ -22,8 +22,8 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;

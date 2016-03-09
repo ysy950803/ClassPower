@@ -104,7 +104,20 @@
                     android:id="@+id/ss_ssthumview"
                     android:layout_width="@dimen/ss_seat_thum_size_w"
                     android:layout_height="@dimen/ss_seat_thum_size_h"
-                    android:layout_centerVertical="true" />
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible" />
+
+                <com.ysy.classpower_utils.CircularImageView
+                    android:id="@+id/student_avatar_imageView"
+                    android:layout_width="90.0dip"
+                    android:layout_height="90.0dip"
+                    app:civ_border="true"
+                    app:civ_borderWidth="4dp"
+                    app:civ_borderColor="@color/transparent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_account_circle_black_48dp" />
 
                 <TextView
                     android:id="@+id/textView12"

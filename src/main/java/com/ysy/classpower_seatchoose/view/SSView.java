@@ -36,6 +36,10 @@ public class SSView extends View {
      * 已选中
      */
     private Bitmap mBitMapSeatChecked = null;
+    /**
+     * 锁定并选中
+     */
+    private Bitmap mBitMapSeatLockChecked = null;
 
     /**
      * 缩略图画布
@@ -184,6 +188,8 @@ public class SSView extends View {
                 .getResources().getDrawable(R.drawable.seat_lock));
         this.mBitMapSeatChecked = getBitmapFromDrawable((BitmapDrawable) this.mContext
                 .getResources().getDrawable(R.drawable.seat_checked));
+        this.mBitMapSeatLockChecked= getBitmapFromDrawable((BitmapDrawable) this.mContext
+                .getResources().getDrawable(R.drawable.seat_lock_checked));
 
         this.ss_seat_thumb_size_w = this.mContext.getResources()
                 .getDimensionPixelSize(R.dimen.ss_seat_thum_size_w);
@@ -334,7 +340,7 @@ public class SSView extends View {
                 this.T = d2;
             }
             if (this.U) {
-                localPaint2.setColor(-16777216);
+                localPaint2.setColor(0b11111111000000000000000000000000);
                 if (first_load_bg) {
                     first_load_bg = false;
                     tempX = 5 + (int) (this.r * this.T);
@@ -352,7 +358,7 @@ public class SSView extends View {
         this.h = (int) Math.round(this.ss_seat_current_width / 2.0D);
         localPaint2.setTextAlign(Paint.Align.CENTER);
         localPaint2.setAntiAlias(true);
-        localPaint2.setColor(-16777216);
+        localPaint2.setColor(0b11111111000000000000000000000000);
         for (int i2 = 0; i2 < this.mListSeatConditions.size(); i2++) {
             ArrayList<Integer> localArrayList = this.mListSeatConditions
                     .get(i2);
@@ -365,18 +371,22 @@ public class SSView extends View {
                     case 0: // 2401 - 走道
                         localPaint2.setColor(0);
                         a(i3, i2, null, paramCanvas, this.mCanvas, localPaint2);
-                        localPaint2.setColor(-16777216);
+                        localPaint2.setColor(0b11111111000000000000000000000000);
                         break;
                     case 1:// 可选
                         a(i3, i2, this.mBitMapSeatNormal, paramCanvas,
                                 this.mCanvas, localPaint2);
                         break;
-                    case 2://
+                    case 2:// 锁定（未选中）
                         a(i3, i2, this.mBitMapSeatLock, paramCanvas,
                                 this.mCanvas, localPaint2);
                         break;
                     case 3: // 2500-一已点击的状态
                         a(i3, i2, this.mBitMapSeatChecked, paramCanvas,
+                                this.mCanvas, localPaint2);
+                        break;
+                    case 4: // 锁定（选中）
+                        a(i3, i2, this.mBitMapSeatLockChecked, paramCanvas,
                                 this.mCanvas, localPaint2);
                         break;
                     default:
@@ -389,7 +399,7 @@ public class SSView extends View {
         // 画排数
         localPaint2.setTextSize(0.4F * this.ss_seat_current_height);
         for (int i1 = 0; i1 < this.mListSeatInfo.size(); i1++) {
-            localPaint2.setColor(-1308622848);
+            localPaint2.setColor(0b10110010000000000000000000000000);
             paramCanvas.drawRect(new Rect((int) Math.abs(this.n), this.j
                     + i1 * this.ss_seat_current_height, (int) Math.abs(this.n) + this.ss_seat_current_width / 2,
                     this.j + (i1 + 1) * this.ss_seat_current_height), localPaint2);
@@ -404,7 +414,7 @@ public class SSView extends View {
 
         if (this.U) {
             // 画缩略图的黄色框
-            localPaint2.setColor(-739328);
+            localPaint2.setColor(0b11111111111101001011100000000000);
             localPaint2.setStyle(Paint.Style.STROKE);
             localPaint2.setStrokeWidth(this.ss_seat_rect_line);
             this.mCanvas.drawRect(

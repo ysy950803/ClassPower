@@ -34,10 +34,11 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
+import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -74,8 +75,6 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
     private View mProgressView;
     private View mLoginFormView;
     private View focusView;
-
-    private static final String USER_LOGIN_URL = ServerUrlConstant.USER_LOGIN_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +205,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                 e.printStackTrace();
             }
             String json = userInfoObject.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_LOGIN_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_LOGIN_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0) {
@@ -214,12 +213,12 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                     } else if (i == 400) {
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                         if (s.contains("error_code")) {
-                            if (jsonByGson.getValue("error_code").equals("701")) {
+                            if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.USER_NOT_FOUND)) {
                                 mEmailView.setError(getString(R.string.error_invalid_email));
                                 focusView = mEmailView;
                                 focusView.requestFocus();
                             } else {
-                                if (jsonByGson.getValue("error_code").equals("602")) {
+                                if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.WRONG_PASSWORD)) {
                                     mPasswordView.setError(getString(R.string.error_incorrect_password));
                                     focusView = mPasswordView;
                                     focusView.requestFocus();
@@ -305,6 +304,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         majorName_editor.putString("majorName", majorName);
 
         loginJson_editor.putString("loginJson", loginJson);
+        Log.d("LoginJson", loginJson);
 
         currentWeek_editor.commit();
         loginJson_editor.commit();

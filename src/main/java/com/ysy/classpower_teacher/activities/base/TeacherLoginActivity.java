@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,8 +26,8 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity;
 import com.ysy.classpower_utils.ConnectionDetector;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;

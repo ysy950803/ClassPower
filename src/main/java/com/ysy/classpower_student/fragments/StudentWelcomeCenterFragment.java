@@ -1,7 +1,5 @@
 package com.ysy.classpower_student.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,23 +21,21 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.Base64;
 import com.loopj.android.http.BinaryHttpResponseHandler;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_utils.CardTurnAnimation;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.CircularImageView;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -54,14 +51,12 @@ import java.io.IOException;
 public class StudentWelcomeCenterFragment extends Fragment {
 
     View view;
-    private static final String USER_ME_URL = ServerUrlConstant.USER_ME_URL;
-    private static final String USER_AVATAR_URL = ServerUrlConstant.USER_AVATAR_URL;
     private static final String IMAGE_UNSPECIFIED = "image/*";
     private static final int ALBUM_REQUEST_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
     private static final int CROP_REQUEST_CODE = 4;
-    private ImageView studentAvatar;
-    private ImageView studentUpAvatar;
+    private CircularImageView studentAvatar;
+    private CircularImageView studentUpAvatar;
     private String userId;
     private String token;
     private byte[] studentAvatarBytes = null;
@@ -104,8 +99,8 @@ public class StudentWelcomeCenterFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_student_welcome_center, container, false);
 
-        studentAvatar = (ImageView) view.findViewById(R.id.student_avatar_imageView);
-        studentUpAvatar = (ImageView) view.findViewById(R.id.student_up_avatar_imageView);
+        studentAvatar = (CircularImageView) view.findViewById(R.id.student_avatar_imageView);
+        studentUpAvatar = (CircularImageView) view.findViewById(R.id.student_up_avatar_imageView);
         studentWelcomeCenterLayout = (RelativeLayout) view.findViewById(R.id.student_welcome_center_layout);
         studentUpAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_up_avatar_layout);
         studentNameContentTextView = (TextView) view.findViewById(R.id.student_name_content_text_view);
@@ -121,7 +116,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
         Button takePhotoAsAvatarBtn = (Button) view.findViewById(R.id.take_photo_as_avatar_btn);
         Button confirmUpAvatarBtn = (Button) view.findViewById(R.id.confirm_up_avatar_btn);
 
-        new AsyncHttpClient().get(USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+        new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -130,14 +125,15 @@ public class StudentWelcomeCenterFragment extends Fragment {
 
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-
+                studentAvatar.setImageResource(R.drawable.ic_account_circle_black_48dp);
             }
+
         });
         studentNameContentTextView.setText(name);
         studentNumberContentTextView.setText(userId);
         if (gender)
             studentSexContentTextView.setText("男");
-        else if (!gender)
+        else
             studentSexContentTextView.setText("女");
         studentClassContentTextView.setText(className);
         studentEmailContentTextView.setText(email);
@@ -156,7 +152,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_ME_URL, json, new TextHttpResponseHandler() {
+                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.USER_ME_URL, json, new TextHttpResponseHandler() {
                     @Override
                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                         Toast.makeText(getContext(), "网络错误，刷新失败！", Toast.LENGTH_SHORT).show();
@@ -166,28 +162,40 @@ public class StudentWelcomeCenterFragment extends Fragment {
                     public void onSuccess(int i, Header[] headers, String s) {
                         Toast.makeText(getContext(), "个人信息刷新成功！", Toast.LENGTH_SHORT).show();
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                        if (jsonByGson.getArrayBoolValue("info", "gender"))
+                        String name = jsonByGson.getArrayValue("info", "name");
+                        String userId = jsonByGson.getArrayValue("info", "user_id");
+                        String email = jsonByGson.getArrayValue("info", "email");
+                        String tel = jsonByGson.getArrayValue("info", "tel");
+                        String className = jsonByGson.getArrayValue("info", "class_name");
+                        if (jsonByGson.getArrayBoolValue("info", "gender")) {
                             studentSexContentTextView.setText("男");
-                        else
+                            updateInfoFromRefresh(email, true, name, tel, userId, className);
+                        } else {
                             studentSexContentTextView.setText("女");
-                        studentNameContentTextView.setText(jsonByGson.getArrayValue("info", "name"));
-                        studentNumberContentTextView.setText(jsonByGson.getArrayValue("info", "user_id"));
-                        studentEmailContentTextView.setText(jsonByGson.getArrayValue("info", "email"));
-                        studentTelContentTextView.setText(jsonByGson.getArrayValue("info", "tel"));
-                        studentClassContentTextView.setText(jsonByGson.getArrayValue("info", "class_name"));
+                            updateInfoFromRefresh(email, false, name, tel, userId, className);
+                        }
+                        studentNameContentTextView.setText(name);
+                        studentNumberContentTextView.setText(userId);
+                        studentEmailContentTextView.setText(email);
+                        studentTelContentTextView.setText(tel);
+                        studentClassContentTextView.setText(className);
                         studentLessonContentTextView.setText(""); // 当前课堂获取方法待定
                     }
                 });
-                new AsyncHttpClient().get(USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+                new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
                     @Override
                     public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                        Log.d("HLength/BLength", headers.length + "/" + bytes.length);
+//                        for (int j = 0; j < headers.length; ++j) {
+//                            Log.d("HContent" + j, headers[j] + "");
+//                        }
                         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         studentAvatar.setImageBitmap(bm);
                     }
 
                     @Override
                     public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-
+                        studentAvatar.setImageResource(R.drawable.ic_account_circle_black_48dp);
                     }
                 });
             }
@@ -205,7 +213,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogoutTips();
+                logoutTips();
             }
         });
 
@@ -257,6 +265,36 @@ public class StudentWelcomeCenterFragment extends Fragment {
         return view;
     }
 
+    private void updateInfoFromRefresh(String email, boolean gender, String name, String tel, String userId, String className) {
+        SharedPreferences email_sp = getContext().getSharedPreferences("email", Context.MODE_PRIVATE);
+        SharedPreferences gender_sp = getContext().getSharedPreferences("gender", Context.MODE_PRIVATE);
+        SharedPreferences name_sp = getContext().getSharedPreferences("name", Context.MODE_PRIVATE);
+        SharedPreferences tel_sp = getContext().getSharedPreferences("tel", Context.MODE_PRIVATE);
+        SharedPreferences userId_sp = getContext().getSharedPreferences("userId", Context.MODE_PRIVATE);
+        SharedPreferences className_sp = getContext().getSharedPreferences("className", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor email_editor = email_sp.edit();
+        SharedPreferences.Editor gender_editor = gender_sp.edit();
+        SharedPreferences.Editor name_editor = name_sp.edit();
+        SharedPreferences.Editor tel_editor = tel_sp.edit();
+        SharedPreferences.Editor userId_editor = userId_sp.edit();
+        SharedPreferences.Editor className_editor = className_sp.edit();
+
+        email_editor.putString("email", email);
+        gender_editor.putBoolean("gender", gender);
+        name_editor.putString("name", name);
+        tel_editor.putString("tel", tel);
+        userId_editor.putString("userId", userId);
+        className_editor.putString("className", className);
+
+        email_editor.apply();
+        gender_editor.apply();
+        name_editor.apply();
+        tel_editor.apply();
+        userId_editor.apply();
+        className_editor.apply();
+    }
+
     private void startCrop(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");//调用Android系统自带的一个图片剪裁页面,
         intent.setDataAndType(uri, IMAGE_UNSPECIFIED);
@@ -304,7 +342,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    studentUpAvatar.setImageBitmap(photo); //把图片显示在ImageView控件上
+                    studentUpAvatar.setImageBitmap(photo); // 把图片显示在ImageView控件上
                 }
                 break;
             default:
@@ -313,8 +351,8 @@ public class StudentWelcomeCenterFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void LogoutTips() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    private void logoutTips() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
         builder.setTitle("提示").setMessage("确定要注销当前用户吗？").setCancelable(false)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
@@ -327,7 +365,7 @@ public class StudentWelcomeCenterFragment extends Fragment {
                 dialog.cancel();
             }
         });
-        AlertDialog alert = builder.create();
+        android.support.v7.app.AlertDialog alert = builder.create();
         alert.show();
 
         //设置透明度
@@ -341,16 +379,18 @@ public class StudentWelcomeCenterFragment extends Fragment {
         if (studentAvatarBytes == null) {
             Toast.makeText(getContext(), "未设置头像！", Toast.LENGTH_SHORT).show();
         } else {
-            String base64_code = Base64.encodeToString(studentAvatarBytes, 0, studentAvatarBytes.length, Base64.DEFAULT);
             JSONObject up_avatar_obj = new JSONObject();
             try {
                 up_avatar_obj.put("token", token);
-                up_avatar_obj.put("img", base64_code);
+                up_avatar_obj.put("img", Base64.encodeToString(studentAvatarBytes, Base64.DEFAULT));
+                Log.d("SABLength", studentAvatarBytes.length + "");
+//                Log.d("Base64Code", Base64.encodeToString(studentAvatarBytes, Base64.NO_WRAP));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             String json = up_avatar_obj.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_AVATAR_URL, json, new TextHttpResponseHandler() {
+//            Log.d("Json", json);
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.USER_AVATAR_URL, json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     Toast.makeText(getContext(), "头像上传失败！", Toast.LENGTH_SHORT).show();

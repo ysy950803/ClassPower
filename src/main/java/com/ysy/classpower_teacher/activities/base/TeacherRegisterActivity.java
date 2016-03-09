@@ -15,8 +15,8 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
-import com.ysy.classpower_utils.PostJsonAndGetCallback;
-import com.ysy.classpower_utils.ReadJsonByGson;
+import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -58,11 +58,11 @@ public class TeacherRegisterActivity extends AppCompatActivity {
         registerLayout = (RelativeLayout) findViewById(R.id.register_layout);
         registerSuccessLayout = (RelativeLayout) findViewById(R.id.register_success_layout);
 
-        userIdEditText = (EditText) findViewById(R.id.user_id_edit_text);
-        passWordEditText = (EditText) findViewById(R.id.password_edit_text);
-        nameEditText = (EditText) findViewById(R.id.name_edit_text);
-        emailEditText = (EditText) findViewById(R.id.email_edit_text);
-        telEditText = (EditText) findViewById(R.id.tel_editText);
+        userIdEditText = (EditText) findViewById(R.id.student_register_userId_editText);
+        passWordEditText = (EditText) findViewById(R.id.student_register_password_editText);
+        nameEditText = (EditText) findViewById(R.id.student_register_double_password_editText);
+        emailEditText = (EditText) findViewById(R.id.student_register_name_editText);
+        telEditText = (EditText) findViewById(R.id.student_register_email_editText);
         maleRadioButton = (RadioButton) findViewById(R.id.male_radio_button);
         femaleRadioButton = (RadioButton) findViewById(R.id.female_radio_button);
         handleRegisterButton = (Button) findViewById(R.id.handle_register_button);
