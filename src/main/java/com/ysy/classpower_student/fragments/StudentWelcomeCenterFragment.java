@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -110,7 +111,14 @@ public class StudentWelcomeCenterFragment extends Fragment {
         studentEmailContentTextView = (TextView) view.findViewById(R.id.student_email_content_textView);
         studentTelContentTextView = (TextView) view.findViewById(R.id.student_tel_content_textView);
         studentLessonContentTextView = (TextView) view.findViewById(R.id.student_lesson_content_text_view);
-        RelativeLayout studentAvatarLayout = (RelativeLayout) view.findViewById(R.id.student_avatar_layout);
+        CardView studentAvatarLayout = (CardView) view.findViewById(R.id.student_avatar_layout);
+        CardView studentUpAvatarCardView = (CardView) view.findViewById(R.id.student_up_avatar_cardView);
+        studentUpAvatarCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         Button giveUpAvatarButton = (Button) view.findViewById(R.id.give_up_avatar_btn);
         Button choosePicAsAvatarBtn = (Button) view.findViewById(R.id.choose_pic_as_avatar_btn);
         Button takePhotoAsAvatarBtn = (Button) view.findViewById(R.id.take_photo_as_avatar_btn);

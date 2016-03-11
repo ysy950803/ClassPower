@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import com.ysy.classpower.R;
+import com.ysy.classpower_utils.ListOnItemClickListener;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -26,6 +27,11 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
     private List<String> createdOnList;
     private List<String> titleList;
     private int onTopCount = 0;
+
+    private ListOnItemClickListener mOnItemClickListener;
+    public void setListOnItemClickListener(ListOnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
 
     public StudentHomeNotificationsListAdapter(List<String> byList, List<String> contentList, List<String> createdOnList,
                                                List<String> titleList, int onTopCount) {
@@ -68,6 +74,27 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
                     }
                 });
             }
+
+            // 如果设置了回调，则设置点击事件
+            if (mOnItemClickListener != null) {
+                holder.item_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos = holder.getLayoutPosition();
+                        mOnItemClickListener.onItemClick(holder.item_view, pos);
+                    }
+                });
+
+                holder.item_view.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int pos = holder.getLayoutPosition();
+                        mOnItemClickListener.onItemLongClick(holder.item_view, pos);
+                        return false;
+                    }
+                });
+            }
+
         }
 
     }

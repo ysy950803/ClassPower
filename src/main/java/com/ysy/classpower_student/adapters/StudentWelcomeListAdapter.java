@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import com.ysy.classpower.R;
+import com.ysy.classpower_utils.ListOnItemClickListener;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -29,6 +30,11 @@ public class StudentWelcomeListAdapter extends UltimateViewAdapter<StudentWelcom
     private List<String> weekList;
     private List<String> periodList;
     private List<String> roomNameList;
+
+    private ListOnItemClickListener mOnItemClickListener;
+    public void setListOnItemClickListener(ListOnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
 
     public StudentWelcomeListAdapter(List<String> courseNameList, List<String> teacherList, List<String> dayList,
                                      List<String> weekList, List<String> periodList, List<String> roomNameList) {
@@ -71,6 +77,27 @@ public class StudentWelcomeListAdapter extends UltimateViewAdapter<StudentWelcom
                     }
                 });
             }
+
+            // 如果设置了回调，则设置点击事件
+            if (mOnItemClickListener != null) {
+                holder.item_view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos = holder.getLayoutPosition();
+                        mOnItemClickListener.onItemClick(holder.item_view, pos);
+                    }
+                });
+
+                holder.item_view.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        int pos = holder.getLayoutPosition();
+                        mOnItemClickListener.onItemLongClick(holder.item_view, pos);
+                        return false;
+                    }
+                });
+            }
+
         }
 
     }

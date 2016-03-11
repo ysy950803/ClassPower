@@ -43,8 +43,6 @@
         <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true">
 
             <RelativeLayout
@@ -56,6 +54,7 @@
                 android:paddingTop="@dimen/activity_vertical_margin">
 
                 <android.support.v7.widget.CardView
+                    android:stateListAnimator="@animator/touch_raise"
                     android:id="@+id/student_avatar_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -69,7 +68,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:text="头像"
@@ -80,7 +78,6 @@
                             android:layout_width="64dp"
                             android:layout_height="64dp"
                             android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentTop="true"
                             android:src="@drawable/ic_account_circle_black_48dp"
                             app:civ_border="true"
@@ -92,7 +89,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_toLeftOf="@+id/student_avatar_imageView"
                             android:layout_toStartOf="@+id/student_avatar_imageView"
                             android:text="点击设置头像"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -101,11 +97,11 @@
 
                 </android.support.v7.widget.CardView>
 
+
                 <TextView
                     android:id="@+id/student_name_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/student_avatar_layout"
                     android:text="姓名"
@@ -117,7 +113,6 @@
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/View1"
                     android:layout_alignEnd="@+id/student_avatar_layout"
-                    android:layout_alignRight="@+id/student_avatar_layout"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <View
@@ -131,7 +126,6 @@
                     android:id="@+id/student_number_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/View1"
                     android:text="学号"
@@ -142,7 +136,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/View1"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -157,7 +150,6 @@
                     android:id="@+id/student_sex_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/View2"
                     android:text="性别"
@@ -168,7 +160,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/View2"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -183,7 +174,6 @@
                     android:id="@+id/student_class_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/View3"
                     android:text="班级"
@@ -194,7 +184,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/View3"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -218,7 +207,6 @@
                     android:id="@+id/student_lesson_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/textView5"
                     android:text="当前课堂"
@@ -237,7 +225,6 @@
                     android:id="@+id/View5"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/student_lesson_text_view"
                     android:background="@android:color/darker_gray" />
@@ -246,7 +233,6 @@
                     android:id="@+id/student_tel_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/student_class_text_view"
                     android:text="电话"
@@ -257,7 +243,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/View4"
-                    android:layout_alignRight="@+id/View4"
                     android:layout_alignTop="@+id/View4"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -266,7 +251,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@+id/student_tel_textView"
                     android:background="@android:color/darker_gray" />
 
@@ -274,7 +258,6 @@
                     android:id="@+id/student_email_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/View6"
                     android:text="邮箱"
@@ -285,7 +268,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/View6"
-                    android:layout_alignRight="@+id/View6"
                     android:layout_below="@+id/View6"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -293,7 +275,6 @@
                     android:id="@+id/View7"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/student_email_textView"
                     android:background="@android:color/darker_gray" />
@@ -312,6 +293,7 @@
         android:visibility="gone">
 
         <android.support.v7.widget.CardView
+            android:stateListAnimator="@animator/touch_raise"
             android:id="@+id/student_up_avatar_cardView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -343,8 +325,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/student_up_avatar_imageView"
-                    android:layout_alignLeft="@+id/student_up_avatar_imageView"
-                    android:layout_alignRight="@+id/student_up_avatar_imageView"
                     android:layout_alignStart="@+id/student_up_avatar_imageView"
                     android:layout_below="@+id/textView4"
                     android:text="本地选择头像" />
@@ -355,9 +335,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_toEndOf="@+id/textView2"
-                    android:layout_toRightOf="@+id/textView2"
                     android:text="确认上传" />
 
                 <Button
@@ -365,9 +343,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@+id/textView2"
                     android:layout_toStartOf="@+id/textView2"
                     android:text="返    回" />
 
@@ -394,8 +370,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/choose_pic_as_avatar_btn"
-                    android:layout_alignLeft="@+id/choose_pic_as_avatar_btn"
-                    android:layout_alignRight="@+id/choose_pic_as_avatar_btn"
                     android:layout_alignStart="@+id/choose_pic_as_avatar_btn"
                     android:layout_alignTop="@+id/textView2"
                     android:text="拍照作为头像" />

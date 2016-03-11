@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.marshalchen.ultimaterecyclerview.ItemTouchListenerAdapter;
 import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
@@ -55,6 +57,7 @@ import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
 import com.ysy.classpower_utils.CircularImageView;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
+import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -439,6 +442,17 @@ public class StudentHomeActivity extends AppCompatActivity
             StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
                     ntfcsListCreatedOnData, ntfcsListTitleData, ntfcsListOnTopCount);
             notificationsURV.setAdapter(notificationsListAdapter);
+            notificationsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+
+                }
+
+                @Override
+                public void onItemLongClick(View view, int position) {
+
+                }
+            });
         }
         notificationsURV.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -446,12 +460,6 @@ public class StudentHomeActivity extends AppCompatActivity
                 refreshNotifications();
             }
         });
-        notificationsURV.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-
-            }
-        }));
 
     }
 
@@ -525,6 +533,78 @@ public class StudentHomeActivity extends AppCompatActivity
                     "      \"title\": \"adsgfgs\"\n" +
                     "    },\n" +
                     "    {\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
+                    "      \"by\": \"test\",\n" +
+                    "      \"content\": \"test_notification_modified\",\n" +
+                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
+                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
+                    "      \"on_top\": false,\n" +
+                    "      \"title\": \"adsgfgs\"\n" +
+                    "    },\n" +
+                    "\t{\n" +
                     "      \"by\": \"test\",\n" +
                     "      \"content\": \"test_notification_modified\",\n" +
                     "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
@@ -799,6 +879,13 @@ public class StudentHomeActivity extends AppCompatActivity
 
     // 加载选座数据模块
     private void initSeatsData() {
+        CardView personalInfoCardView = (CardView) findViewById(R.id.student_personal_info_cardView);
+        personalInfoCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         seatChooseChildLayout = (RelativeLayout) findViewById(R.id.seat_choose_child_layout);
         refreshTipsTextView = (TextView) findViewById(R.id.student_home_refresh_tips_textView);
         refreshTipsLayout = (RelativeLayout) findViewById(R.id.student_home_refresh_tips_layout);

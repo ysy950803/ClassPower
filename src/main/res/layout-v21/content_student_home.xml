@@ -81,7 +81,7 @@
         android:id="@+id/seat_choose_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:context=".StudentHomeActivity">
 
         <RelativeLayout
@@ -91,21 +91,20 @@
             android:visibility="gone">
 
             <android.support.v7.widget.CardView
-                android:layout_margin="@dimen/card_view_margin"
                 android:id="@+id/student_personal_info_cardView"
-                app:cardElevation="4dp"
-                android:foreground="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_view_margin"
+                android:foreground="?attr/selectableItemBackground"
+                android:stateListAnimator="@animator/touch_raise"
+                app:cardElevation="4dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:background="@android:color/transparent"
-                    android:paddingRight="4dp">
+                    android:background="@android:color/transparent">
 
                     <com.ysy.classpower_seatchoose.view.SSThumbView
                         android:id="@+id/ss_ssthumview"
@@ -118,7 +117,6 @@
                         android:id="@+id/student_avatar_imageView"
                         android:layout_width="90.0dip"
                         android:layout_height="90.0dip"
-                        android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
                         android:src="@drawable/ic_account_circle_black_48dp"
@@ -132,7 +130,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_toEndOf="@+id/ss_ssthumview"
-                        android:layout_toRightOf="@+id/ss_ssthumview"
                         android:text="座位"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="@android:color/holo_blue_dark" />
@@ -143,14 +140,12 @@
                         android:layout_height="1dp"
                         android:layout_below="@+id/textView12"
                         android:layout_toEndOf="@+id/ss_ssthumview"
-                        android:layout_toRightOf="@+id/ss_ssthumview"
                         android:background="@android:color/darker_gray" />
 
                     <TextView
                         android:id="@+id/textView11"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/textView12"
                         android:layout_alignStart="@+id/textView12"
                         android:layout_below="@+id/View1"
                         android:text="姓名"
@@ -162,10 +157,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
                         android:layout_below="@+id/textView11"
                         android:layout_toEndOf="@+id/ss_ssthumview"
-                        android:layout_toRightOf="@+id/ss_ssthumview"
                         android:background="@android:color/darker_gray" />
 
                     <TextView
@@ -174,7 +167,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@+id/View2"
                         android:layout_toEndOf="@+id/ss_ssthumview"
-                        android:layout_toRightOf="@+id/ss_ssthumview"
                         android:text="性别"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="@android:color/holo_green_dark" />
@@ -185,7 +177,6 @@
                         android:layout_height="1dp"
                         android:layout_below="@+id/textView13"
                         android:layout_toEndOf="@+id/ss_ssthumview"
-                        android:layout_toRightOf="@+id/ss_ssthumview"
                         android:background="@android:color/darker_gray" />
 
                     <TextView
@@ -194,7 +185,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/View1"
                         android:layout_alignEnd="@+id/View1"
-                        android:layout_alignRight="@+id/View1"
                         android:text="        "
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -204,7 +194,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/View2"
                         android:layout_alignEnd="@+id/View1"
-                        android:layout_alignRight="@+id/View1"
                         android:text="        "
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -214,7 +203,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/View3"
                         android:layout_alignEnd="@+id/View2"
-                        android:layout_alignRight="@+id/View2"
                         android:text="        "
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 

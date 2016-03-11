@@ -39,7 +39,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     private Button testDetailsButton;
     private TextView additionalInfoContentTextView;
 
-    public static int timeNumber = 15;
+    public static int timeNumber = 180;
     public static boolean isOpenFromTestResult;
 
     @Override
@@ -48,7 +48,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
         setContentView(R.layout.activity_student_test_preview);
         setupActionBar();
 
-        timeNumber = 15;
+        timeNumber = 180;
         isOpenFromTestResult = false;
 
         testBeginButton = (Button) findViewById(R.id.test_begin_button);
@@ -188,7 +188,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     @Override
     protected void onResume() {
         Log.d("Time_Number", timeNumber + "");
-        if (timeNumber < 15 && timeNumber > 0) {
+        if (timeNumber < 180 && timeNumber > 0) {
             if (!isOpenFromTestResult)
                 startTime();
         }

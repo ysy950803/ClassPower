@@ -18,13 +18,13 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -95,9 +95,9 @@ public class StudentWelcomeListFragment extends Fragment {
                 }, 1000);
             }
         });
-        ultimateRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+        listAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
             @Override
-            public void onItemClick(final View view, int position) {
+            public void onItemClick(View view, int position) {
                 ConnectionDetector cd = new ConnectionDetector(getContext());
                 if (cd.isConnectingToInternet()) {
                     // 点击列表项时记录各种id，跳转后使用
@@ -122,7 +122,7 @@ public class StudentWelcomeListFragment extends Fragment {
                     new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                            view.setBackgroundResource(0);
+//                            view.setBackgroundResource(0);
                             Toast.makeText(getContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
                         }
 
@@ -132,7 +132,7 @@ public class StudentWelcomeListFragment extends Fragment {
                             SharedPreferences.Editor notificationsList_editor = notificationsList_sp.edit();
                             notificationsList_editor.putString("notificationsList", s);
                             notificationsList_editor.commit();
-                            view.setBackgroundResource(R.drawable.item_list_press);
+//                            view.setBackgroundResource(R.drawable.item_list_press);
                             startActivity(new Intent(getActivity(), StudentHomeActivity.class));
                             getActivity().finish();
                         }
@@ -141,7 +141,12 @@ public class StudentWelcomeListFragment extends Fragment {
                     Toast.makeText(getContext(), "断开连接，请检查网络！", Toast.LENGTH_SHORT).show();
 
             }
-        }));
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
 
 //        // 设置ListHeader装饰，相关内容在Adapter的onBindHeaderViewHolder方法中
 //        StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(listAdapter);

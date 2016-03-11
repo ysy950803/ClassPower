@@ -93,9 +93,9 @@ public class TestDetailsListFragment extends Fragment {
         mDatas = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             if (i == 0)
-                mDatas.add("2015-10-15 13:37:42    题1");
+                mDatas.add("知识点1    题1");
             else
-                mDatas.add("2015-10-15 13:37:34    题2");
+                mDatas.add("知识点1    题2");
         }
     }
 
@@ -104,9 +104,9 @@ public class TestDetailsListFragment extends Fragment {
         mDatas = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             if (i == 0)
-                mDatas.add("2016-12-15 13:35:45    题1");
+                mDatas.add("知识点2    题1");
             else
-                mDatas.add("2016-12-15 13:35:35    题2");
+                mDatas.add("知识点2    题2");
         }
     }
 
@@ -120,7 +120,7 @@ public class TestDetailsListFragment extends Fragment {
     class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new MyViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.test_item_student_home, parent,
+            return new MyViewHolder(LayoutInflater.from(getActivity()).inflate(R.layout.test_item_test_details_list, parent,
                     false));
         }
 
@@ -169,7 +169,7 @@ public class TestDetailsListFragment extends Fragment {
 
             public MyViewHolder(View view) {
                 super(view);
-                tv = (TextView) view.findViewById(R.id.id_num);
+                tv = (TextView) view.findViewById(R.id.test_list_textView);
             }
         }
     }

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="96dp"
     android:layout_margin="@dimen/card_view_margin"
+    android:stateListAnimator="@animator/touch_raise"
     app:cardElevation="4dp"
     android:foreground="?attr/selectableItemBackground">
 

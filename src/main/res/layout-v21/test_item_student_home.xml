@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:stateListAnimator="@animator/touch_raise"
     android:layout_margin="@dimen/card_view_margin"
     app:cardElevation="4dp"
     android:foreground="?attr/selectableItemBackground">
