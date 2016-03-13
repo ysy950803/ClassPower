@@ -5,23 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.ysy.classpower_student.activities.test.TestResultActivity">
+    tools:context="com.ysy.classpower_student.activities.base.StudentPersonalCenterActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="256dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:background="@drawable/test_result_background"
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/student_personal_center_background"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <com.ysy.classpower_utils.for_design.CircularImageView
+                android:id="@+id/student_avatar_imageView"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_account_circle_white_48dp"
+                app:civ_border="true"
+                app:civ_borderColor="@color/transparent"
+                app:civ_borderWidth="2dp" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -34,15 +45,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_test_result" />
+    <include layout="@layout/content_student_personal_center" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/student_personal_center_refresh_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end" />
+        android:src="@drawable/ic_refresh_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

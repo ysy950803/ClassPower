@@ -18,9 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ysy.classpower.R;
-import com.ysy.classpower_student.activities.home.SettingsActivity;
 import com.ysy.classpower_student.adapters.StudentWelcomeFragmentAdapter;
-import com.ysy.classpower_student.fragments.StudentWelcomeCenterFragment;
 import com.ysy.classpower_student.fragments.StudentWelcomeListFragment;
 
 import java.util.ArrayList;
@@ -29,8 +27,6 @@ import java.util.List;
 public class StudentWelcomeActivity extends AppCompatActivity {
 
     private long exitTime;
-    private static boolean isCenterOpen;
-    public static boolean isUpAvatarOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +37,10 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        final FloatingActionButton refreshFab = (FloatingActionButton) findViewById(R.id.student_welcome_refresh_fab);
         final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.student_welcome_add_fab);
-
-        isCenterOpen = true;
-        isUpAvatarOpen = false;
 
         List<Fragment> fragments = new ArrayList<>();
         Fragment list_fragment = new StudentWelcomeListFragment();
-        Fragment center_fragment = new StudentWelcomeCenterFragment();
-        fragments.add(center_fragment);
         fragments.add(list_fragment);
 
         final ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
@@ -58,37 +48,29 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         mViewPager.setAdapter(fragmentAdapter);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabsFromPagerAdapter(fragmentAdapter);
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition() == 1) {
-                    isCenterOpen = false;
-                    refreshFab.setVisibility(View.GONE);
-                    addFab.setVisibility(View.VISIBLE);
-                    invalidateOptionsMenu();
-                } else if (tab.getPosition() == 0) {
-                    isCenterOpen = true;
-                    addFab.setVisibility(View.GONE);
-                    if (!isUpAvatarOpen) {
-                        refreshFab.setVisibility(View.VISIBLE);
-                    } else {
-                        refreshFab.setVisibility(View.GONE);
-                    }
-                    invalidateOptionsMenu();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+//        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                mViewPager.setCurrentItem(tab.getPosition());
+//                if (tab.getPosition() == 1) {
+//                    addFab.setVisibility(View.VISIBLE);
+//                    invalidateOptionsMenu();
+//                } else if (tab.getPosition() == 0) {
+//                    addFab.setVisibility(View.GONE);
+//                    invalidateOptionsMenu();
+//                }
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
     }
 
@@ -117,6 +99,14 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                 return true;
             }
         });
+        MenuItem menuItem2 = menu.findItem(R.id.action_student_personal_center);
+        menuItem2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(StudentWelcomeActivity.this, StudentPersonalCenterActivity.class));
+                return true;
+            }
+        });
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setQueryHint("找课堂"); //设置搜索框内的hint文字
         MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() { //设置打开关闭动作监听
@@ -130,10 +120,6 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                 return true;
             }
         });
-        if (!isCenterOpen) {
-            menuItem.setVisible(true);
-        } else
-            menuItem.setVisible(false);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -146,10 +132,10 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(StudentWelcomeActivity.this, SettingsActivity.class));
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            startActivity(new Intent(StudentWelcomeActivity.this, SettingsActivity.class));
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

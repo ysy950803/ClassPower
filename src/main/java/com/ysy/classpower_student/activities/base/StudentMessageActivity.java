@@ -100,10 +100,11 @@ public class StudentMessageActivity extends SwipeBackActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(StudentMessageActivity.this, SettingsActivity.class));
-            return true;
-        } else if (id == android.R.id.home) {
+//        if (id == R.id.action_settings) {
+//            startActivity(new Intent(StudentMessageActivity.this, SettingsActivity.class));
+//            return true;
+//        } else
+        if (id == android.R.id.home) {
             scrollToFinishActivity();
             return true;
         }

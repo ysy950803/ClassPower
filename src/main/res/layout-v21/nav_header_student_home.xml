@@ -14,6 +14,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <com.ysy.classpower_utils.for_design.CircularImageView
+        android:transitionName="student_home_personalCenter_transition"
         app:civ_border="true"
         app:civ_borderWidth="2dp"
         app:civ_borderColor="@color/transparent"

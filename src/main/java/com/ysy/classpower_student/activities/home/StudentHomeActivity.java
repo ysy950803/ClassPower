@@ -1,10 +1,12 @@
 package com.ysy.classpower_student.activities.home;
 
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +18,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,22 +42,21 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.marshalchen.ultimaterecyclerview.ItemTouchListenerAdapter;
-import com.marshalchen.ultimaterecyclerview.RecyclerItemClickListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
-import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_seatchoose.OnSeatClickListener;
 import com.ysy.classpower_seatchoose.model.Seat;
 import com.ysy.classpower_seatchoose.model.SeatInfo;
 import com.ysy.classpower_seatchoose.view.SSThumbView;
 import com.ysy.classpower_seatchoose.view.SSView;
+import com.ysy.classpower_student.activities.base.StudentPersonalCenterActivity;
 import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
-import com.ysy.classpower_utils.CircularImageView;
+import com.ysy.classpower_utils.OwnApp;
+import com.ysy.classpower_utils.for_design.CircularImageView;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
 import com.ysy.classpower_utils.ListOnItemClickListener;
@@ -97,7 +99,7 @@ public class StudentHomeActivity extends AppCompatActivity
     private CircularImageView studentAvatarImageView;
     private TextView refreshTipsTextView;
     private TextView refreshLittleTipsTextView;
-    private RelativeLayout refreshTipsLayout;
+    private CardView refreshTipsCardView;
     private RelativeLayout seatChooseChildLayout;
 
     private SSView mSSView;
@@ -129,6 +131,9 @@ public class StudentHomeActivity extends AppCompatActivity
     private Timer remainingSecsTimer;
     private int remainingSecs = 0;
     private Handler remainingSecsHandler;
+
+    private RelativeLayout emptyTipsLayout;
+    private TextView emptyTipsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,22 +186,28 @@ public class StudentHomeActivity extends AppCompatActivity
         // 为抽屉里的头部Layout添加监听（注意先获取父级容器）
         View navHeaderStudentHomeView = navigationView.getHeaderView(0);
         LinearLayout navHeaderStudentHomeLayout = (LinearLayout) navHeaderStudentHomeView.findViewById(R.id.nav_header_student_home_layout);
-        navHeaderStudentHomeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(StudentHomeActivity.this, StudentWelcomeActivity.class));
-                finish();
-            }
-        });
         TextView navHeaderName = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_name_textView);
         TextView navHeaderEmail = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_email_textView);
         final CircularImageView navHeaderAvatar = (CircularImageView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_avatar_imageView);
+        navHeaderStudentHomeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(StudentHomeActivity.this, StudentPersonalCenterActivity.class);
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(StudentHomeActivity.this, navHeaderAvatar, "student_home_personalCenter_transition");
+                    startActivity(intent, options.toBundle());
+                } else
+                    startActivity(new Intent(StudentHomeActivity.this, StudentPersonalCenterActivity.class));
+            }
+        });
         navHeaderName.setText(name);
         navHeaderEmail.setText(email);
         new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                OwnApp ownApp = (OwnApp) getApplication();
                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                ownApp.setBitmap(bm);
                 navHeaderAvatar.setImageBitmap(bm);
             }
 
@@ -308,137 +319,24 @@ public class StudentHomeActivity extends AppCompatActivity
 
     }
 
-    private void clearSeatChoose(String mSeatId) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("token", token);
-            jsonObject.put("seat_token", seatToken);
-            jsonObject.put("seat_id", mSeatId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_FREESEAT, json, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                Toast.makeText(StudentHomeActivity.this, "网络错误，请稍后重试！", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int i, Header[] headers, String s) {
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
-                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
-                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, "");
-                mSeatId_editor.commit();
-                Toast.makeText(StudentHomeActivity.this, "成功释放已选座位，你现在可以重新选座了！", Toast.LENGTH_SHORT).show();
-                refreshSeats(true);
-            }
-        });
-    }
-
-    private void handSeatConfirmInfo() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("token", token);
-            jsonObject.put("seat_token", seatToken);
-            jsonObject.put("seat_id", seatId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_CHOOSESEAT_URL, json, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                if (i == 0) {
-                    Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
-                } else if (s.contains("error_code")) {
-                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期
-                        updateToken(3);
-                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.SEAT_ALREADY_TAKEN)) { // 座位已被选
-                        seatChooseTips();
-                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_ALREADY_OVER)) { // 已经下课
-                        if (remainingSecsTimer != null)
-                            remainingSecsTimer.cancel();
-                        seatChooseChildLayout.setVisibility(View.GONE);
-                        refreshTipsLayout.setVisibility(View.VISIBLE);
-                        refreshTipsTextView.setText("已经下课啦，休息一下吧！");
-                        refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
-                    }
-                }
-            }
-
-            @Override
-            public void onSuccess(int i, Header[] headers, String s) {
-                // 选座成功获取seat_id
-                Toast.makeText(StudentHomeActivity.this, "你已成功选座！\n（座位号：" + seatId + "）", Toast.LENGTH_SHORT).show();
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
-                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
-                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, seatId);
-                mSeatId_editor.commit();
-                refreshSeats(true);
-            }
-        });
-    }
-
-    private void clearSeatChooseTips(final String mSeatId) {
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
-        builder.setTitle("即将释放之前已选座位").setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）").setCancelable(false)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        clearSeatChoose(mSeatId);
-                    }
-                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        final android.support.v7.app.AlertDialog alert = builder.create();
-        alert.show();
-
-        //设置透明度
-        Window window = alert.getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.alpha = 0.75f;
-        window.setAttributes(lp);
-    }
-
-    private void seatChooseTips() {
-        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
-        builder.setTitle("座位已被其他同学选了").setMessage("请另选座位吧！\n（点击确定可刷新座位）").setCancelable(false)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        refreshSeats(true);
-                    }
-                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        final android.support.v7.app.AlertDialog alert = builder.create();
-        alert.show();
-
-        //设置透明度
-        Window window = alert.getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.alpha = 0.75f;
-        window.setAttributes(lp);
-    }
-
     // 初始化通知List模块
     private void initNotifications() {
         initNotificationsData(0, null);
         LinearLayoutManager notificationsLM = new LinearLayoutManager(this);
         notificationsURV = (UltimateRecyclerView) findViewById(R.id.student_home_notifications_list_urv);
         notificationsURV.setLayoutManager(notificationsLM);
+        emptyTipsLayout = (RelativeLayout) findViewById(R.id.empty_tips_layout);
+        emptyTipsTextView = (TextView) findViewById(R.id.empty_list_tips_text_view);
         if (isNotificationsListEmpty) {
+            emptyTipsLayout.setVisibility(View.VISIBLE);
+            emptyTipsTextView.setText("没有新的通知哦！");
             List<String> emptyListData = new ArrayList<>();
-            emptyListData.add(0, "没有新的课程通知");
+            emptyListData.add(0, "");
             EmptyListWithTipsAdapter emptyListAdapter = new EmptyListWithTipsAdapter(emptyListData);
             notificationsURV.setAdapter(emptyListAdapter);
         } else {
+            emptyTipsLayout.setVisibility(View.GONE);
+            emptyTipsTextView.setText("加载中…");
             StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
                     ntfcsListCreatedOnData, ntfcsListTitleData, ntfcsListOnTopCount);
             notificationsURV.setAdapter(notificationsListAdapter);
@@ -492,11 +390,15 @@ public class StudentHomeActivity extends AppCompatActivity
             public void onSuccess(int i, Header[] headers, String s) {
                 initNotificationsData(1, s);
                 if (isNotificationsListEmpty) {
+                    emptyTipsLayout.setVisibility(View.VISIBLE);
+                    emptyTipsTextView.setText("没有新的通知哦！");
                     List<String> emptyListData = new ArrayList<>();
-                    emptyListData.add(0, "没有新的课程通知");
+                    emptyListData.add(0, "");
                     EmptyListWithTipsAdapter emptyListAdapter = new EmptyListWithTipsAdapter(emptyListData);
                     notificationsURV.setAdapter(emptyListAdapter);
                 } else {
+                    emptyTipsLayout.setVisibility(View.GONE);
+                    emptyTipsTextView.setText("加载中…");
                     StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
                             ntfcsListCreatedOnData, ntfcsListTitleData, ntfcsListOnTopCount);
                     notificationsURV.setAdapter(notificationsListAdapter);
@@ -820,8 +722,10 @@ public class StudentHomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+        if (id == R.id.action_exit) {
+            this.finish();
+            System.exit(0);
+//            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -864,13 +768,14 @@ public class StudentHomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             isSeatChooseOpen = false;
             invalidateOptionsMenu();
-            startActivity(new Intent(this, StudentLoginActivity.class));
-            this.finish();
-        } else if (id == R.id.nav_exit) {
-            isSeatChooseOpen = false;
-            invalidateOptionsMenu();
+            startActivity(new Intent(StudentHomeActivity.this, StudentWelcomeActivity.class));
             this.finish();
         }
+//        else if (id == R.id.nav_exit) {
+//            isSeatChooseOpen = false;
+//            invalidateOptionsMenu();
+//            this.finish();
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -888,7 +793,13 @@ public class StudentHomeActivity extends AppCompatActivity
         });
         seatChooseChildLayout = (RelativeLayout) findViewById(R.id.seat_choose_child_layout);
         refreshTipsTextView = (TextView) findViewById(R.id.student_home_refresh_tips_textView);
-        refreshTipsLayout = (RelativeLayout) findViewById(R.id.student_home_refresh_tips_layout);
+        refreshTipsCardView = (CardView) findViewById(R.id.student_home_refresh_tips_cardView);
+        refreshTipsCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         refreshLittleTipsTextView = (TextView) findViewById(R.id.student_home_refresh_little_tips_textView);
         // 点击座位出现的学生信息
         studentSeatTextView = (TextView) findViewById(R.id.student_seat_text_view);
@@ -970,7 +881,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         if (remainingSecsTimer != null)
                             remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
-                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsCardView.setVisibility(View.VISIBLE);
                         refreshLittleTipsTextView.setText("请耐心等待…");
                         remainingSecs = Integer.valueOf(jsonByGson.getValue("remaining_secs"));
                         startRemainingSecsTimer();
@@ -984,14 +895,14 @@ public class StudentHomeActivity extends AppCompatActivity
                         if (remainingSecsTimer != null)
                             remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
-                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsCardView.setVisibility(View.VISIBLE);
                         refreshTipsTextView.setText("已经下课啦，休息一下吧！");
                         refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
                     } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_IS_NOT_ON_TODAY)) { // 不是今天上课
                         if (remainingSecsTimer != null)
                             remainingSecsTimer.cancel();
                         seatChooseChildLayout.setVisibility(View.GONE);
-                        refreshTipsLayout.setVisibility(View.VISIBLE);
+                        refreshTipsCardView.setVisibility(View.VISIBLE);
                         refreshTipsTextView.setText("不是今天上这堂课哦！");
                         refreshLittleTipsTextView.setText("返回课程列表可选择其它课");
                     } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
@@ -1026,7 +937,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
                             ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                            refreshTipsLayout.setVisibility(View.GONE);
+                            refreshTipsCardView.setVisibility(View.GONE);
                             seatChooseChildLayout.setVisibility(View.VISIBLE);
                             // 闭环成功节点，开始绘制座位图
                             int COL = jsonByGson.getIntValue("col_num");
@@ -1082,24 +993,123 @@ public class StudentHomeActivity extends AppCompatActivity
         });
     }
 
-    private void startRemainingSecsTimer() {
-        remainingSecsTimer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                remainingSecs--;
-                Message message = remainingSecsHandler.obtainMessage();
-                message.arg1 = remainingSecs;
-                remainingSecsHandler.sendMessage(message);
-            }
-        };
-        remainingSecsTimer.schedule(task, 1000);
-        if (remainingSecs == 0) { //由于有mHandler，所以此处可以动态判断
-            remainingSecsTimer.cancel();
-            seatChooseChildLayout.setVisibility(View.VISIBLE);
-            refreshTipsLayout.setVisibility(View.GONE);
-            refreshSeats(true);
+    private void clearSeatChoose(String mSeatId) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("token", token);
+            jsonObject.put("seat_token", seatToken);
+            jsonObject.put("seat_id", mSeatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        String json = jsonObject.toString();
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_FREESEAT, json, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                Toast.makeText(StudentHomeActivity.this, "网络错误，请稍后重试！", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
+                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, "");
+                mSeatId_editor.commit();
+                Toast.makeText(StudentHomeActivity.this, "成功释放已选座位，你现在可以重新选座了！", Toast.LENGTH_SHORT).show();
+                refreshSeats(true);
+            }
+        });
+    }
+
+    private void handSeatConfirmInfo() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("token", token);
+            jsonObject.put("seat_token", seatToken);
+            jsonObject.put("seat_id", seatId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json = jsonObject.toString();
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_CHOOSESEAT_URL, json, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                if (i == 0) {
+                    Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
+                } else if (s.contains("error_code")) {
+                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期
+                        updateToken(3);
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.SEAT_ALREADY_TAKEN)) { // 座位已被选
+                        seatChooseTips();
+                    } else if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.COURSE_ALREADY_OVER)) { // 已经下课
+                        if (remainingSecsTimer != null)
+                            remainingSecsTimer.cancel();
+                        seatChooseChildLayout.setVisibility(View.GONE);
+                        refreshTipsCardView.setVisibility(View.VISIBLE);
+                        refreshTipsTextView.setText("已经下课啦，休息一下吧！");
+                        refreshLittleTipsTextView.setText("返回课程列表可进入下一堂课");
+                    }
+                }
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                // 选座成功获取seat_id
+                Toast.makeText(StudentHomeActivity.this, "你已成功选座！\n（座位号：" + seatId + "）", Toast.LENGTH_SHORT).show();
+                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
+                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, seatId);
+                mSeatId_editor.commit();
+                refreshSeats(true);
+            }
+        });
+    }
+
+    private void clearSeatChooseTips(final String mSeatId) {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("即将释放之前已选座位").setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）").setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        clearSeatChoose(mSeatId);
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        final android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
+    }
+
+    private void seatChooseTips() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("座位已被其他同学选了").setMessage("请另选座位吧！\n（点击确定可刷新座位）").setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        refreshSeats(true);
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        final android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
     }
 
     private void setSeatInfo(int COL, int ROW, ReadJsonByGson jsonByGson) {
@@ -1154,8 +1164,8 @@ public class StudentHomeActivity extends AppCompatActivity
                 } else if (whichLayout == 2) {
                     // 选座布局消失，显示错误提示布局并提供刷新按钮
                     seatChooseChildLayout.setVisibility(View.GONE);
-                    refreshTipsLayout.setVisibility(View.VISIBLE);
-                    refreshTipsLayout.setOnClickListener(new View.OnClickListener() {
+                    refreshTipsCardView.setVisibility(View.VISIBLE);
+                    refreshTipsCardView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             refreshSeats(true); // 用户手动闭环处理（低概率事件）
@@ -1183,6 +1193,26 @@ public class StudentHomeActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    private void startRemainingSecsTimer() {
+        remainingSecsTimer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                remainingSecs--;
+                Message message = remainingSecsHandler.obtainMessage();
+                message.arg1 = remainingSecs;
+                remainingSecsHandler.sendMessage(message);
+            }
+        };
+        remainingSecsTimer.schedule(task, 1000);
+        if (remainingSecs == 0) { //由于有mHandler，所以此处可以动态判断
+            remainingSecsTimer.cancel();
+            seatChooseChildLayout.setVisibility(View.VISIBLE);
+            refreshTipsCardView.setVisibility(View.GONE);
+            refreshSeats(true);
+        }
     }
 
 }

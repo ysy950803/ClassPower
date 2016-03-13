@@ -35,11 +35,11 @@
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_arrow_back_black_24dp"
-                android:title="注销" />
-            <item
-                android:id="@+id/nav_exit"
-                android:icon="@drawable/ic_close_black_24dp"
-                android:title="退出" />
+                android:title="课表" />
+            <!--<item-->
+                <!--android:id="@+id/nav_exit"-->
+                <!--android:icon="@drawable/ic_close_black_24dp"-->
+                <!--android:title="退出" />-->
         </menu>
     </item>
 

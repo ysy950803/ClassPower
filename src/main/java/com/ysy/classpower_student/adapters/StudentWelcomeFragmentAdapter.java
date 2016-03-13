@@ -32,8 +32,6 @@ public class StudentWelcomeFragmentAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "个人中心";
-            case 1:
                 return "课程列表";
         }
         return null;

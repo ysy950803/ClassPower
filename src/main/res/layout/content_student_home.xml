@@ -34,7 +34,49 @@
             android:id="@+id/student_home_notifications_list_urv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:recyclerviewClipToPadding="true" />
+            app:recyclerviewClipToPadding="true">
+
+            <RelativeLayout
+                android:id="@+id/empty_tips_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/empty_list_tips_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="32dp" />
+
+                <TextView
+                    android:id="@+id/empty_list_tips_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:text="可以再刷新看看！"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/darker_gray" />
+
+                <View
+                    android:id="@+id/empty_list_tips_divider_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </RelativeLayout>
+
+        </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
 
     </LinearLayout>
 
@@ -91,12 +133,12 @@
             android:visibility="gone">
 
             <android.support.v7.widget.CardView
-                android:layout_margin="@dimen/card_view_margin"
                 android:id="@+id/student_personal_info_cardView"
-                app:cardElevation="4dp"
-                android:foreground="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_view_margin"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardElevation="4dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -114,7 +156,7 @@
                         android:layout_centerVertical="true"
                         android:visibility="invisible" />
 
-                    <com.ysy.classpower_utils.CircularImageView
+                    <com.ysy.classpower_utils.for_design.CircularImageView
                         android:id="@+id/student_avatar_imageView"
                         android:layout_width="90.0dip"
                         android:layout_height="90.0dip"
@@ -222,12 +264,20 @@
 
             </android.support.v7.widget.CardView>
 
-            <com.ysy.classpower_seatchoose.view.SSView
-                android:id="@+id/mSSView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <com.ysy.classpower_utils.for_design.RippleView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_above="@+id/clear_confirm_seat_choose_layout"
-                android:layout_below="@+id/student_personal_info_cardView" />
+                android:layout_below="@+id/student_personal_info_cardView">
+
+                <com.ysy.classpower_seatchoose.view.SSView
+                    android:id="@+id/mSSView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/clear_confirm_seat_choose_layout"
+                    android:layout_below="@+id/student_personal_info_cardView" />
+
+            </com.ysy.classpower_utils.for_design.RippleView>
 
             <LinearLayout
                 android:id="@+id/clear_confirm_seat_choose_layout"
@@ -258,31 +308,43 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/student_home_refresh_tips_layout"
+        <android.support.v7.widget.CardView
+            android:id="@+id/student_home_refresh_tips_cardView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="192dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/seat_choose_child_layout"
+            android:layout_toRightOf="@+id/seat_choose_child_layout"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:id="@+id/student_home_refresh_little_tips_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:text="加载中…"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/student_home_refresh_tips_textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/student_home_refresh_little_tips_textView"
-                android:layout_centerHorizontal="true"
-                android:text="加载中…"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                <TextView
+                    android:id="@+id/student_home_refresh_little_tips_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/student_home_refresh_tips_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/student_home_refresh_little_tips_textView"
+                    android:layout_centerHorizontal="true"
+                    android:text="加载中…"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="24dp" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
 
     </RelativeLayout>
 

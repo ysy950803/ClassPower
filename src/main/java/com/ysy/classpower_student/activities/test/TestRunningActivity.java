@@ -1,25 +1,31 @@
 package com.ysy.classpower_student.activities.test;
 
+import android.animation.Animator;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -61,6 +67,8 @@ public class TestRunningActivity extends AppCompatActivity {
 
     private Timer timer = null;
     private int timeNumber2 = TestPreviewActivity.timeNumber;
+
+    private boolean isHelpsCardOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -208,13 +216,30 @@ public class TestRunningActivity extends AppCompatActivity {
             }
         });
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        final CardView helpsCardView = (CardView) findViewById(R.id.test_running_helps_cardView);
+        final FloatingActionButton helpsFab = (FloatingActionButton) findViewById(R.id.test_running_helps_fab);
+        helpsFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                helpTips();
+//                helpTips();
+                if (!isHelpsCardOpen) {
+                    isHelpsCardOpen = true;
+                    helpsCardView.setVisibility(View.VISIBLE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Animator animator = ViewAnimationUtils.createCircularReveal(
+                                helpsCardView,
+                                helpsCardView.getWidth(),
+                                helpsCardView.getHeight(),
+                                0,
+                                (float) Math.hypot(helpsCardView.getWidth(), helpsCardView.getHeight()));
+                        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                        animator.setDuration(1000);
+                        animator.start();
+                    }
+                } else {
+                    isHelpsCardOpen = false;
+                    helpsCardView.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -296,8 +321,8 @@ public class TestRunningActivity extends AppCompatActivity {
             }
         });
 
+        // 进入即启动倒计时
         startTime();
-
     }
 
     private void setupActionBar() {

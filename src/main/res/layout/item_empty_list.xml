@@ -1,30 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/empty_list_tips_layout"
     android:layout_width="match_parent"
-    android:layout_height="480dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/empty_list_tips_textView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:text="加载中…"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="32dp" />
+        android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/empty_list_tips_textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/empty_list_tips_textView"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal|bottom"
-        android:text="可以再刷新看看！"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/darker_gray" />
-
-</RelativeLayout>
+</LinearLayout>

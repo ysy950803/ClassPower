@@ -1,7 +1,9 @@
 package com.ysy.classpower_student.activities.test;
 
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
@@ -57,7 +59,12 @@ public class TestPreviewActivity extends SwipeBackActivity {
             public void onClick(View v) {
                 if (timer != null)
                     stopTime();
-                startActivity(new Intent(TestPreviewActivity.this, TestRunningActivity.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(TestPreviewActivity.this, TestRunningActivity.class);
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(TestPreviewActivity.this, testBeginButton, "test_preview_running_transition");
+                    startActivity(intent, options.toBundle());
+                } else
+                    startActivity(new Intent(TestPreviewActivity.this, TestRunningActivity.class));
                 testBeginButton.setText("继续测试");
 //              finish();
             }
@@ -68,7 +75,12 @@ public class TestPreviewActivity extends SwipeBackActivity {
             @Override
             public void onClick(View v) {
                 StudentHomeActivity.isDirectlyCheckResult = true;
-                startActivity(new Intent(TestPreviewActivity.this, TestResultActivity.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(TestPreviewActivity.this, TestResultActivity.class);
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(TestPreviewActivity.this, checkAnswerButton, "test_preview_result_transition");
+                    startActivity(intent, options.toBundle());
+                } else
+                    startActivity(new Intent(TestPreviewActivity.this, TestResultActivity.class));
 //                finish();
             }
         });

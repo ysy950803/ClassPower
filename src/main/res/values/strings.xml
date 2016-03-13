@@ -189,5 +189,6 @@
     <string name="title_activity_add_notifications">添加通知</string>
     <string name="title_activity_select_subjects">选择题目</string>
     <string name="title_activity_send_test">发送测试</string>
+    <string name="title_activity_student_personal_center">个人中心</string>
 
 </resources>

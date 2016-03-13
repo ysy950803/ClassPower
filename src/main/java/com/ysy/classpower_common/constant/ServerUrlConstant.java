@@ -3,9 +3,10 @@ package com.ysy.classpower_common.constant;
 /**
  * Created by 姚圣禹 on 2016/2/18.
  */
+
 public class ServerUrlConstant {
 
-    private static final String URL = "http://10.15.85.197:5000/"; // 127.0.0.1 /10.15.85.197 /10.16.82.250 /10.0.2.2 + 5000
+    private static final String URL = "http://10.15.85.200:5000/"; // 127.0.0.1 /10.15.85.197 /10.16.82.250 /10.0.2.2 + 5000
     public static final String USER_LOGIN_URL = URL + "user/login";
     public static final String USER_REGISTER_STUDENT_URL = URL + "user/register/student";
     public static final String USER_REGISTER_TEACHER_URL = URL + "user/register/teacher";

@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
 
-    <com.ysy.classpower_utils.CircularImageView
+    <com.ysy.classpower_utils.for_design.CircularImageView
         android:id="@+id/student_welcome_list_stick_imgView"
         android:layout_width="48dp"
         android:layout_height="48dp"

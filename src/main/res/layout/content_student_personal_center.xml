@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ysy.classpower_student.activities.base.StudentPersonalCenterActivity"
+    tools:showIn="@layout/activity_student_personal_center">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/student_personal_info_cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_view_margin"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="visible"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin">
+
+                <TextView
+                    android:id="@+id/student_name_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="姓名"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_name_content_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_above="@+id/View1"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/student_name_text_view"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_number_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/View1"
+                    android:text="学号"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_number_content_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_above="@+id/View2"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/student_number_text_view"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_sex_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/View2"
+                    android:text="性别"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_sex_content_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_above="@+id/View3"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/student_sex_text_view"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_class_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/View3"
+                    android:text="班级"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_class_content_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_above="@+id/View4"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View4"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/student_class_text_view"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/View7"
+                    android:layout_centerHorizontal="true"
+                    android:text="        "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/student_lesson_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/textView5"
+                    android:text="当前课堂"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_lesson_content_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/View7"
+                    android:layout_alignRight="@+id/View7"
+                    android:layout_alignTop="@+id/student_lesson_text_view"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <View
+                    android:id="@+id/View5"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/student_lesson_text_view"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_tel_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/student_class_text_view"
+                    android:text="电话"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_tel_content_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_below="@+id/View4"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View6"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/student_tel_textView"
+                    android:background="@android:color/darker_gray" />
+
+                <TextView
+                    android:id="@+id/student_email_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/View6"
+                    android:text="邮箱"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:textColor="@color/dark_gray"
+                    android:id="@+id/student_email_content_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_below="@+id/View6"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <View
+                    android:id="@+id/View7"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/student_email_textView"
+                    android:background="@android:color/darker_gray" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/student_up_avatar_cardView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/card_view_margin"
+            android:layout_marginLeft="@dimen/card_view_margin"
+            android:layout_marginRight="@dimen/card_view_margin"
+            android:layout_marginTop="@dimen/card_view_margin"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin">
+
+                <Button
+                    android:id="@+id/choose_pic_as_avatar_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView4"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/item_will_press"
+                    android:text="    本地选择头像    "
+                    android:textColor="@android:color/white" />
+
+                <com.ysy.classpower_utils.for_design.CircularImageView
+                    android:id="@+id/confirm_up_avatar_btn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView39"
+                    android:src="@drawable/ic_check_circle_black_24dp"
+                    app:civ_border="true"
+                    app:civ_borderColor="@color/light_gray"
+                    app:civ_borderWidth="2dp" />
+
+                <com.ysy.classpower_utils.for_design.CircularImageView
+                    android:id="@+id/give_up_avatar_btn"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignBottom="@+id/confirm_up_avatar_btn"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_keyboard_return_black_24dp"
+                    app:civ_border="true"
+                    app:civ_borderColor="@color/light_gray"
+                    app:civ_borderWidth="2dp" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="请选择静态图片作为你的头像"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/choose_pic_as_avatar_btn"
+                    android:layout_centerHorizontal="true"
+                    android:text="    "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <Button
+                    android:id="@+id/take_photo_as_avatar_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@+id/choose_pic_as_avatar_btn"
+                    android:layout_alignLeft="@+id/choose_pic_as_avatar_btn"
+                    android:layout_alignRight="@+id/choose_pic_as_avatar_btn"
+                    android:layout_alignStart="@+id/choose_pic_as_avatar_btn"
+                    android:layout_alignTop="@+id/textView2"
+                    android:background="@drawable/item_done_press"
+                    android:text="    拍照作为头像    "
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/textView39"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/take_photo_as_avatar_btn"
+                    android:layout_centerHorizontal="true"
+                    android:text="  "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

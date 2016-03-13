@@ -2,7 +2,7 @@ package com.ysy.classpower_student.activities.base;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -124,14 +124,19 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
             }
         });
 
-        Button studentRegisterButton = (Button) findViewById(R.id.student_register_button);
+        final Button studentRegisterButton = (Button) findViewById(R.id.student_register_button);
         studentRegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
-                if (cd.isConnectingToInternet())
-                    startActivity(new Intent(StudentLoginActivity.this, StudentRegisterActivity.class));
-                else
+                if (cd.isConnectingToInternet()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        Intent intent = new Intent(StudentLoginActivity.this, StudentRegisterActivity.class);
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(StudentLoginActivity.this, studentRegisterButton, "student_login_register_transition");
+                        startActivity(intent, options.toBundle());
+                    } else
+                        startActivity(new Intent(StudentLoginActivity.this, StudentRegisterActivity.class));
+                } else
                     Toast.makeText(StudentLoginActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
             }
         });
@@ -155,6 +160,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_exit) {
             this.finish();
+            System.exit(0);
             return true;
         }
 
@@ -324,7 +330,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
     /**
      * Shows the progress UI and hides the login form.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+//    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in

@@ -42,14 +42,15 @@
     <android.support.v7.widget.CardView
         android:visibility="gone"
         android:id="@+id/test_running_helps_cardView"
+        android:stateListAnimator="@animator/touch_raise"
         app:cardElevation="4dp"
         android:foreground="?attr/selectableItemBackground"
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="64dp"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginLeft="@dimen/fab_margin">
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginStart="@dimen/fab_margin">
 
         <ScrollView
             android:layout_width="wrap_content"
