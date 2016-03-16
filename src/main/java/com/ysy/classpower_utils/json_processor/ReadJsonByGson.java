@@ -25,8 +25,19 @@ public class ReadJsonByGson {
         object = (JsonObject) parser.parse(json);
     }
 
+    public String[] getAllTestsInfo(String test_details) {
+        JsonObject test_object;
+        JsonArray tests_array = object.getAsJsonArray("tests");
+        String[] details = new String[tests_array.size()];
+        for (int i = 0; i < tests_array.size(); ++i) {
+            test_object = tests_array.get(i).getAsJsonObject();
+            details[i] = test_object.get(test_details).getAsString();
+        }
+        return details;
+    }
+
     public String[] getNotificationsInfo(String notification_details) {
-        JsonObject notifications_object;
+        JsonObject notification_object;
         JsonArray notifications_array = object.getAsJsonArray("notifications");
         List<JsonObject> objectList = new ArrayList<>();
         int on_top_count = 0;
@@ -56,15 +67,15 @@ public class ReadJsonByGson {
             details[1] = "" + on_top_count;
         } else if (notification_details.equals("on_top")) {
             for (int i = 0; i < notifications_array.size(); ++i) {
-//                notifications_object = (JsonObject) notifications_array.get(i);
-                notifications_object = objectList.get(i);
-                details[i] = notifications_object.get(notification_details).toString();
+//                notification_object = (JsonObject) notifications_array.get(i);
+                notification_object = objectList.get(i);
+                details[i] = notification_object.get(notification_details).toString();
             }
         } else {
             for (int i = 0; i < notifications_array.size(); ++i) {
-//                notifications_object = (JsonObject) notifications_array.get(i);
-                notifications_object = objectList.get(i);
-                details[i] = notifications_object.get(notification_details).getAsString();
+//                notification_object = (JsonObject) notifications_array.get(i);
+                notification_object = objectList.get(i);
+                details[i] = notification_object.get(notification_details).getAsString();
             }
         }
         return details;

@@ -16,6 +16,7 @@
         android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:visibility="visible">
 
         <LinearLayout
@@ -35,7 +36,8 @@
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimaryDark" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -60,25 +62,18 @@
             <TextView
                 android:id="@+id/textView42"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="54dp"
                 android:layout_gravity="center_horizontal"
                 android:text="    "
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <Button
+            <com.ysy.classpower_utils.for_design.MaterialButtonRectangle
                 android:id="@+id/student_sign_in_button"
-                style="?android:attr/buttonStyleSmall"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/green"
+                android:layout_height="60dp"
+                android:background="#81C784"
+                android:gravity="center"
                 android:text="@string/action_student_sign_in" />
-
-            <Button
-                android:id="@+id/student_register_button"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/action_student_register" />
 
         </LinearLayout>
 

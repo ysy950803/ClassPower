@@ -280,7 +280,7 @@ public class TeacherHomeActivity extends AppCompatActivity
 
             public MyViewHolder(View view) {
                 super(view);
-                tv = (TextView) view.findViewById(R.id.id_num);
+                tv = (TextView) view.findViewById(R.id.student_home_tests_title_textView);
             }
         }
 

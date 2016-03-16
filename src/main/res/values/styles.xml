@@ -59,4 +59,25 @@
         <item name="shadow_bottom">@drawable/shadow_bottom</item>
     </style>
 
+    <style name="Own.Material.Drawable.Ripple" parent="Material.Drawable.Ripple">
+        <item name="rd_backgroundColor">#26CCCCCC</item>
+        <item name="rd_backgroundAnimDuration">256</item>
+        <item name="rd_maxRippleRadius">256dp</item>
+        <item name="rd_rippleColor">#32CD32</item>
+        <item name="rd_rippleAnimDuration">512</item>
+        <item name="rd_rippleType">touch</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
+    </style>
+
 </resources>

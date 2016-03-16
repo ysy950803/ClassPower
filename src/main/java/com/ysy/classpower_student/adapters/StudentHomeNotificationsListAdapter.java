@@ -29,6 +29,7 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
     private int onTopCount = 0;
 
     private ListOnItemClickListener mOnItemClickListener;
+
     public void setListOnItemClickListener(ListOnItemClickListener mOnItemClickListener) {
         this.mOnItemClickListener = mOnItemClickListener;
     }

@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.for_design.MaterialButtonRectangle;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -99,13 +101,14 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
             }
         });
 
-        Button mStudentSignInButton = (Button) findViewById(R.id.student_sign_in_button);
+        MaterialButtonRectangle mStudentSignInButton = (MaterialButtonRectangle) findViewById(R.id.student_sign_in_button);
         mStudentSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin(2);
             }
         });
+        mStudentSignInButton.setRippleSpeed(24f);
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -124,15 +127,15 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
             }
         });
 
-        final Button studentRegisterButton = (Button) findViewById(R.id.student_register_button);
-        studentRegisterButton.setOnClickListener(new View.OnClickListener() {
+        final RelativeLayout studentRegisterTipsLayout = (RelativeLayout) findViewById(R.id.student_register_tips_layout);
+        studentRegisterTipsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
                 if (cd.isConnectingToInternet()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Intent intent = new Intent(StudentLoginActivity.this, StudentRegisterActivity.class);
-                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(StudentLoginActivity.this, studentRegisterButton, "student_login_register_transition");
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(StudentLoginActivity.this, studentRegisterTipsLayout, "student_login_register_transition");
                         startActivity(intent, options.toBundle());
                     } else
                         startActivity(new Intent(StudentLoginActivity.this, StudentRegisterActivity.class));

@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_common.activities.TestDetailsActivity;
+import com.ysy.classpower_utils.OwnApp;
+import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
 import java.util.Timer;
@@ -40,6 +42,10 @@ public class TestPreviewActivity extends SwipeBackActivity {
     private Button checkAnswerButton;
     private Button testDetailsButton;
     private TextView additionalInfoContentTextView;
+
+    private String beginsOn;
+    private String expiresOn;
+    private String state;
 
     public static int timeNumber = 180;
     public static boolean isOpenFromTestResult;
@@ -104,7 +110,15 @@ public class TestPreviewActivity extends SwipeBackActivity {
         sixthDividerView = findViewById(R.id.View6);
         additionalInfoContentTextView = (TextView) findViewById(R.id.additional_info_content_text_view);
 
-        if (StudentHomeActivity.STUDENT_TEST_STATE.equals("DOING")) {
+        OwnApp ownApp = (OwnApp) getApplication();
+        ReadJsonByGson jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
+        beginsOn = jsonByGson.getArrayValue("test", "begins_on");
+        expiresOn = jsonByGson.getArrayValue("test", "expires_on");
+        if (ownApp.getTestIsFinished())
+            state = "已结束";
+        else
+            state = "未完成";
+        if (!ownApp.getTestIsFinished()) {
             testBeginButton.setVisibility(View.VISIBLE);
             checkAnswerButton.setVisibility(View.GONE);
             testDetailsButton.setVisibility(View.GONE);
@@ -112,13 +126,13 @@ public class TestPreviewActivity extends SwipeBackActivity {
             accuracyRateContentTextView.setVisibility(View.GONE);
             sixthDividerView.setVisibility(View.GONE);
 
-            beginTimeContentTextView.setText("2015-10-15 13:41:26");
-            endTimeContentTextView.setText("2016-09-15 16:42:11");
+            beginTimeContentTextView.setText(beginsOn);
+            endTimeContentTextView.setText(expiresOn);
             testCountContentTextView.setText("2");
-            testStateContentTextView.setText("未完成");
+            testStateContentTextView.setText(state);
             limitTimeContentTextView.setText("3分钟");
             additionalInfoContentTextView.setText("测试");
-        } else if (StudentHomeActivity.STUDENT_TEST_STATE.equals("DONE")) {
+        } else {
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
             testDetailsButton.setVisibility(View.VISIBLE);
@@ -126,28 +140,29 @@ public class TestPreviewActivity extends SwipeBackActivity {
             accuracyRateContentTextView.setVisibility(View.VISIBLE);
             sixthDividerView.setVisibility(View.VISIBLE);
 
-            beginTimeContentTextView.setText("2015-10-15 13:41:26");
-            endTimeContentTextView.setText("2016-09-15 16:42:11");
+            beginTimeContentTextView.setText(beginsOn);
+            endTimeContentTextView.setText(expiresOn);
             testCountContentTextView.setText("2");
             accuracyRateContentTextView.setText("1/2");
-            testStateContentTextView.setText("已结束");
+            testStateContentTextView.setText(state);
             limitTimeContentTextView.setText("无");
             additionalInfoContentTextView.setText("无");
-        } else if (StudentHomeActivity.STUDENT_TEST_STATE.equals("WILL")) {
-            testBeginButton.setVisibility(View.GONE);
-            checkAnswerButton.setVisibility(View.GONE);
-            testDetailsButton.setVisibility(View.GONE);
-            accuracyRateTextView.setVisibility(View.GONE);
-            accuracyRateContentTextView.setVisibility(View.GONE);
-            sixthDividerView.setVisibility(View.GONE);
-
-            beginTimeContentTextView.setText("2015-10-15 13:41:26");
-            endTimeContentTextView.setText("2016-09-15 16:42:11");
-            testCountContentTextView.setText("2");
-            testStateContentTextView.setText("未开始");
-            limitTimeContentTextView.setText("3分钟");
-            additionalInfoContentTextView.setText("测试");
         }
+//        else if (StudentHomeActivity.STUDENT_TEST_STATE.equals("WILL")) {
+//            testBeginButton.setVisibility(View.GONE);
+//            checkAnswerButton.setVisibility(View.GONE);
+//            testDetailsButton.setVisibility(View.GONE);
+//            accuracyRateTextView.setVisibility(View.GONE);
+//            accuracyRateContentTextView.setVisibility(View.GONE);
+//            sixthDividerView.setVisibility(View.GONE);
+//
+//            beginTimeContentTextView.setText("2015-10-15 13:41:26");
+//            endTimeContentTextView.setText("2016-09-15 16:42:11");
+//            testCountContentTextView.setText("2");
+//            testStateContentTextView.setText("未开始");
+//            limitTimeContentTextView.setText("3分钟");
+//            additionalInfoContentTextView.setText("测试");
+//        }
 
     }
 
@@ -160,6 +175,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
     private void startTime() {
         timer = new Timer();
+        setSwipeBackEnable(false);
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -180,11 +196,11 @@ public class TestPreviewActivity extends SwipeBackActivity {
             accuracyRateContentTextView.setVisibility(View.VISIBLE);
             sixthDividerView.setVisibility(View.VISIBLE);
 
-            beginTimeContentTextView.setText("2015-10-15 13:41:26");
-            endTimeContentTextView.setText("2016-09-15 16:42:11");
+            beginTimeContentTextView.setText(beginsOn);
+            endTimeContentTextView.setText(expiresOn);
             testCountContentTextView.setText("2");
             accuracyRateContentTextView.setText("1/2");
-            testStateContentTextView.setText("已结束");
+            testStateContentTextView.setText(state);
             limitTimeContentTextView.setText("无");
             additionalInfoContentTextView.setText("无");
 
@@ -195,6 +211,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
     private void stopTime() {
         timer.cancel();
+        setSwipeBackEnable(true);
     }
 
     @Override
@@ -206,6 +223,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
         }
         if (timeNumber <= 0 || isOpenFromTestResult) {
             timer = null;
+            setSwipeBackEnable(true);
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
             testDetailsButton.setVisibility(View.VISIBLE);
@@ -213,11 +231,11 @@ public class TestPreviewActivity extends SwipeBackActivity {
             accuracyRateContentTextView.setVisibility(View.VISIBLE);
             sixthDividerView.setVisibility(View.VISIBLE);
 
-            beginTimeContentTextView.setText("2015-10-15 13:41:26");
-            endTimeContentTextView.setText("2016-09-15 16:42:11");
+            beginTimeContentTextView.setText(beginsOn);
+            endTimeContentTextView.setText(expiresOn);
             testCountContentTextView.setText("2");
             accuracyRateContentTextView.setText("1/2");
-            testStateContentTextView.setText("已结束");
+            testStateContentTextView.setText(state);
             limitTimeContentTextView.setText("无");
             additionalInfoContentTextView.setText("无");
         }

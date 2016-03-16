@@ -16,4 +16,38 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_live_help_white_24dp" />
 
+    <RelativeLayout
+        android:layout_gravity="bottom"
+        android:id="@+id/student_register_tips_layout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:id="@+id/student_register_tips_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/action_student_register"
+            android:textColor="#81C784" />
+
+        <View
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_alignEnd="@+id/student_register_tips_textView"
+            android:layout_alignLeft="@+id/student_register_tips_textView"
+            android:layout_alignRight="@+id/student_register_tips_textView"
+            android:layout_alignStart="@+id/student_register_tips_textView"
+            android:layout_below="@+id/student_register_tips_textView"
+            android:background="#81C784" />
+
+    </RelativeLayout>
+
 </android.support.design.widget.CoordinatorLayout>

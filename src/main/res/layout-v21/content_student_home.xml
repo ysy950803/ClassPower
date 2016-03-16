@@ -103,19 +103,53 @@
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/student_test_swipe_refresh_layout"
+        <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+            android:id="@+id/student_home_tests_list_urv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:recyclerviewClipToPadding="true">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/id_recyclerview"
+            <RelativeLayout
+                android:id="@+id/tests_empty_tips_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:divider="#ffff0000"
-                android:dividerHeight="10dp" />
+                android:layout_gravity="center"
+                android:visibility="gone">
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+                <TextView
+                    android:id="@+id/tests_empty_list_tips_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="32dp"
+                    android:layout_above="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true" />
+
+                <TextView
+                    android:id="@+id/tests_empty_list_tips_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:text="可以再刷新看看！"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_below="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+            </RelativeLayout>
+
+        </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
 
     </LinearLayout>
 

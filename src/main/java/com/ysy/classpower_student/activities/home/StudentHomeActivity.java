@@ -16,10 +16,8 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Pair;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -30,7 +28,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -55,9 +52,10 @@ import com.ysy.classpower_student.activities.base.StudentPersonalCenterActivity;
 import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
+import com.ysy.classpower_student.adapters.StudentHomeTestsListAdapter;
+import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.for_design.CircularImageView;
-import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
 import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
@@ -82,7 +80,6 @@ public class StudentHomeActivity extends AppCompatActivity
     private LinearLayout notificationLayout;
     private LinearLayout testLayout;
     private RelativeLayout seatChooseLayout;
-    private List<String> mData;
 
     private List<String> ntfcsListByData;
     private List<String> ntfcsListContentData;
@@ -92,6 +89,15 @@ public class StudentHomeActivity extends AppCompatActivity
     private int ntfcsListOnTopCount;
     private boolean isNotificationsListEmpty;
     private UltimateRecyclerView notificationsURV;
+
+    private List<String> testsListBeginsOnData;
+    private List<String> testsListExpiresOnData;
+    private UltimateRecyclerView testsURV;
+    private RelativeLayout testsEmptyTipsLayout;
+    private TextView testsEmptyListTipsTextView;
+
+    private List<Boolean> testsListStateData;
+    private List<String> testsListTestIdData;
 
     private TextView studentSeatTextView;
     private TextView studentNameTextView;
@@ -113,7 +119,7 @@ public class StudentHomeActivity extends AppCompatActivity
     public static boolean isSeatChooseEmpty = true;
     public static boolean isSeatChooseOpen;
     public static boolean isDirectlyCheckResult = false;
-    public static String STUDENT_TEST_STATE = null; // DOING, DONE, WILL
+//    public static String STUDENT_TEST_STATE = null; // DOING, DONE, WILL
 
     private String userId = "";
     private String name = "";
@@ -221,67 +227,8 @@ public class StudentHomeActivity extends AppCompatActivity
         // 获取通知List模块
         initNotifications();
 
-        // 加载测试页面的RecyclerView（代替ListView）
-        initTestsData();
-        final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.id_recyclerview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        HomeAdapter mAdapter = new HomeAdapter();
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(StudentHomeActivity.this,
-                DividerItemDecoration.VERTICAL_LIST));
-        // List当中Item的监听
-        mAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position == 0)
-                    STUDENT_TEST_STATE = "DOING";
-                else if (position == 1)
-                    STUDENT_TEST_STATE = "WILL";
-                else
-                    STUDENT_TEST_STATE = "DONE";
-                startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-            }
-        });
-
-        final SwipeRefreshLayout studentTestSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.student_test_swipe_refresh_layout);
-        studentTestSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
-        studentTestSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        changedTestsData();
-                        HomeAdapter mAdapter = new HomeAdapter();
-                        mRecyclerView.setAdapter(mAdapter);
-                        //List当中Item的监听
-                        mAdapter.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-                                if (position == 0)
-                                    STUDENT_TEST_STATE = "DOING";
-                                else if (position == 1)
-                                    STUDENT_TEST_STATE = "WILL";
-                                else
-                                    STUDENT_TEST_STATE = "DONE";
-                                startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
-                            }
-
-                            @Override
-                            public void onItemLongClick(View view, int position) {
-
-                            }
-                        });
-                        studentTestSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 1000);
-            }
-        });
+        // 获取测试List模块
+        initTests();
 
         // 初始化选座
         initSeatsData();
@@ -402,6 +349,17 @@ public class StudentHomeActivity extends AppCompatActivity
                     StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
                             ntfcsListCreatedOnData, ntfcsListTitleData, ntfcsListOnTopCount);
                     notificationsURV.setAdapter(notificationsListAdapter);
+                    notificationsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+
+                        }
+
+                        @Override
+                        public void onItemLongClick(View view, int position) {
+
+                        }
+                    });
                 }
                 notificationsURV.setRefreshing(false);
                 Toast.makeText(StudentHomeActivity.this, "课程通知刷新成功！", Toast.LENGTH_SHORT).show();
@@ -577,97 +535,319 @@ public class StudentHomeActivity extends AppCompatActivity
 
     }
 
-    // 初始化List数据（离线Demo）
-    protected void initTestsData() {
-        mData = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            if (i == 0)
-                mData.add("2015-10-15 13:37:42    正在进行");
-            else if (i == 1)
-                mData.add("2015-10-15 13:37:34    未开始");
-            else
-                mData.add("2015-10-15 13:37:3" + i + "    已结束");
-        }
-    }
-
-    // 刷新后的List数据（离线Demo）
-    protected void changedTestsData() {
-        mData = new ArrayList<>();
-        for (int i = 0; i < 17; i++) {
-            if (i == 0)
-                mData.add("2016-01-15 15:35:45    正在进行");
-            else if (i == 1)
-                mData.add("2016-01-15 15:35:35    未开始");
-            else
-                mData.add("2016-01-15 15:35:3" + i + "    已结束");
-        }
-    }
-
-    // 自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-
-        void onItemLongClick(View view, int position);
-    }
-
-    class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new MyViewHolder(LayoutInflater.from(StudentHomeActivity.this).inflate(R.layout.test_item_student_home, parent,
-                    false));
-        }
-
-        private OnItemClickListener mOnItemClickListener;
-
-        public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
-            this.mOnItemClickListener = mOnItemClickListener;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            holder.tv.setText(mData.get(position));
-            if (position == 0)
-                holder.tv.setBackgroundResource(R.drawable.item_doing_press);
-            else if (position == 1)
-                holder.tv.setBackgroundResource(R.drawable.item_will_press);
-            else
-                holder.tv.setBackgroundResource(R.drawable.item_done_press);
-
-            // 如果设置了回调，则设置点击事件
-            if (mOnItemClickListener != null) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int pos = holder.getLayoutPosition();
-                        mOnItemClickListener.onItemClick(holder.itemView, pos);
-                    }
-                });
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        int pos = holder.getLayoutPosition();
-                        mOnItemClickListener.onItemLongClick(holder.itemView, pos);
-                        return false;
-                    }
-                });
+    // 初始化测试List模块
+    private void initTests() {
+        LinearLayoutManager testsLM = new LinearLayoutManager(this);
+        testsURV = (UltimateRecyclerView) findViewById(R.id.student_home_tests_list_urv);
+        testsURV.setLayoutManager(testsLM);
+        testsEmptyTipsLayout = (RelativeLayout) findViewById(R.id.tests_empty_tips_layout);
+        testsEmptyListTipsTextView = (TextView) findViewById(R.id.tests_empty_list_tips_text_view);
+        testsURV.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTests(0);
             }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mData.size();
-        }
-
-        class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tv;
-
-            public MyViewHolder(View view) {
-                super(view);
-                tv = (TextView) view.findViewById(R.id.id_num);
-            }
-        }
+        });
     }
+
+    private void refreshTests(final int page) {
+        testsURV.setRefreshing(true);
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("token", token);
+            jsonObject.put("course_id", courseId);
+            jsonObject.put("sub_id", subId);
+            jsonObject.put("role", 2);
+            jsonObject.put("page", page);
+            jsonObject.put("finished", false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String json = jsonObject.toString();
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                if (s.contains("error_code")) {
+                    ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                    if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
+                        updateToken(1);
+                    }
+                } else {
+                    Toast.makeText(StudentHomeActivity.this, "网络错误，刷新失败，请重试！", Toast.LENGTH_SHORT).show();
+                    testsURV.setRefreshing(false);
+                }
+            }
+
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                if (s.contains("\"tests\": []")) { // false 空
+                    JSONObject jsonObject2 = new JSONObject();
+                    try {
+                        jsonObject2.put("token", token);
+                        jsonObject2.put("course_id", courseId);
+                        jsonObject2.put("sub_id", subId);
+                        jsonObject2.put("role", 2);
+                        jsonObject2.put("page", page);
+                        jsonObject2.put("finished", true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String json2 = jsonObject2.toString();
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json2, new TextHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                            if (s.contains("error_code")) {
+                                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
+                                    updateToken(1);
+                                }
+                            } else {
+                                Toast.makeText(StudentHomeActivity.this, "网络错误，刷新失败，请重试！", Toast.LENGTH_SHORT).show();
+                                testsURV.setRefreshing(false);
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(int i, Header[] headers, String s) {
+                            if (s.contains("\"tests\": []")) { // false 空 true 空
+                                // finished: true or false 得到的tests均为空
+                                testsEmptyTipsLayout.setVisibility(View.VISIBLE);
+                                testsEmptyListTipsTextView.setText("没有任何测试哦！");
+                                List<String> emptyListData = new ArrayList<>();
+                                emptyListData.add(0, "");
+                                EmptyListWithTipsAdapter emptyListAdapter = new EmptyListWithTipsAdapter(emptyListData);
+                                testsURV.setAdapter(emptyListAdapter);
+                            } else { // false 空 true 非空
+                                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                testsListBeginsOnData = new ArrayList<>();
+                                testsListExpiresOnData = new ArrayList<>();
+                                testsListStateData = new ArrayList<>();
+                                String[] testsListBeginsOnInfo = jsonByGson.getAllTestsInfo("begins_on");
+                                String[] testsListExpiresOnInfo = jsonByGson.getAllTestsInfo("expires_on");
+                                final String[] testsListTestIdInfo = jsonByGson.getAllTestsInfo("test_id");
+                                for (int j = 0; j < testsListBeginsOnInfo.length; ++j)
+                                    testsListStateData.add(j, true);
+                                Collections.addAll(testsListBeginsOnData, testsListBeginsOnInfo);
+                                Collections.addAll(testsListExpiresOnData, testsListExpiresOnInfo);
+                                testsEmptyTipsLayout.setVisibility(View.GONE);
+                                testsEmptyListTipsTextView.setText("加载中…");
+                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                                testsURV.setAdapter(testsListAdapter);
+                                testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        testListItemOnClick(testsListTestIdInfo[position], testsListStateData.get(position));
+                                    }
+
+                                    @Override
+                                    public void onItemLongClick(View view, int position) {
+
+                                    }
+                                });
+
+                            }
+                            testsURV.setRefreshing(false);
+                            Toast.makeText(StudentHomeActivity.this, "课程测试刷新成功！", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else { // false 非空
+                    final ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                    testsListBeginsOnData = new ArrayList<>();
+                    testsListExpiresOnData = new ArrayList<>();
+                    testsListStateData = new ArrayList<>();
+                    testsListTestIdData = new ArrayList<>();
+                    final String[] testsListBeginsOnInfo = jsonByGson.getAllTestsInfo("begins_on");
+                    final String[] testsListExpiresOnInfo = jsonByGson.getAllTestsInfo("expires_on");
+                    final String[] testsListTestIdInfo = jsonByGson.getAllTestsInfo("test_id");
+                    Collections.addAll(testsListBeginsOnData, testsListBeginsOnInfo);
+                    Collections.addAll(testsListExpiresOnData, testsListExpiresOnInfo);
+                    Collections.addAll(testsListTestIdData, testsListTestIdInfo);
+                    for (int j = 0; j < testsListBeginsOnInfo.length; ++j)
+                        testsListStateData.add(j, false);
+
+                    testsEmptyTipsLayout.setVisibility(View.GONE);
+                    testsEmptyListTipsTextView.setText("加载中…");
+                    StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                    testsURV.setAdapter(testsListAdapter);
+                    testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            testListItemOnClick(testsListTestIdInfo[position], testsListStateData.get(position));
+                        }
+
+                        @Override
+                        public void onItemLongClick(View view, int position) {
+
+                        }
+                    });
+
+                    JSONObject jsonObject2 = new JSONObject();
+                    try {
+                        jsonObject2.put("token", token);
+                        jsonObject2.put("course_id", courseId);
+                        jsonObject2.put("sub_id", subId);
+                        jsonObject2.put("role", 2);
+                        jsonObject2.put("page", page);
+                        jsonObject2.put("finished", true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String json2 = jsonObject2.toString();
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json2, new TextHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                            if (s.contains("error_code")) {
+                                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
+                                    updateToken(1);
+                                }
+                            } else {
+                                Toast.makeText(StudentHomeActivity.this, "网络中断，只获得部分测试，请再刷新试试！", Toast.LENGTH_SHORT).show();
+                                testsURV.setRefreshing(false);
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(int i, Header[] headers, String s) {
+                            if (!s.contains("\"tests\": []")) { // false 非空 true 非空
+                                ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                String[] testsListBeginsOnInfo2 = jsonByGson.getAllTestsInfo("begins_on");
+                                String[] testsListExpiresOnInfo2 = jsonByGson.getAllTestsInfo("expires_on");
+                                String[] testsListTestIdInfo2 = jsonByGson.getAllTestsInfo("test_id");
+                                for (int j = testsListBeginsOnInfo.length; j < (testsListBeginsOnInfo2.length + testsListBeginsOnInfo.length); ++j) {
+                                    testsListBeginsOnData.add(j, testsListBeginsOnInfo2[j]);
+                                    testsListExpiresOnData.add(j, testsListExpiresOnInfo2[j]);
+                                    testsListTestIdData.add(j, testsListTestIdInfo2[j]);
+                                    testsListStateData.add(j, true);
+                                }
+
+                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                                testsURV.setAdapter(testsListAdapter);
+                                testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        testListItemOnClick(testsListTestIdData.get(position), testsListStateData.get(position));
+                                    }
+
+                                    @Override
+                                    public void onItemLongClick(View view, int position) {
+
+                                    }
+                                });
+                            } else { // false 非空 true 空
+
+                            }
+                            testsURV.setRefreshing(false);
+                            Toast.makeText(StudentHomeActivity.this, "课程测试刷新成功！", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    // 初始化测试List模块数据
+    private void initTestsData() {
+        refreshTests(0);
+    }
+
+    private void testListItemOnClick(String testId, final boolean isFinished) {
+        ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
+        if (cd.isConnectingToInternet()) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("token", token);
+                object.put("course_id", courseId);
+                object.put("sub_id", subId);
+                object.put("test_id", testId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String json = object.toString();
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETTESTDETAILS_URL, json, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    Toast.makeText(getApplicationContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSuccess(int i, Header[] headers, String s) {
+                    OwnApp ownApp = (OwnApp) getApplication();
+                    ownApp.setTestPreviewInfo(s);
+                    ownApp.setTestIsFinished(isFinished);
+                    startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
+                }
+            });
+        } else
+            Toast.makeText(getApplicationContext(), "断开连接，请检查网络！", Toast.LENGTH_SHORT).show();
+    }
+
+//    // 自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
+//    public interface OnItemClickListener {
+//        void onItemClick(View view, int position);
+//
+//        void onItemLongClick(View view, int position);
+//    }
+//
+//    class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder> {
+//        @Override
+//        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            return new MyViewHolder(LayoutInflater.from(StudentHomeActivity.this).inflate(R.layout.test_item_student_home, parent,
+//                    false));
+//        }
+//
+//        private OnItemClickListener mOnItemClickListener;
+//
+//        public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+//            this.mOnItemClickListener = mOnItemClickListener;
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(final MyViewHolder holder, final int position) {
+//            holder.tv.setText(testsListData.get(position));
+//            if (position == 0)
+//                holder.tv.setBackgroundResource(R.drawable.item_doing_press);
+//            else if (position == 1)
+//                holder.tv.setBackgroundResource(R.drawable.item_will_press);
+//            else
+//                holder.tv.setBackgroundResource(R.drawable.item_done_press);
+//
+//            // 如果设置了回调，则设置点击事件
+//            if (mOnItemClickListener != null) {
+//                holder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int pos = holder.getLayoutPosition();
+//                        mOnItemClickListener.onItemClick(holder.itemView, pos);
+//                    }
+//                });
+//
+//                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//                    @Override
+//                    public boolean onLongClick(View v) {
+//                        int pos = holder.getLayoutPosition();
+//                        mOnItemClickListener.onItemLongClick(holder.itemView, pos);
+//                        return false;
+//                    }
+//                });
+//            }
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            return testsListData.size();
+//        }
+//
+//        class MyViewHolder extends RecyclerView.ViewHolder {
+//            TextView tv;
+//
+//            public MyViewHolder(View view) {
+//                super(view);
+//                tv = (TextView) view.findViewById(R.id.id_num);
+//            }
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -752,6 +932,7 @@ public class StudentHomeActivity extends AppCompatActivity
             notificationLayout.setVisibility(View.GONE);
             testLayout.setVisibility(View.VISIBLE);
             seatChooseLayout.setVisibility(View.GONE);
+            initTestsData(); // 减轻onCreate主线程压力
 
         } else if (id == R.id.nav_choose_seat) {
             refreshSeats(true); // 在用户点击选座界面时才开始加载座位数据，以减轻onCreate主线程压力
@@ -1160,7 +1341,8 @@ public class StudentHomeActivity extends AppCompatActivity
                     Toast.makeText(StudentHomeActivity.this, "网络错误，请再刷新试试！", Toast.LENGTH_SHORT).show();
                     notificationsURV.setRefreshing(false);
                 } else if (whichLayout == 1) {
-
+                    Toast.makeText(StudentHomeActivity.this, "网络错误，请再刷新试试！", Toast.LENGTH_SHORT).show();
+                    testsURV.setRefreshing(false);
                 } else if (whichLayout == 2) {
                     // 选座布局消失，显示错误提示布局并提供刷新按钮
                     seatChooseChildLayout.setVisibility(View.GONE);
@@ -1185,7 +1367,7 @@ public class StudentHomeActivity extends AppCompatActivity
                 if (whichLayout == 0) { // 成功获取新token，后台自动继续刷新
                     refreshNotifications(); // 闭环处理
                 } else if (whichLayout == 1) {
-
+                    refreshTests(0);
                 } else if (whichLayout == 2) {
                     refreshSeats(true); // 闭环处理
                 } else if (whichLayout == 3) {

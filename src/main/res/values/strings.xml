@@ -9,7 +9,7 @@
     <string name="action_student_sign_in">学生登录</string>
     <string name="action_teacher_sign_in">教师登录</string>
     <string name="title_register">注册</string>
-    <string name="action_student_register">学生注册</string>
+    <string name="action_student_register">还没有加入吗？先注册一下吧！</string>
     <string name="action_teacher_register">教师注册</string>
     <string name="action_sign_in_short">登录</string>
     <string name="error_invalid_email">用户不存在</string>
@@ -190,5 +190,9 @@
     <string name="title_activity_select_subjects">选择题目</string>
     <string name="title_activity_send_test">发送测试</string>
     <string name="title_activity_student_personal_center">个人中心</string>
+
+    <string name="title_activity_splash_fullscreen">课堂动力</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>
