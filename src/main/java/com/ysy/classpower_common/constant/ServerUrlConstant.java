@@ -6,24 +6,97 @@ package com.ysy.classpower_common.constant;
 
 public class ServerUrlConstant {
 
-    private static final String URL = "http://10.15.85.194:5000/"; // 127.0.0.1 /10.15.85.197 /10.16.82.250 /10.0.2.2 + 5000
-    public static final String USER_LOGIN_URL = URL + "user/login";
-    public static final String USER_REGISTER_STUDENT_URL = URL + "user/register/student";
-    public static final String USER_REGISTER_TEACHER_URL = URL + "user/register/teacher";
-    public static final String USER_REGISTER_GETSCHOOLS_URL = URL + "user/register/getSchools";
-    public static final String USER_REGISTER_GETMAJORS_URL = URL + "user/register/getMajors";
-    public static final String USER_REGISTER_GETCLASSES_URL = URL + "user/register/getClasses";
-    public static final String USER_ME_URL = URL + "user/me";
-    public static final String USER_AVATAR_URL = URL + "user/avatar";
-    public static final String USER_REGISTERCOURSE_URL = URL + "user/registerCourse";
-    public static final String COURSE_NTFC_GETNTFCS_URL = URL + "course/notification/getNotifications";
-    public static final String COURSE_QUESTION_GETALLQUESTIONS_URL = URL + "course/question/getAllQuestions";
-    public static final String COURSE_TEST_GETALLTESTS_URL = URL + "course/test/getAllTests";
-    public static final String COURSE_TEST_GETTESTDETAILS_URL = URL + "course/test/getTestDetails";
-    public static final String SEAT_GETSEATTOKEN_URL = URL + "seat/getSeatToken";
-    public static final String SEAT_GETSEATMAP_URL = URL + "seat/getSeatMap";
-    public static final String SEAT_CHOOSESEAT_URL = URL + "seat/chooseSeat";
-    public static final String SEAT_FREESEAT = URL + "seat/freeSeat";
-    public static final String SEAT_CHECKIFOPEN_URL = URL + "seat/checkIfOpen";
+    //    private static String URL_FIGURE = "10.15.85.201"; // 127.0.0.1 /10.15.85.197 /10.16.82.250 /10.0.2.2 + 5000
+//    private static String URL = "http://" + URL_FIGURE + ":5000/";
+    private static String USER_LOGIN_URL = "user/login";
+    private static String USER_REGISTER_STUDENT_URL = "user/register/student";
+    private static String USER_REGISTER_TEACHER_URL = "user/register/teacher";
+    private static String USER_REGISTER_GETSCHOOLS_URL = "user/register/getSchools";
+    private static String USER_REGISTER_GETMAJORS_URL = "user/register/getMajors";
+    private static String USER_REGISTER_GETCLASSES_URL = "user/register/getClasses";
+    private static String USER_ME_URL = "user/me";
+    private static String USER_AVATAR_URL = "user/avatar";
+    private static String USER_REGISTERCOURSE_URL = "user/registerCourse";
+    private static String COURSE_NTFC_GETNTFCS_URL = "course/notification/getNotifications";
+    private static String COURSE_QUESTION_GETALLQUESTIONS_URL = "course/question/getAllQuestions";
+    private static String COURSE_TEST_GETALLTESTS_URL = "course/test/getAllTests";
+    private static String COURSE_TEST_GETTESTDETAILS_URL = "course/test/getTestDetails";
+    private static String SEAT_GETSEATTOKEN_URL = "seat/getSeatToken";
+    private static String SEAT_GETSEATMAP_URL = "seat/getSeatMap";
+    private static String SEAT_CHOOSESEAT_URL = "seat/chooseSeat";
+    private static String SEAT_FREESEAT_URL = "seat/freeSeat";
+    private static String SEAT_CHECKIFOPEN_URL = "seat/checkIfOpen";
+
+    public static String getUserAvatarUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_AVATAR_URL;
+    }
+
+    public static String getUserMeUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_ME_URL;
+    }
+
+    public static String getCourseNtfcGetntfcsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_NTFC_GETNTFCS_URL;
+    }
+
+    public static String getUserLoginUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_LOGIN_URL;
+    }
+
+    public static String getUserRegistercourseUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTERCOURSE_URL;
+    }
+
+    public static String getUserRegisterGetclassesUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_GETCLASSES_URL;
+    }
+
+    public static String getUserRegisterGetmajorsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_GETMAJORS_URL;
+    }
+
+    public static String getCourseQuestionGetallquestionsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_QUESTION_GETALLQUESTIONS_URL;
+    }
+
+    public static String getUserRegisterGetschoolsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_GETSCHOOLS_URL;
+    }
+
+    public static String getCourseTestGetalltestsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETALLTESTS_URL;
+    }
+
+    public static String getUserRegisterStudentUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_STUDENT_URL;
+    }
+
+    public static String getCourseTestGettestdetailsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETTESTDETAILS_URL;
+    }
+
+    public static String getSeatGetseattokenUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + SEAT_GETSEATTOKEN_URL;
+    }
+
+    public static String getSeatGetseatmapUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + SEAT_GETSEATMAP_URL;
+    }
+
+    public static String getUserRegisterTeacherUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_TEACHER_URL;
+    }
+
+    public static String getSeatCheckifopenUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + SEAT_CHECKIFOPEN_URL;
+    }
+
+    public static String getSeatChooseseatUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + SEAT_CHOOSESEAT_URL;
+    }
+
+    public static String getSeatFreeseatUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + SEAT_FREESEAT_URL;
+    }
 
 }

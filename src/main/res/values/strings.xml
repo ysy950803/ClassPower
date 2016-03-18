@@ -185,7 +185,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="title_activity_student_welcome">欢迎使用</string>
+    <string name="title_activity_student_welcome">课程列表</string>
     <string name="title_activity_add_notifications">添加通知</string>
     <string name="title_activity_select_subjects">选择题目</string>
     <string name="title_activity_send_test">发送测试</string>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ysy.classpower">
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
+    <application
+        android:name="com.ysy.classpower_utils.OwnApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.ysy.classpower_student.activities.base.StudentLoginActivity"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.base.TeacherLoginActivity"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.home.TeacherHomeActivity"
+            android:label="@string/title_activity_teacher_home"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.home.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.test.TestPreviewActivity"
+            android:label="@string/title_activity_test"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.test.TestRunningActivity"
+            android:label="@string/title_activity_test"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.home.StudentHomeActivity"
+            android:label="@string/title_activity_student_home"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.test.TestResultActivity"
+            android:label="@string/title_activity_test_result"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.test.TestPreviewActivity"
+            android:label="@string/title_activity_test"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_common.activities.TestDetailsActivity"
+            android:label="@string/title_activity_test_details"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.base.StudentWelcomeActivity"
+            android:label="@string/title_activity_student_welcome"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.home.AddNotificationsActivity"
+            android:label="@string/title_activity_add_notifications"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.test.SelectSubjectsActivity"
+            android:label="@string/title_activity_select_subjects"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.test.SendTestActivity"
+            android:label="@string/title_activity_send_test"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity"
+            android:label="@string/title_activity_student_welcome"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_teacher.activities.base.TeacherRegisterActivity"
+            android:label="@string/title_register"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.base.StudentRegisterActivity"
+            android:label="@string/title_register"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.base.StudentMessageActivity"
+            android:label="@string/title_activity_message_center"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.base.StudentPersonalCenterActivity"
+            android:label="@string/title_activity_student_personal_center"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_common.activities.SplashFullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_splash_fullscreen"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

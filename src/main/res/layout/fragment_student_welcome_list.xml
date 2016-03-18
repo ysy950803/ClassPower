@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/fragment_student_welcome_list"
     tools:context="com.ysy.classpower_student.activities.base.StudentWelcomeActivity">
 
     <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView

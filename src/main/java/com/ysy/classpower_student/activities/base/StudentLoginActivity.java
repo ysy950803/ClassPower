@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -17,16 +19,18 @@ import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,6 +42,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.for_design.MaterialButtonRectangle;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
@@ -78,10 +83,16 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
     private View mLoginFormView;
     private View focusView;
 
+    private int betaHiddenUrlEditorCount;
+    private OwnApp ownApp;
+
+    private ProgressDialog waitDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_login);
+        ownApp = (OwnApp) getApplication();
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
@@ -144,6 +155,83 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
             }
         });
 
+        betaHiddenUrlEditorCount = 0;
+        TextView betaHiddenUrlEditor = (TextView) findViewById(R.id.beta_hidden_url_editor);
+        betaHiddenUrlEditor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ++betaHiddenUrlEditorCount;
+                if (betaHiddenUrlEditorCount == 8) {
+                    editorEnterTips();
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        betaHiddenUrlEditorCount = 0;
+        super.onResume();
+    }
+
+    private void editorEnterTips() {
+        final EditText editText = new EditText(getApplicationContext());
+        editText.setTextColor(getResources().getColor(R.color.colorPrimary));
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("开发者测试功能（URL编辑器）").setMessage("请输入开发者管理密钥：").setView(editText).setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (editText.getText().toString().equals("950803"))
+                            editorTips();
+                        else {
+                            Toast.makeText(getApplicationContext(), "密钥错误，非开发者请勿使用此功能！", Toast.LENGTH_SHORT).show();
+                            betaHiddenUrlEditorCount = 0;
+                        }
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                betaHiddenUrlEditorCount = 0;
+                dialog.cancel();
+            }
+        });
+        final android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
+    }
+
+    private void editorTips() {
+        final EditText editText = new EditText(getApplicationContext());
+        editText.setTextColor(getResources().getColor(R.color.colorPrimary));
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("开发者测试功能（URL编辑器）").setMessage("请输入服务器URL：").setView(editText).setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ownApp.setURL_FIGURE(editText.getText().toString());
+                        betaHiddenUrlEditorCount = 0;
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                betaHiddenUrlEditorCount = 0;
+                dialog.cancel();
+            }
+        });
+        final android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
     }
 
     @Override
@@ -214,9 +302,16 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                 e.printStackTrace();
             }
             String json = userInfoObject.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_LOGIN_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserLoginUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentLoginActivity.this, "正在登录", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    waitDialog.dismiss();
                     if (i == 0) {
                         Toast.makeText(StudentLoginActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
                     } else if (i == 400) {
@@ -239,6 +334,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (s.contains("token")) {
                         // 共有属性
@@ -257,7 +353,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
                         mEmailView.setError(null);
                         mPasswordView.setError(null);
-                        showProgress(true);
+//                        showProgress(true);
                         startActivity(new Intent(StudentLoginActivity.this, StudentWelcomeActivity.class));
                         finish();
                     } else

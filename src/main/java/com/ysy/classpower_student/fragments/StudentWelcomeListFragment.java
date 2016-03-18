@@ -1,13 +1,17 @@
 package com.ysy.classpower_student.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -25,6 +29,7 @@ import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.ListOnItemClickListener;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -39,7 +44,7 @@ import java.util.List;
 /**
  * Created by 姚圣禹 on 2016/2/5.
  */
-public class StudentWelcomeListFragment extends Fragment {
+public class StudentWelcomeListFragment extends Fragment implements AppBarLayout.OnOffsetChangedListener {
 
     View view;
     private String token;
@@ -58,6 +63,12 @@ public class StudentWelcomeListFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private UltimateRecyclerView ultimateRecyclerView;
     private ItemTouchHelper mItemTouchHelper;
+    private AppBarLayout appBarLayout;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+
+    private OwnApp ownApp;
+
+    private ProgressDialog waitDialog;
 
     public StudentWelcomeListFragment() {
 
@@ -70,6 +81,8 @@ public class StudentWelcomeListFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_student_welcome_list, container, false);
         SharedPreferences token_sp = getContext().getSharedPreferences("token", Context.MODE_PRIVATE);
         token = token_sp.getString("token", "");
+
+        ownApp = (OwnApp) getActivity().getApplication();
 
         initData();
 
@@ -87,10 +100,10 @@ public class StudentWelcomeListFragment extends Fragment {
                     public void run() {
 //                        RVAdapter.insert(moreNum++ + "  Refresh things", 0);
                         ultimateRecyclerView.setRefreshing(false);
-                        //   ultimateRecyclerView.scrollBy(0, -50);
+//                        ultimateRecyclerView.scrollBy(0, -50);
 //                        linearLayoutManager.scrollToPosition(0);
-//                        ultimateRecyclerView.setAdapter(RVAdapter);
-//                        RVAdapter.notifyDataSetChanged();
+//                        ultimateRecyclerView.setAdapter(listAdapter);
+//                        listAdapter.notifyDataSetChanged();
                     }
                 }, 1000);
             }
@@ -119,15 +132,23 @@ public class StudentWelcomeListFragment extends Fragment {
                         e.printStackTrace();
                     }
                     String json = obj.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.getCourseNtfcGetntfcsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                        @Override
+                        public void onStart() {
+                            waitDialog = ProgressDialog.show(getActivity(), "正在获取课堂信息", "请稍等…");
+                            super.onStart();
+                        }
+
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                            waitDialog.dismiss();
 //                            view.setBackgroundResource(0);
                             Toast.makeText(getContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
+                            waitDialog.dismiss();
                             SharedPreferences notificationsList_sp = getContext().getSharedPreferences("notificationsList", Context.MODE_PRIVATE);
                             SharedPreferences.Editor notificationsList_editor = notificationsList_sp.edit();
                             notificationsList_editor.putString("notificationsList", s);
@@ -162,14 +183,6 @@ public class StudentWelcomeListFragment extends Fragment {
 //                mItemTouchHelper.startDrag(viewHolder);
 //            }
 //        });
-
-        addFab = (FloatingActionButton) getActivity().findViewById(R.id.student_welcome_add_fab);
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
         return view;
     }
@@ -209,4 +222,25 @@ public class StudentWelcomeListFragment extends Fragment {
         Collections.addAll(roomIdData, roomIdInfo);
     }
 
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout))
+            ultimateRecyclerView.enableDefaultSwipeRefresh(false);
+        else
+            ultimateRecyclerView.enableDefaultSwipeRefresh(true);
+    }
+
+    @Override
+    public void onResume() {
+        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
+        appBarLayout.addOnOffsetChangedListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        appBarLayout.removeOnOffsetChangedListener(this);
+        super.onPause();
+    }
 }

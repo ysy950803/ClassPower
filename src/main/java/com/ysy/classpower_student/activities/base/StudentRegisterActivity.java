@@ -1,5 +1,6 @@
 package com.ysy.classpower_student.activities.base;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
@@ -72,11 +74,17 @@ public class StudentRegisterActivity extends SwipeBackActivity {
     private boolean isMale;
     private JsonObject registerObject;
 
+    private OwnApp ownApp;
+
+    private ProgressDialog waitDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_register);
         setupActionBar();
+
+        ownApp = (OwnApp) getApplication();
 
         registerObject = new JsonObject();
 
@@ -127,15 +135,23 @@ public class StudentRegisterActivity extends SwipeBackActivity {
 
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         if (cd.isConnectingToInternet()) {
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETSCHOOLS_URL, "{}", new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserRegisterGetschoolsUrl(ownApp.getURL_FIGURE()), "{}", new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentRegisterActivity.this, "正在连接", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    waitDialog.dismiss();
                     if (i == 0)
-                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取学院，请退出重试！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取学院，请退出重试！", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     String school_name_array[] = jsonByGson.getSchoolsInfo("school_name");
                     final String school_id_array[] = jsonByGson.getSchoolsInfo("school_id");
@@ -191,10 +207,17 @@ public class StudentRegisterActivity extends SwipeBackActivity {
                 e.printStackTrace();
             }
             String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETMAJORS_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserRegisterGetmajorsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentRegisterActivity.this, "正在获取专业列表", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     schoolsSpinner.setSelection(0);
+                    waitDialog.dismiss();
                     if (i == 0) {
                         Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取专业，请重选学院！", Toast.LENGTH_SHORT).show();
                     }
@@ -202,6 +225,7 @@ public class StudentRegisterActivity extends SwipeBackActivity {
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     String major_name_array[] = jsonByGson.getMajorsInfo("major_name");
                     final String major_id_array[] = jsonByGson.getMajorsInfo("major_id");
@@ -246,9 +270,16 @@ public class StudentRegisterActivity extends SwipeBackActivity {
                 e.printStackTrace();
             }
             String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_GETCLASSES_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserRegisterGetclassesUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentRegisterActivity.this, "正在获取班级列表", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    waitDialog.dismiss();
                     majorsSpinner.setSelection(0);
                     if (i == 0) {
                         Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取班级，请重选专业！", Toast.LENGTH_SHORT).show();
@@ -257,6 +288,7 @@ public class StudentRegisterActivity extends SwipeBackActivity {
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     final String class_name_array[] = jsonByGson.getClassesInfo("class_name");
                     final String class_id_array[] = jsonByGson.getClassesInfo("class_id");
@@ -295,9 +327,16 @@ public class StudentRegisterActivity extends SwipeBackActivity {
                     if (cd.isConnectingToInternet()) {
                         if (registerInfoAsJson()) {
                             final String studentInfoJson = registerObject.toString();
-                            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_REGISTER_STUDENT_URL, studentInfoJson, new TextHttpResponseHandler() {
+                            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserRegisterStudentUrl(ownApp.getURL_FIGURE()), studentInfoJson, new TextHttpResponseHandler() {
+                                @Override
+                                public void onStart() {
+                                    waitDialog = ProgressDialog.show(StudentRegisterActivity.this, "正在提交", "请稍等…");
+                                    super.onStart();
+                                }
+
                                 @Override
                                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                    waitDialog.dismiss();
                                     if (i == 0)
                                         Toast.makeText(StudentRegisterActivity.this, "服务器连接超时，请重试！", Toast.LENGTH_SHORT).show();
                                     else if (i == 400) {
@@ -311,6 +350,7 @@ public class StudentRegisterActivity extends SwipeBackActivity {
 
                                 @Override
                                 public void onSuccess(int i, Header[] headers, String s) {
+                                    waitDialog.dismiss();
                                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                                     if (jsonByGson.getValue("msg").equals("Success")) {
                                         setRegisterSuccessInfoByJson(studentInfoJson);

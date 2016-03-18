@@ -1,6 +1,7 @@
 package com.ysy.classpower_student.activities.home;
 
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +18,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -141,12 +141,17 @@ public class StudentHomeActivity extends AppCompatActivity
     private RelativeLayout emptyTipsLayout;
     private TextView emptyTipsTextView;
 
+    private OwnApp ownApp;
+
+    private ProgressDialog waitDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ownApp = (OwnApp) getApplication();
 
         // 核心参数优先获取
         SharedPreferences userId_sp = getSharedPreferences("userId", MODE_PRIVATE);
@@ -208,7 +213,7 @@ public class StudentHomeActivity extends AppCompatActivity
         });
         navHeaderName.setText(name);
         navHeaderEmail.setText(email);
-        new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+        new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
             @Override
             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                 OwnApp ownApp = (OwnApp) getApplication();
@@ -319,7 +324,7 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_NTFC_GETNTFCS_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseNtfcGetntfcsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 if (s.contains("error_code")) {
@@ -564,7 +569,7 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 if (s.contains("error_code")) {
@@ -593,7 +598,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     String json2 = jsonObject2.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json2, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             if (s.contains("error_code")) {
@@ -693,7 +698,7 @@ public class StudentHomeActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     String json2 = jsonObject2.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETALLTESTS_URL, json2, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             if (s.contains("error_code")) {
@@ -765,14 +770,22 @@ public class StudentHomeActivity extends AppCompatActivity
                 e.printStackTrace();
             }
             String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.COURSE_TEST_GETTESTDETAILS_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGettestdetailsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在连接测试中心", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    waitDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     OwnApp ownApp = (OwnApp) getApplication();
                     ownApp.setTestPreviewInfo(s);
                     ownApp.setTestIsFinished(isFinished);
@@ -1051,9 +1064,16 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = object.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_GETSEATTOKEN_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getSeatGetseattokenUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在加载座位", "请稍等…");
+                super.onStart();
+            }
+
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                waitDialog.dismiss();
                 if (i == 0) {
                     Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
                 } else if (s.contains("error_code")) {
@@ -1094,6 +1114,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
+                waitDialog.dismiss();
                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                 seatMapToken = jsonByGson.getValue("seat_map_token");
                 seatToken = jsonByGson.getValue("seat_token");
@@ -1109,14 +1130,22 @@ public class StudentHomeActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     String json = object.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_GETSEATMAP_URL, json, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getSeatGetseatmapUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                        @Override
+                        public void onStart() {
+                            waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在加载座位", "请稍等…");
+                            super.onStart();
+                        }
+
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                            waitDialog.dismiss();
                             Toast.makeText(StudentHomeActivity.this, "获取座位图失败，请稍后刷新重试！", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
+                            waitDialog.dismiss();
                             ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                             refreshTipsCardView.setVisibility(View.GONE);
                             seatChooseChildLayout.setVisibility(View.VISIBLE);
@@ -1133,7 +1162,7 @@ public class StudentHomeActivity extends AppCompatActivity
                                     seatId = seat_id[column_num][row_num];
                                     studentSeatTextView.setText(seatId);
                                     if (!seat_cur_stu[column_num][row_num].equals("")) {
-                                        new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + seat_cur_stu[column_num][row_num] + ".jpg", new BinaryHttpResponseHandler() {
+                                        new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + seat_cur_stu[column_num][row_num] + ".jpg", new BinaryHttpResponseHandler() {
                                             @Override
                                             public void onSuccess(int i, Header[] headers, byte[] bytes) {
                                                 Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -1184,14 +1213,22 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_FREESEAT, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getSeatFreeseatUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在释放座位", "请稍等…");
+                super.onStart();
+            }
+
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                waitDialog.dismiss();
                 Toast.makeText(StudentHomeActivity.this, "网络错误，请稍后重试！", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
+                waitDialog.dismiss();
                 SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
                 SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
                 mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, "");
@@ -1212,9 +1249,16 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.SEAT_CHOOSESEAT_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getSeatChooseseatUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在提交选座", "请稍等…");
+                super.onStart();
+            }
+
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                waitDialog.dismiss();
                 if (i == 0) {
                     Toast.makeText(StudentHomeActivity.this, "服务器未响应，请稍后重试！", Toast.LENGTH_SHORT).show();
                 } else if (s.contains("error_code")) {
@@ -1236,6 +1280,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
+                waitDialog.dismiss();
                 // 选座成功获取seat_id
                 Toast.makeText(StudentHomeActivity.this, "你已成功选座！\n（座位号：" + seatId + "）", Toast.LENGTH_SHORT).show();
                 SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
@@ -1333,7 +1378,7 @@ public class StudentHomeActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String json = object.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_LOGIN_URL, json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserLoginUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 // 若token获取失败，提示用户手动刷新

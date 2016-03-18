@@ -15,6 +15,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -45,13 +46,15 @@ public class TeacherRegisterActivity extends AppCompatActivity {
 
     private boolean isMale;
     private JSONObject registerObject;
-    private static final String USER_REGISTER_TEACHER_URL = ServerUrlConstant.USER_REGISTER_TEACHER_URL;
+
+    private OwnApp ownApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher_register);
         setupActionBar();
+        ownApp = (OwnApp) getApplication();
 
         registerObject = new JSONObject();
 
@@ -94,7 +97,7 @@ public class TeacherRegisterActivity extends AppCompatActivity {
                 case R.id.handle_register_button:
                     registerInfoAsJson();
                     final String teacherInfoJson = registerObject.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_REGISTER_TEACHER_URL, teacherInfoJson, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserRegisterTeacherUrl(ownApp.getURL_FIGURE()), teacherInfoJson, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 

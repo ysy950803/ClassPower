@@ -1,5 +1,6 @@
 package com.ysy.classpower_student.activities.base;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -76,6 +77,8 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
 
     private OwnApp ownApp;
 
+    private ProgressDialog waitDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupActionBar();
+        ownApp = (OwnApp) getApplication();
 
         isStudentAvatarClicked = false;
 
@@ -152,14 +156,22 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_ME_URL, json, new TextHttpResponseHandler() {
+                new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserMeUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                    @Override
+                    public void onStart() {
+                        waitDialog = ProgressDialog.show(StudentPersonalCenterActivity.this, "正在刷新个人信息", "请稍等…");
+                        super.onStart();
+                    }
+
                     @Override
                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                        waitDialog.dismiss();
                         Toast.makeText(getApplicationContext(), "网络错误，刷新失败！", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onSuccess(int i, Header[] headers, String s) {
+                        waitDialog.dismiss();
                         Toast.makeText(getApplicationContext(), "个人信息刷新成功！", Toast.LENGTH_SHORT).show();
                         ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                         String name = jsonByGson.getArrayValue("info", "name");
@@ -182,7 +194,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
                         studentLessonContentTextView.setText(""); // 当前课堂获取方法待定
                     }
                 });
-                new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+                new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
                     @Override
                     public void onSuccess(int i, Header[] headers, byte[] bytes) {
                         Log.d("HLength/BLength", headers.length + "/" + bytes.length);
@@ -250,19 +262,26 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
         });
 
-        ownApp = (OwnApp) getApplication();
         if (ownApp.getBitmap() != null)
             studentAvatar.setImageBitmap(ownApp.getBitmap());
         else
-            new AsyncHttpClient().get(ServerUrlConstant.USER_AVATAR_URL + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+            new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentPersonalCenterActivity.this, "正在获取头像", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                    waitDialog.dismiss();
                     Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     studentAvatar.setImageBitmap(bm);
                 }
 
                 @Override
                 public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                    waitDialog.dismiss();
                     studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
                 }
 
@@ -389,14 +408,22 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
             String json = up_avatar_obj.toString();
 //            Log.d("Json", json);
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.USER_AVATAR_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(StudentPersonalCenterActivity.this, "正在上传头像", "请稍等…");
+                    super.onStart();
+                }
+
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    waitDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "头像上传失败！", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
                     studentAvatar.setImageBitmap(photo);
                     Toast.makeText(getApplicationContext(), "头像上传成功！", Toast.LENGTH_SHORT).show();
                 }

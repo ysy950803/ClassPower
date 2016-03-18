@@ -114,11 +114,11 @@ public class TestPreviewActivity extends SwipeBackActivity {
         ReadJsonByGson jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
         beginsOn = jsonByGson.getArrayValue("test", "begins_on");
         expiresOn = jsonByGson.getArrayValue("test", "expires_on");
-        if (ownApp.getTestIsFinished())
+        if (!ownApp.getTestIsFinished())
             state = "已结束";
         else
             state = "未完成";
-        if (!ownApp.getTestIsFinished()) {
+        if (ownApp.getTestIsFinished()) {
             testBeginButton.setVisibility(View.VISIBLE);
             checkAnswerButton.setVisibility(View.GONE);
             testDetailsButton.setVisibility(View.GONE);

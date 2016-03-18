@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ysy.classpower.R;
@@ -28,6 +30,14 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
     private long exitTime;
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,19 +45,26 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+//        setupActionBar();
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         final FloatingActionButton addFab = (FloatingActionButton) findViewById(R.id.student_welcome_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        List<Fragment> fragments = new ArrayList<>();
-        Fragment list_fragment = new StudentWelcomeListFragment();
-        fragments.add(list_fragment);
+            }
+        });
 
-        final ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
-        StudentWelcomeFragmentAdapter fragmentAdapter = new StudentWelcomeFragmentAdapter(getSupportFragmentManager(), fragments);
-        mViewPager.setAdapter(fragmentAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.setTabsFromPagerAdapter(fragmentAdapter);
+//        List<Fragment> fragments = new ArrayList<>();
+//        Fragment list_fragment = new StudentWelcomeListFragment();
+//        fragments.add(list_fragment);
+
+//        final ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
+//        StudentWelcomeFragmentAdapter fragmentAdapter = new StudentWelcomeFragmentAdapter(getSupportFragmentManager(), fragments);
+//        mViewPager.setAdapter(fragmentAdapter);
+//        tabLayout.setupWithViewPager(mViewPager);
+//        tabLayout.setTabsFromPagerAdapter(fragmentAdapter);
 //        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 //            @Override
 //            public void onTabSelected(TabLayout.Tab tab) {

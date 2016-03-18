@@ -22,6 +22,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -35,7 +36,7 @@ import org.json.JSONObject;
 public class TeacherWelcomeCenterFragment extends Fragment {
 
     View view;
-    private static final String USER_ME_URL = ServerUrlConstant.USER_ME_URL;
+    private OwnApp ownApp;
 
     public TeacherWelcomeCenterFragment() {
 
@@ -45,6 +46,7 @@ public class TeacherWelcomeCenterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        ownApp = (OwnApp) getActivity().getApplication();
         SharedPreferences token_sp = getContext().getSharedPreferences("token", Context.MODE_PRIVATE);
         SharedPreferences name_sp = getContext().getSharedPreferences("name", Context.MODE_PRIVATE);
         SharedPreferences userId_sp = getContext().getSharedPreferences("userId", Context.MODE_PRIVATE);
@@ -90,7 +92,7 @@ public class TeacherWelcomeCenterFragment extends Fragment {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), USER_ME_URL, json, new TextHttpResponseHandler() {
+                new PostJsonAndGetCallback(new AsyncHttpClient(), getContext(), ServerUrlConstant.getUserMeUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
                     @Override
                     public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
 

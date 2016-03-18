@@ -11,6 +11,7 @@ public class OwnApp extends Application {
     private Bitmap mBitmap = null;
     private String mTestPreviewInfo = null;
     private boolean mTestIsFinished;
+    private String URL_FIGURE = "10.15.85.201";
 
     public Bitmap getBitmap() {
         return mBitmap;
@@ -24,6 +25,10 @@ public class OwnApp extends Application {
         return mTestIsFinished;
     }
 
+    public String getURL_FIGURE() {
+        return URL_FIGURE;
+    }
+
     public void setBitmap(Bitmap bitmap) {
         this.mBitmap = bitmap;
     }
@@ -34,6 +39,10 @@ public class OwnApp extends Application {
 
     public void setTestIsFinished(boolean b) {
         this.mTestIsFinished = b;
+    }
+
+    public void setURL_FIGURE(String URL_FIGURE) {
+        this.URL_FIGURE = URL_FIGURE;
     }
 
 }

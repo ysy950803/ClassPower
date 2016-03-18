@@ -111,14 +111,14 @@ public class SplashFullscreenActivity extends AppCompatActivity {
         // while interacting with the UI.
 //        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
-        // 使用Handler的postDelayed方法，1秒后执行跳转到MainActivity
+        // 使用Handler的postDelayed方法，X秒后执行跳转到MainActivity
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 startActivity(new Intent(SplashFullscreenActivity.this, StudentLoginActivity.class));
                 finish();
 //                System.exit(0);
             }
-        }, 2048);
+        }, 4096);
     }
 
     @Override

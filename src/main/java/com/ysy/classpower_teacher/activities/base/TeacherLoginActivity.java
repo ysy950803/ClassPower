@@ -26,6 +26,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_teacher.activities.home.TeacherWelcomeActivity;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -42,12 +43,13 @@ public class TeacherLoginActivity extends AppCompatActivity {
     private View mLoginFormView;
     private View focusView;
 
-    private static final String USER_LOGIN_URL = ServerUrlConstant.USER_LOGIN_URL;
+    private OwnApp ownApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher_login);
+        ownApp = (OwnApp) getApplication();
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
@@ -140,7 +142,7 @@ public class TeacherLoginActivity extends AppCompatActivity {
 
         ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
         if (cd.isConnectingToInternet()) {
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), USER_LOGIN_URL, json, new TextHttpResponseHandler() {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getUserLoginUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     if (i == 0) {
