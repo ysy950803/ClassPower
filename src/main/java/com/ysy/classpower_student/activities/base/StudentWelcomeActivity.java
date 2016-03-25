@@ -1,7 +1,6 @@
 package com.ysy.classpower_student.activities.base;
 
 import android.content.Intent;
-import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -9,22 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ysy.classpower.R;
-import com.ysy.classpower_student.adapters.StudentWelcomeFragmentAdapter;
-import com.ysy.classpower_student.fragments.StudentWelcomeListFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StudentWelcomeActivity extends AppCompatActivity {
 
@@ -61,7 +52,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 //        fragments.add(list_fragment);
 
 //        final ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
-//        StudentWelcomeFragmentAdapter fragmentAdapter = new StudentWelcomeFragmentAdapter(getSupportFragmentManager(), fragments);
+//        TestDoingFragmentAdapter fragmentAdapter = new TestDoingFragmentAdapter(getSupportFragmentManager(), fragments);
 //        mViewPager.setAdapter(fragmentAdapter);
 //        tabLayout.setupWithViewPager(mViewPager);
 //        tabLayout.setTabsFromPagerAdapter(fragmentAdapter);

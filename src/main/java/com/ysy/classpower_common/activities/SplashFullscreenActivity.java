@@ -118,7 +118,7 @@ public class SplashFullscreenActivity extends AppCompatActivity {
                 finish();
 //                System.exit(0);
             }
-        }, 4096);
+        }, 2048);
     }
 
     @Override

@@ -209,6 +209,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
     private void editorTips() {
         final EditText editText = new EditText(getApplicationContext());
+        editText.setText("10.15.85.199");
         editText.setTextColor(getResources().getColor(R.color.colorPrimary));
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
         builder.setTitle("开发者测试功能（URL编辑器）").setMessage("请输入服务器URL：").setView(editText).setCancelable(false)

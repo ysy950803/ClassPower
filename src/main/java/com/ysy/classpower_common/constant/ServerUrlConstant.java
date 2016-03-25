@@ -19,7 +19,9 @@ public class ServerUrlConstant {
     private static String USER_REGISTERCOURSE_URL = "user/registerCourse";
     private static String COURSE_NTFC_GETNTFCS_URL = "course/notification/getNotifications";
     private static String COURSE_QUESTION_GETALLQUESTIONS_URL = "course/question/getAllQuestions";
-    private static String COURSE_TEST_GETALLTESTS_URL = "course/test/getAllTests";
+    private static String COURSE_TEST_GETFINISHEDTESTS_URL = "course/test/getFinishedTests";
+    private static String COURSE_TEST_GETUNFINISHEDTESTS_URL = "course/test/getUnfinishedTests";
+    private static String COURSE_TEST_GETQUESTIONSINTEST_URL = "course/test/getQuestionsInTest";
     private static String COURSE_TEST_GETTESTDETAILS_URL = "course/test/getTestDetails";
     private static String SEAT_GETSEATTOKEN_URL = "seat/getSeatToken";
     private static String SEAT_GETSEATMAP_URL = "seat/getSeatMap";
@@ -63,8 +65,16 @@ public class ServerUrlConstant {
         return "http://" + URL_FIGURE + ":5000/" + USER_REGISTER_GETSCHOOLS_URL;
     }
 
-    public static String getCourseTestGetalltestsUrl(String URL_FIGURE) {
-        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETALLTESTS_URL;
+    public static String getCourseTestGetfinishedtestsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETFINISHEDTESTS_URL;
+    }
+
+    public static String getCourseTestGetunfinishedtestsUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETUNFINISHEDTESTS_URL;
+    }
+
+    public static String getCourseTestGetquestionsintestUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETQUESTIONSINTEST_URL;
     }
 
     public static String getUserRegisterStudentUrl(String URL_FIGURE) {

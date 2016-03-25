@@ -25,6 +25,28 @@ public class ReadJsonByGson {
         object = (JsonObject) parser.parse(json);
     }
 
+    public String[] getChoicesOfQuestionsInTest(int position) {
+        JsonArray questions_array = object.getAsJsonArray("questions");
+        JsonObject choice_object = questions_array.get(position).getAsJsonObject();
+        JsonArray choices_array = choice_object.getAsJsonArray("choices");
+        String[] details = new String[choices_array.size()];
+        for (int i = 0; i < choices_array.size(); ++i) {
+            details[i] = choices_array.get(i).getAsString();
+        }
+        return details;
+    }
+
+    public String[] getQuestionsInTest(String question_details) {
+        JsonObject question_object;
+        JsonArray questions_array = object.getAsJsonArray("questions");
+        String[] details = new String[questions_array.size()];
+        for (int i = 0; i < questions_array.size(); ++i) {
+            question_object = questions_array.get(i).getAsJsonObject();
+            details[i] = question_object.get(question_details).getAsString();
+        }
+        return details;
+    }
+
     public String[] getAllTestsInfo(String test_details) {
         JsonObject test_object;
         JsonArray tests_array = object.getAsJsonArray("tests");

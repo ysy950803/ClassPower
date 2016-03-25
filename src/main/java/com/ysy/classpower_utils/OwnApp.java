@@ -2,6 +2,10 @@ package com.ysy.classpower_utils;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 姚圣禹 on 2016/3/13.
@@ -11,38 +15,79 @@ public class OwnApp extends Application {
     private Bitmap mBitmap = null;
     private String mTestPreviewInfo = null;
     private boolean mTestIsFinished;
-    private String URL_FIGURE = "10.15.85.201";
+    private String URL_FIGURE = "10.15.85.197";
+//    private String[] questionInfo = null;
+    private Bundle[] questionStates = null;
 
     public Bitmap getBitmap() {
         return mBitmap;
-    }
-
-    public String getTestPreviewInfo() {
-        return mTestPreviewInfo;
-    }
-
-    public boolean getTestIsFinished() {
-        return mTestIsFinished;
-    }
-
-    public String getURL_FIGURE() {
-        return URL_FIGURE;
     }
 
     public void setBitmap(Bitmap bitmap) {
         this.mBitmap = bitmap;
     }
 
+    public String getTestPreviewInfo() {
+        return mTestPreviewInfo;
+    }
+
     public void setTestPreviewInfo(String string) {
         this.mTestPreviewInfo = string;
+    }
+
+    public boolean getTestIsFinished() {
+        return mTestIsFinished;
     }
 
     public void setTestIsFinished(boolean b) {
         this.mTestIsFinished = b;
     }
 
+    public String getURL_FIGURE() {
+        return URL_FIGURE;
+    }
+
     public void setURL_FIGURE(String URL_FIGURE) {
         this.URL_FIGURE = URL_FIGURE;
+    }
+
+//    public void setQuestionInfoSize(int size) {
+//        this.questionInfo = new String[size];
+//        for (int i = 0; i < size; ++i) {
+//            this.questionInfo[i] = "";
+//        }
+//    }
+//
+//    public void setQuestionInfo(int position, String info) {
+//        this.questionInfo[position] = info;
+//    }
+//
+//    public String[] getQuestionInfo() {
+//        return this.questionInfo;
+//    }
+
+    public void setQuestionStates(int position, boolean[] states) {
+        this.questionStates[position].putBooleanArray("radioButtons_state", states);
+    }
+
+    public void clearQuestionStates() {
+        this.questionStates = null;
+    }
+
+    public void setQuestionStatesSize(int size) {
+        this.questionStates = new Bundle[size];
+        for (int i = 0; i < size; ++i) {
+            this.questionStates[i] = new Bundle();
+            this.questionStates[i].putBooleanArray("radioButtons_state", null);
+        }
+    }
+
+    public boolean[] getQuestionStates(int position) {
+        return this.questionStates[position].getBooleanArray("radioButtons_state");
+    }
+
+    public Bundle[] getQuestionStates() {
+        return this.questionStates;
     }
 
 }

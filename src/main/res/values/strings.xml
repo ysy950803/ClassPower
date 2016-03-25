@@ -194,5 +194,6 @@
     <string name="title_activity_splash_fullscreen">课堂动力</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_test_doing">测试</string>
 
 </resources>

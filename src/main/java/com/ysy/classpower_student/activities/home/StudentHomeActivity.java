@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
@@ -180,8 +179,8 @@ public class StudentHomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
@@ -555,7 +554,7 @@ public class StudentHomeActivity extends AppCompatActivity
         });
     }
 
-    private void refreshTests(final int page) {
+    private void refreshTests(final int finished_page) {
         testsURV.setRefreshing(true);
         final JSONObject jsonObject = new JSONObject();
         try {
@@ -563,13 +562,13 @@ public class StudentHomeActivity extends AppCompatActivity
             jsonObject.put("course_id", courseId);
             jsonObject.put("sub_id", subId);
             jsonObject.put("role", 2);
-            jsonObject.put("page", page);
-            jsonObject.put("finished", false);
+//            jsonObject.put("page", page);
+//            jsonObject.put("finished", false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         String json = jsonObject.toString();
-        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetunfinishedtestsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 if (s.contains("error_code")) {
@@ -585,20 +584,20 @@ public class StudentHomeActivity extends AppCompatActivity
 
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
-                if (s.contains("\"tests\": []")) { // false 空
+                if (s.contains("\"tests\": []")) { // unfinished 空
                     JSONObject jsonObject2 = new JSONObject();
                     try {
                         jsonObject2.put("token", token);
                         jsonObject2.put("course_id", courseId);
                         jsonObject2.put("sub_id", subId);
-                        jsonObject2.put("role", 2);
-                        jsonObject2.put("page", page);
-                        jsonObject2.put("finished", true);
+//                        jsonObject2.put("role", 2);
+                        jsonObject2.put("page", finished_page);
+                        jsonObject2.put("descending", true); // 是否置顶
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     String json2 = jsonObject2.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetfinishedtestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             if (s.contains("error_code")) {
@@ -614,19 +613,19 @@ public class StudentHomeActivity extends AppCompatActivity
 
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
-                            if (s.contains("\"tests\": []")) { // false 空 true 空
-                                // finished: true or false 得到的tests均为空
+                            if (s.contains("\"tests\": []")) { // unfinished 空 finished 空
                                 testsEmptyTipsLayout.setVisibility(View.VISIBLE);
                                 testsEmptyListTipsTextView.setText("没有任何测试哦！");
                                 List<String> emptyListData = new ArrayList<>();
                                 emptyListData.add(0, "");
                                 EmptyListWithTipsAdapter emptyListAdapter = new EmptyListWithTipsAdapter(emptyListData);
                                 testsURV.setAdapter(emptyListAdapter);
-                            } else { // false 空 true 非空
+                            } else { // unfinished 空 finished 非空
                                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                                 testsListBeginsOnData = new ArrayList<>();
                                 testsListExpiresOnData = new ArrayList<>();
                                 testsListStateData = new ArrayList<>();
+                                testsListTestIdData = new ArrayList<>();
                                 String[] testsListBeginsOnInfo = jsonByGson.getAllTestsInfo("begins_on");
                                 String[] testsListExpiresOnInfo = jsonByGson.getAllTestsInfo("expires_on");
                                 final String[] testsListTestIdInfo = jsonByGson.getAllTestsInfo("test_id");
@@ -634,6 +633,7 @@ public class StudentHomeActivity extends AppCompatActivity
                                     testsListStateData.add(j, true);
                                 Collections.addAll(testsListBeginsOnData, testsListBeginsOnInfo);
                                 Collections.addAll(testsListExpiresOnData, testsListExpiresOnInfo);
+                                Collections.addAll(testsListTestIdData, testsListTestIdInfo);
                                 testsEmptyTipsLayout.setVisibility(View.GONE);
                                 testsEmptyListTipsTextView.setText("加载中…");
                                 StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
@@ -641,7 +641,15 @@ public class StudentHomeActivity extends AppCompatActivity
                                 testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                                     @Override
                                     public void onItemClick(View view, int position) {
-                                        testListItemOnClick(testsListTestIdInfo[position], testsListStateData.get(position));
+                                        JSONObject obj = new JSONObject();
+                                        try {
+                                            obj.put("begins_on", testsListBeginsOnData.get(position));
+                                            obj.put("expires_on", testsListExpiresOnData.get(position));
+                                            obj.put("test_id", testsListTestIdData.get(position));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        testListItemOnClick(obj.toString(), testsListStateData.get(position));
                                     }
 
                                     @Override
@@ -655,7 +663,7 @@ public class StudentHomeActivity extends AppCompatActivity
                             Toast.makeText(StudentHomeActivity.this, "课程测试刷新成功！", Toast.LENGTH_SHORT).show();
                         }
                     });
-                } else { // false 非空
+                } else { // unfinished 非空
                     final ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     testsListBeginsOnData = new ArrayList<>();
                     testsListExpiresOnData = new ArrayList<>();
@@ -677,7 +685,15 @@ public class StudentHomeActivity extends AppCompatActivity
                     testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            testListItemOnClick(testsListTestIdInfo[position], testsListStateData.get(position));
+                            JSONObject obj = new JSONObject();
+                            try {
+                                obj.put("begins_on", testsListBeginsOnData.get(position));
+                                obj.put("expires_on", testsListExpiresOnData.get(position));
+                                obj.put("test_id", testsListTestIdData.get(position));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            testListItemOnClick(obj.toString(), testsListStateData.get(position));
                         }
 
                         @Override
@@ -691,14 +707,14 @@ public class StudentHomeActivity extends AppCompatActivity
                         jsonObject2.put("token", token);
                         jsonObject2.put("course_id", courseId);
                         jsonObject2.put("sub_id", subId);
-                        jsonObject2.put("role", 2);
-                        jsonObject2.put("page", page);
-                        jsonObject2.put("finished", true);
+//                        jsonObject2.put("role", 2);
+                        jsonObject2.put("page", finished_page);
+                        jsonObject2.put("descending", true);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     String json2 = jsonObject2.toString();
-                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetalltestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
+                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGetfinishedtestsUrl(ownApp.getURL_FIGURE()), json2, new TextHttpResponseHandler() {
                         @Override
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             if (s.contains("error_code")) {
@@ -714,15 +730,15 @@ public class StudentHomeActivity extends AppCompatActivity
 
                         @Override
                         public void onSuccess(int i, Header[] headers, String s) {
-                            if (!s.contains("\"tests\": []")) { // false 非空 true 非空
+                            if (!s.contains("\"tests\": []")) { // unfinished 非空 finished 非空
                                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
-                                String[] testsListBeginsOnInfo2 = jsonByGson.getAllTestsInfo("begins_on");
-                                String[] testsListExpiresOnInfo2 = jsonByGson.getAllTestsInfo("expires_on");
+                                final String[] testsListBeginsOnInfo2 = jsonByGson.getAllTestsInfo("begins_on");
+                                final String[] testsListExpiresOnInfo2 = jsonByGson.getAllTestsInfo("expires_on");
                                 String[] testsListTestIdInfo2 = jsonByGson.getAllTestsInfo("test_id");
                                 for (int j = testsListBeginsOnInfo.length; j < (testsListBeginsOnInfo2.length + testsListBeginsOnInfo.length); ++j) {
-                                    testsListBeginsOnData.add(j, testsListBeginsOnInfo2[j]);
-                                    testsListExpiresOnData.add(j, testsListExpiresOnInfo2[j]);
-                                    testsListTestIdData.add(j, testsListTestIdInfo2[j]);
+                                    testsListBeginsOnData.add(j, testsListBeginsOnInfo2[j - testsListBeginsOnInfo.length]);
+                                    testsListExpiresOnData.add(j, testsListExpiresOnInfo2[j - testsListBeginsOnInfo.length]);
+                                    testsListTestIdData.add(j, testsListTestIdInfo2[j - testsListBeginsOnInfo.length]);
                                     testsListStateData.add(j, true);
                                 }
 
@@ -731,7 +747,15 @@ public class StudentHomeActivity extends AppCompatActivity
                                 testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                                     @Override
                                     public void onItemClick(View view, int position) {
-                                        testListItemOnClick(testsListTestIdData.get(position), testsListStateData.get(position));
+                                        JSONObject obj = new JSONObject();
+                                        try {
+                                            obj.put("begins_on", testsListBeginsOnData.get(position));
+                                            obj.put("expires_on", testsListExpiresOnData.get(position));
+                                            obj.put("test_id", testsListTestIdData.get(position));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        testListItemOnClick(obj.toString(), testsListStateData.get(position));
                                     }
 
                                     @Override
@@ -739,7 +763,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
                                     }
                                 });
-                            } else { // false 非空 true 空
+                            } else { // unfinished 非空 finished 空
 
                             }
                             testsURV.setRefreshing(false);
@@ -757,43 +781,47 @@ public class StudentHomeActivity extends AppCompatActivity
         refreshTests(0);
     }
 
-    private void testListItemOnClick(String testId, final boolean isFinished) {
-        ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
-        if (cd.isConnectingToInternet()) {
-            JSONObject object = new JSONObject();
-            try {
-                object.put("token", token);
-                object.put("course_id", courseId);
-                object.put("sub_id", subId);
-                object.put("test_id", testId);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String json = object.toString();
-            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGettestdetailsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在连接测试中心", "请稍等…");
-                    super.onStart();
-                }
+    private void testListItemOnClick(String test_preview_info, final boolean isFinished) {
+//        ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
+//        if (cd.isConnectingToInternet()) {
+//            JSONObject object = new JSONObject();
+//            try {
+//                object.put("token", token);
+//                object.put("course_id", courseId);
+//                object.put("sub_id", subId);
+//                object.put("test_id", testId);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            String json = object.toString();
+//            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestGettestdetailsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
+//                @Override
+//                public void onStart() {
+//                    waitDialog = ProgressDialog.show(StudentHomeActivity.this, "正在连接测试中心", "请稍等…");
+//                    super.onStart();
+//                }
+//
+//                @Override
+//                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+//                    waitDialog.dismiss();
+//                    Toast.makeText(getApplicationContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onSuccess(int i, Header[] headers, String s) {
+//                    waitDialog.dismiss();
+//                    OwnApp ownApp = (OwnApp) getApplication();
+//                    ownApp.setTestPreviewInfo(s);
+//                    ownApp.setTestIsFinished(isFinished);
+//                    startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
+//                }
+//            });
+//        } else
+//            Toast.makeText(getApplicationContext(), "断开连接，请检查网络！", Toast.LENGTH_SHORT).show();
+        ownApp.setTestPreviewInfo(test_preview_info);
+        ownApp.setTestIsFinished(isFinished);
+        startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
 
-                @Override
-                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                    waitDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onSuccess(int i, Header[] headers, String s) {
-                    waitDialog.dismiss();
-                    OwnApp ownApp = (OwnApp) getApplication();
-                    ownApp.setTestPreviewInfo(s);
-                    ownApp.setTestIsFinished(isFinished);
-                    startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
-                }
-            });
-        } else
-            Toast.makeText(getApplicationContext(), "断开连接，请检查网络！", Toast.LENGTH_SHORT).show();
     }
 
 //    // 自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听

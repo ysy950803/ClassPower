@@ -53,7 +53,7 @@ public class TestResultActivity extends SwipeBackActivity {
         String students_answer_str = "";
         if (!StudentHomeActivity.isDirectlyCheckResult) {
             for (int i = 0; i < 2; i++) {
-                students_answer_str += TestRunningActivity.ANSWER[i];
+//                students_answer_str += TestRunningActivity.ANSWER[i];
             }
             studentsAnswerTextView.setText(students_answer_str);
         } else if (StudentHomeActivity.isDirectlyCheckResult) {

@@ -146,7 +146,7 @@ public class StudentRegisterActivity extends SwipeBackActivity {
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                     waitDialog.dismiss();
                     if (i == 0)
-                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取学院，请退出重试！", Toast.LENGTH_LONG).show();
+                        Toast.makeText(StudentRegisterActivity.this, "服务器未响应，无法获取学院，请退出重试！", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

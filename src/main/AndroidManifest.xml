@@ -42,11 +42,6 @@
             android:label="@string/title_activity_test"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.ysy.classpower_student.activities.test.TestRunningActivity"
-            android:label="@string/title_activity_test"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name="com.ysy.classpower_student.activities.home.StudentHomeActivity"
             android:label="@string/title_activity_student_home"
             android:screenOrientation="portrait"
@@ -119,6 +114,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ysy.classpower_student.activities.test.TestDoingActivity"
+            android:label="@string/title_activity_test_doing"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

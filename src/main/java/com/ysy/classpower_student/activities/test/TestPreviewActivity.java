@@ -50,6 +50,8 @@ public class TestPreviewActivity extends SwipeBackActivity {
     public static int timeNumber = 180;
     public static boolean isOpenFromTestResult;
 
+    private OwnApp ownApp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,14 +65,13 @@ public class TestPreviewActivity extends SwipeBackActivity {
         testBeginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (timer != null)
-                    stopTime();
+                stopTime();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent(TestPreviewActivity.this, TestRunningActivity.class);
+                    Intent intent = new Intent(TestPreviewActivity.this, TestDoingActivity.class);
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(TestPreviewActivity.this, testBeginButton, "test_preview_running_transition");
                     startActivity(intent, options.toBundle());
                 } else
-                    startActivity(new Intent(TestPreviewActivity.this, TestRunningActivity.class));
+                    startActivity(new Intent(TestPreviewActivity.this, TestDoingActivity.class));
                 testBeginButton.setText("继续测试");
 //              finish();
             }
@@ -110,15 +111,15 @@ public class TestPreviewActivity extends SwipeBackActivity {
         sixthDividerView = findViewById(R.id.View6);
         additionalInfoContentTextView = (TextView) findViewById(R.id.additional_info_content_text_view);
 
-        OwnApp ownApp = (OwnApp) getApplication();
+        ownApp = (OwnApp) getApplication();
         ReadJsonByGson jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
-        beginsOn = jsonByGson.getArrayValue("test", "begins_on");
-        expiresOn = jsonByGson.getArrayValue("test", "expires_on");
-        if (!ownApp.getTestIsFinished())
+        beginsOn = jsonByGson.getValue("begins_on");
+        expiresOn = jsonByGson.getValue("expires_on");
+        if (ownApp.getTestIsFinished())
             state = "已结束";
         else
             state = "未完成";
-        if (ownApp.getTestIsFinished()) {
+        if (!ownApp.getTestIsFinished()) {
             testBeginButton.setVisibility(View.VISIBLE);
             checkAnswerButton.setVisibility(View.GONE);
             testDetailsButton.setVisibility(View.GONE);
@@ -188,7 +189,6 @@ public class TestPreviewActivity extends SwipeBackActivity {
         timer.schedule(task, 1000);
         if (timeNumber <= 0) { //由于有mHandler，所以此处可以动态判断
             stopTime();
-            timer = null;
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
             testDetailsButton.setVisibility(View.VISIBLE);
@@ -210,16 +210,21 @@ public class TestPreviewActivity extends SwipeBackActivity {
     }
 
     private void stopTime() {
-        timer.cancel();
-        setSwipeBackEnable(true);
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+            setSwipeBackEnable(true);
+        }
     }
 
     @Override
     protected void onResume() {
-        Log.d("Time_Number", timeNumber + "");
+        Log.d("TEST", "Time_Number" + timeNumber);
         if (timeNumber < 180 && timeNumber > 0) {
-            if (!isOpenFromTestResult)
+            if (!isOpenFromTestResult) {
+                stopTime();
                 startTime();
+            }
         }
         if (timeNumber <= 0 || isOpenFromTestResult) {
             timer = null;
@@ -244,8 +249,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
     @Override
     public void finish() {
-        if (timer != null)
-            stopTime();
+        stopTime();
         super.finish();
     }
 
@@ -301,6 +305,14 @@ public class TestPreviewActivity extends SwipeBackActivity {
         WindowManager.LayoutParams lp = window.getAttributes();
         lp.alpha = 0.75f;
         window.setAttributes(lp);
+    }
+
+    @Override
+    protected void onDestroy() {
+        // 退出TestPreview则退出此测试，必须清空应用级存储，防止干扰另一测试
+        ownApp.clearQuestionStates();
+        Log.d("TEST", "onDestroy");
+        super.onDestroy();
     }
 
 }
