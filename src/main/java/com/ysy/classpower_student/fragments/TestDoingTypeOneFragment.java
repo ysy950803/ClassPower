@@ -13,10 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.test.TestDoingActivity;
+import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_utils.OwnApp;
 
 /**
@@ -75,16 +77,16 @@ public class TestDoingTypeOneFragment extends StatedFragment {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                boolean[] states = new boolean[choices.length];
+                for (int i = 0; i < choices.length; ++i) {
+                    states[i] = false;
+                    if (radioButtons[i].getId() == checkedId) {
+                        states[i] = true;
+                    }
+                }
+                ownApp.setQuestionStates(data.getInt("question_position"), states);
                 // 若标记为false（默认），则表示选项不是靠恢复状态而自动check，而是用户手动check，故执行spinner的刷新
                 if (!isRestoreChecked) {
-                    boolean[] states = new boolean[choices.length];
-                    for (int i = 0; i < choices.length; ++i) {
-                        states[i] = false;
-                        if (radioButtons[i].getId() == checkedId) {
-                            states[i] = true;
-                        }
-                    }
-                    ownApp.setQuestionStates(data.getInt("question_position"), states);
                     String[] questionArray = new String[ownApp.getQuestionStates().length];
                     for (int k = 0; k < ownApp.getQuestionStates().length; ++k) {
                         if (ownApp.getQuestionStates(k) == null) {
@@ -95,7 +97,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
                     // fragment与activity的通信回调
                     TestDoingActivity testDoingActivity = (TestDoingActivity) getActivity();
                     testDoingActivity.setSpinnerAdapter(questionArray, data.getInt("question_position"));
-                    Log.d("TEST", "setSpinnerAdapter" + data.getInt("question_position"));
+//                    Log.d("TEST", "setSpinnerAdapter" + data.getInt("question_position"));
                 }
 
             }
@@ -103,7 +105,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
 
         // 通过应用级全局存储，恢复每道题的选项状态，若是新开的fragment，则判空而不执行下面方法
         if (ownApp.getQuestionStates(data.getInt("question_position")) != null) {
-            Log.d("TEST", "setChecked" + data.getInt("question_position"));
+//            Log.d("TEST", "setChecked" + data.getInt("question_position"));
             for (int i = 0; i < radioButtonsNum; ++i) {
                 if (ownApp.getQuestionStates(data.getInt("question_position"))[i]) {
                     isRestoreChecked = true; // 设置为true表示标记为选项自动check，控制spinner不刷新，否则出现奇怪的viewPager连跳bug
@@ -174,7 +176,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
             states = null; // 若全为false，则说明用户未选中任何一项，即布尔数组置空，方便在某些地方判断
 //        outState.putBooleanArray("radioButtons_state", states);
         ownApp.setQuestionStates(data.getInt("question_position"), states); // 根据题号来为每道题设置一组选项状态
-        Log.d("TEST", "onSaveState" + data.getInt("question_position"));
+//        Log.d("TEST", "onSaveState" + data.getInt("question_position"));
     }
 
     /**
@@ -185,7 +187,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
         super.onRestoreState(savedInstanceState);
         // For example:
         //tvSample.setText(savedInstanceState.getString(text));
-        Log.d("TEST", "onRestoreState" + data.getInt("question_position"));
+//        Log.d("TEST", "onRestoreState" + data.getInt("question_position"));
         // 由于onRestoreState在onCreateView之后执行，所以不需要以下代码来恢复check状态，因为onCreateView末尾已有类似代码
 //        boolean[] state = savedInstanceState.getBooleanArray("radioButtons_state");
 //        for (int i = 0; i < radioButtonsNum; ++i) {

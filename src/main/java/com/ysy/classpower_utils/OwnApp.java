@@ -15,12 +15,12 @@ public class OwnApp extends Application {
     private Bitmap mBitmap = null;
     private String mTestPreviewInfo = null;
     private boolean mTestIsFinished;
-    private String URL_FIGURE = "10.15.85.197";
+    private String URL_FIGURE = "10.15.85.203";
 //    private String[] questionInfo = null;
     private Bundle[] questionStates = null;
 
     public Bitmap getBitmap() {
-        return mBitmap;
+        return this.mBitmap;
     }
 
     public void setBitmap(Bitmap bitmap) {
@@ -28,7 +28,7 @@ public class OwnApp extends Application {
     }
 
     public String getTestPreviewInfo() {
-        return mTestPreviewInfo;
+        return this.mTestPreviewInfo;
     }
 
     public void setTestPreviewInfo(String string) {
@@ -36,7 +36,7 @@ public class OwnApp extends Application {
     }
 
     public boolean getTestIsFinished() {
-        return mTestIsFinished;
+        return this.mTestIsFinished;
     }
 
     public void setTestIsFinished(boolean b) {
@@ -44,7 +44,7 @@ public class OwnApp extends Application {
     }
 
     public String getURL_FIGURE() {
-        return URL_FIGURE;
+        return this.URL_FIGURE;
     }
 
     public void setURL_FIGURE(String URL_FIGURE) {
@@ -67,7 +67,7 @@ public class OwnApp extends Application {
 //    }
 
     public void setQuestionStates(int position, boolean[] states) {
-        this.questionStates[position].putBooleanArray("radioButtons_state", states);
+        this.questionStates[position].putBooleanArray("items_state", states);
     }
 
     public void clearQuestionStates() {
@@ -78,12 +78,12 @@ public class OwnApp extends Application {
         this.questionStates = new Bundle[size];
         for (int i = 0; i < size; ++i) {
             this.questionStates[i] = new Bundle();
-            this.questionStates[i].putBooleanArray("radioButtons_state", null);
+            this.questionStates[i].putBooleanArray("items_state", null);
         }
     }
 
     public boolean[] getQuestionStates(int position) {
-        return this.questionStates[position].getBooleanArray("radioButtons_state");
+        return this.questionStates[position].getBooleanArray("items_state");
     }
 
     public Bundle[] getQuestionStates() {

@@ -119,7 +119,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
                 attemptLogin(2);
             }
         });
-        mStudentSignInButton.setRippleSpeed(24f);
+        mStudentSignInButton.setRippleSpeed(36f);
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -410,7 +410,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         majorName_editor.putString("majorName", majorName);
 
         loginJson_editor.putString("loginJson", loginJson);
-        Log.d("LoginJson", loginJson);
+//        Log.d("LoginJson", loginJson);
 
         currentWeek_editor.commit();
         loginJson_editor.commit();

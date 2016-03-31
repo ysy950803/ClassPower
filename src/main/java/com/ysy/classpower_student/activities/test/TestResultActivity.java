@@ -30,8 +30,7 @@ public class TestResultActivity extends SwipeBackActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
             }
         });
 
@@ -40,7 +39,8 @@ public class TestResultActivity extends SwipeBackActivity {
 
         String correct_answer_str = "";
         for (int i = 0; i < 2; ++i) {
-            correct_answer_str += ReadCorrectAnswerFromJSON("computer_network_" + (i + 1) + ".json");
+//            correct_answer_str += ReadCorrectAnswerFromJSON("computer_network_" + (i + 1) + ".json");
+            correct_answer_str += "";
         }
         if (!StudentHomeActivity.isDirectlyCheckResult) {
             correctAnswerTextView.setText(correct_answer_str);
@@ -70,13 +70,13 @@ public class TestResultActivity extends SwipeBackActivity {
         }
     }
 
-    private String ReadCorrectAnswerFromJSON(String json_name) {
-        //从JSON获取正确答案
-        InputStreamReader json = new InputStreamReader(getClass().getResourceAsStream("/assets/" + json_name));
-        ReadJsonByGson readJsonByGson = new ReadJsonByGson(json);
-        String correct_answer = readJsonByGson.getValue("answer");
-        return correct_answer;
-    }
+//    private String ReadCorrectAnswerFromJSON(String json_name) {
+//        //从JSON获取正确答案
+//        InputStreamReader json = new InputStreamReader(getClass().getResourceAsStream("/assets/" + json_name));
+//        ReadJsonByGson readJsonByGson = new ReadJsonByGson(json);
+//        String correct_answer = readJsonByGson.getValue("answer");
+//        return correct_answer;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { //覆盖整个Activity的返回按钮

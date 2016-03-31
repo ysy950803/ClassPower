@@ -43,22 +43,24 @@ public class TestPreviewActivity extends SwipeBackActivity {
     private Button testDetailsButton;
     private TextView additionalInfoContentTextView;
 
-    private String beginsOn;
-    private String expiresOn;
-    private String state;
+    private String beginsOn = "";
+    private String expiresOn = "";
+    private String state = "";
 
-    public static int timeNumber = 180;
+    public static int timeNumber = 60;
     public static boolean isOpenFromTestResult;
 
     private OwnApp ownApp;
+    private ReadJsonByGson jsonByGson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_test_preview);
         setupActionBar();
+        ownApp = (OwnApp) getApplication();
 
-        timeNumber = 180;
+        timeNumber = 60;
         isOpenFromTestResult = false;
 
         testBeginButton = (Button) findViewById(R.id.test_begin_button);
@@ -111,10 +113,16 @@ public class TestPreviewActivity extends SwipeBackActivity {
         sixthDividerView = findViewById(R.id.View6);
         additionalInfoContentTextView = (TextView) findViewById(R.id.additional_info_content_text_view);
 
-        ownApp = (OwnApp) getApplication();
-        ReadJsonByGson jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
+        if (ownApp.getTestPreviewInfo() != null)
+            jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
+        else {
+            Toast.makeText(TestPreviewActivity.this, "应用进程被系统结束，导致错误，请重试！", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         beginsOn = jsonByGson.getValue("begins_on");
         expiresOn = jsonByGson.getValue("expires_on");
+//        beginsOn = "TEST_TIME";
+//        expiresOn = "TEST_TIME";
         if (ownApp.getTestIsFinished())
             state = "已结束";
         else
@@ -188,6 +196,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
         };
         timer.schedule(task, 1000);
         if (timeNumber <= 0) { //由于有mHandler，所以此处可以动态判断
+            startActivity(new Intent(TestPreviewActivity.this, TestDoingActivity.class));
             stopTime();
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
@@ -203,9 +212,6 @@ public class TestPreviewActivity extends SwipeBackActivity {
             testStateContentTextView.setText(state);
             limitTimeContentTextView.setText("无");
             additionalInfoContentTextView.setText("无");
-
-            Toast.makeText(this, "时间到！系统已为你自动提交答案。", Toast.LENGTH_SHORT).show();
-            // 后台提交数据
         }
     }
 
@@ -220,7 +226,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     @Override
     protected void onResume() {
         Log.d("TEST", "Time_Number" + timeNumber);
-        if (timeNumber < 180 && timeNumber > 0) {
+        if (timeNumber < 60 && timeNumber > 0) {
             if (!isOpenFromTestResult) {
                 stopTime();
                 startTime();

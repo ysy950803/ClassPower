@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -39,6 +40,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -53,6 +55,7 @@ import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,11 +79,26 @@ public class TestDoingActivity extends AppCompatActivity {
 
     private OwnApp ownApp;
     private Toolbar toolbar;
+    private ReadJsonByGson jsonByGson;
+    private String testId = "";
+    private String courseId = "";
+    private String subId = "";
+    private String token = "";
+    private String[] questionIds = null;
+
+    private boolean isPostAnswersSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_doing);
+        ownApp = (OwnApp) getApplication();
+        SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
+        SharedPreferences courseId_sp = getSharedPreferences("courseId", MODE_PRIVATE);
+        SharedPreferences subId_sp = getSharedPreferences("subId", MODE_PRIVATE);
+        token = token_sp.getString("token", "");
+        courseId = courseId_sp.getString("courseId", "");
+        subId = subId_sp.getString("subId", "");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -126,7 +144,7 @@ public class TestDoingActivity extends AppCompatActivity {
                         ++unfinished_answer_num;
                     }
                 }
-                if (!isTestTimeOut)
+                if (!isPostAnswersSuccess || !isTestTimeOut )
                     confirmHandAnswer(ownApp.getQuestionStates().length - unfinished_answer_num, ownApp.getQuestionStates().length);
                 else {
                     startActivity(new Intent(TestDoingActivity.this, TestResultActivity.class));
@@ -141,11 +159,16 @@ public class TestDoingActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         spinner = (Spinner) findViewById(R.id.spinner);
 
-        ownApp = (OwnApp) getApplication();
-        ReadJsonByGson jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
+        if (ownApp.getTestPreviewInfo() != null) {
+            jsonByGson = new ReadJsonByGson(ownApp.getTestPreviewInfo());
+            testId = jsonByGson.getValue("test_id");
+        } else {
+            Toast.makeText(TestDoingActivity.this, "应用进程被系统结束，导致错误，请重试！", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         JSONObject object = new JSONObject();
         try {
-            object.put("test_id", jsonByGson.getValue("test_id"));
+            object.put("test_id", testId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -165,21 +188,22 @@ public class TestDoingActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
+                ReadJsonByGson readJsonByGson = new ReadJsonByGson(s);
+                questionIds = readJsonByGson.getQuestionsInTest("question_id");
                 waitDialog.dismiss();
                 startTime(); // 进入即启动倒计时
                 List<Fragment> fragments = new ArrayList<>();
-                ReadJsonByGson readJsonByGson = new ReadJsonByGson(s);
                 String[] question_type = readJsonByGson.getQuestionsInTest("type");
                 String[] question_content = readJsonByGson.getQuestionsInTest("content");
                 String[] question_difficulty = readJsonByGson.getQuestionsInTest("difficulty");
-                String[] questionArray;
+                String[] questionArray = new String[0];
                 if (ownApp.getQuestionStates() == null) {
                     ownApp.setQuestionStatesSize(question_type.length);
                     questionArray = new String[question_type.length];
                     for (int k = 0; k < question_type.length; ++k) {
                         questionArray[k] = "题目" + (k + 1) + "(未完成)";
                     }
-                } else {
+                } else if (question_type.length == ownApp.getQuestionStates().length) {
                     questionArray = new String[ownApp.getQuestionStates().length];
                     for (int k = 0; k < ownApp.getQuestionStates().length; ++k) {
                         if (ownApp.getQuestionStates(k) == null) {
@@ -187,8 +211,13 @@ public class TestDoingActivity extends AppCompatActivity {
                         } else
                             questionArray[k] = "题目" + (k + 1) + "(已完成)";
                     }
+                } else if (question_type.length != ownApp.getQuestionStates().length) {
+                    // 增加判断，如果老师中途修改题目数量，旧的选项状态会清空
+                    for (int k = 0; k < question_type.length; ++k) {
+                        questionArray[k] = "题目" + (k + 1) + "(未完成)";
+                    }
+                    ownApp.setQuestionStatesSize(question_type.length);
                 }
-
                 assert toolbar != null;
                 spinner.setAdapter(new TestDoingSpinnerAdapter(toolbar.getContext(), questionArray));
 //                ownApp.setQuestionInfoSize(question_type.length);
@@ -292,9 +321,7 @@ public class TestDoingActivity extends AppCompatActivity {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        startActivity(new Intent(TestDoingActivity.this, TestResultActivity.class));
-                        Toast.makeText(TestDoingActivity.this, "提交成功！", Toast.LENGTH_SHORT).show();
-                        finish();
+                        postAnswers(false);
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -304,13 +331,15 @@ public class TestDoingActivity extends AppCompatActivity {
         final android.support.v7.app.AlertDialog alert = builder.create();
         alert.show();
 
-        final Timer alertLife = new Timer();
-        alertLife.schedule(new TimerTask() {
-            public void run() {
-                alert.dismiss(); // when the task active then close the dialog
-                alertLife.cancel(); // also just top the timer thread, otherwise, you may receive a crash report
-            }
-        }, TestPreviewActivity.timeNumber * 1000); // 时间到时自动提交答案并且关闭Dialog（如果你此时打开着）
+        if (isPostAnswersSuccess) {
+            final Timer alertLife = new Timer();
+            alertLife.schedule(new TimerTask() {
+                public void run() {
+                    alert.dismiss(); // when the task active then close the dialog
+                    alertLife.cancel(); // also just top the timer thread, otherwise, you may receive a crash report
+                }
+            }, TestPreviewActivity.timeNumber * 1000); // 时间到时自动提交答案并且关闭Dialog（如果你此时打开着）
+        }
 
         //设置透明度
         Window window = alert.getWindow();
@@ -376,10 +405,8 @@ public class TestDoingActivity extends AppCompatActivity {
         if (timeNumber2 <= 0) { //由于有mHandler，所以此处可以动态判断
             stopTime();
             isTestTimeOut = true;
-            Toast.makeText(this, "时间到！系统已为你自动提交答案。", Toast.LENGTH_SHORT).show();
-            // 后台提交数据
-            handAnswerButton.setText("查看结果");
-            handAnswerButton.setTextColor(Color.WHITE);
+            timerTextView.setText("时间到");
+            postAnswers(true);
         }
     }
 
@@ -394,6 +421,101 @@ public class TestDoingActivity extends AppCompatActivity {
     public void finish() {
         stopTime(); // 关闭计时器，否则退出此Activity后仍出现“时间到”的Toast
         super.finish();
+    }
+
+    private void postAnswers(final boolean isSystemBackgroundPost) {
+        JSONObject post_answers_obj = new JSONObject();
+        JSONArray results_array = new JSONArray();
+        for (int i = 0; i < questionIds.length; ++i) {
+            JSONObject result_obj = new JSONObject();
+            JSONArray my_answers_array = new JSONArray();
+            try {
+                result_obj.put("question_id", questionIds[i]);
+                if (ownApp.getQuestionStates() != null) {
+                    if (ownApp.getQuestionStates(i) != null) {
+                        boolean[] items_state = ownApp.getQuestionStates(i); // states of A,B,C,D...
+                        Log.d("TEST", Arrays.toString(items_state));
+                        for (int j = 0, k = 0; j < items_state.length; ++j) {
+                            if (items_state[j])
+                                my_answers_array.put(k, "" + (j + 1)); // "my_answers":[1,2]
+                            else
+                                --k;
+                            ++k;
+                        }
+                    }
+                }
+                result_obj.put("my_answers", my_answers_array);
+
+                results_array.put(i, result_obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            post_answers_obj.put("test_id", testId);
+            post_answers_obj.put("course_id", courseId);
+            post_answers_obj.put("sub_id", subId);
+            post_answers_obj.put("token", token);
+            post_answers_obj.put("results", results_array);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("TEST", post_answers_obj.toString());
+        if (isSystemBackgroundPost) { // 后台提交数据
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestPostansweraUrl(ownApp.getURL_FIGURE()), post_answers_obj.toString(), new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(TestDoingActivity.this, "正在提交", "时间到，系统自动提交答案，请稍等…");
+                    super.onStart();
+                }
+
+                @Override
+                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    if (s != null)
+                        Log.d("TEST", s);
+                    isPostAnswersSuccess = false;
+                    waitDialog.dismiss();
+                    Toast.makeText(TestDoingActivity.this, "提交失败，请手动重试！", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
+                    isPostAnswersSuccess = true;
+                    Toast.makeText(TestDoingActivity.this, "提交成功！", Toast.LENGTH_SHORT).show();
+                    handAnswerButton.setText("查看结果");
+                    handAnswerButton.setTextColor(Color.WHITE);
+                }
+            });
+        } else {
+            new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestPostansweraUrl(ownApp.getURL_FIGURE()), post_answers_obj.toString(), new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    waitDialog = ProgressDialog.show(TestDoingActivity.this, "正在提交", "请稍等…");
+                    super.onStart();
+                }
+
+                @Override
+                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                    if (s != null)
+                        Log.d("TEST", s);
+                    isPostAnswersSuccess = false;
+                    waitDialog.dismiss();
+                    Toast.makeText(TestDoingActivity.this, "提交失败，请重试！", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSuccess(int i, Header[] headers, String s) {
+                    waitDialog.dismiss();
+                    isPostAnswersSuccess = true;
+                    Toast.makeText(TestDoingActivity.this, "提交成功！", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(TestDoingActivity.this, TestResultActivity.class));
+                    finish();
+                }
+            });
+        }
+
     }
 
 }

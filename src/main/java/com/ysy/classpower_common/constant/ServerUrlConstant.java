@@ -23,6 +23,7 @@ public class ServerUrlConstant {
     private static String COURSE_TEST_GETUNFINISHEDTESTS_URL = "course/test/getUnfinishedTests";
     private static String COURSE_TEST_GETQUESTIONSINTEST_URL = "course/test/getQuestionsInTest";
     private static String COURSE_TEST_GETTESTDETAILS_URL = "course/test/getTestDetails";
+    private static String COURSE_TEST_POSTANSWERA_URL = "course/test/postAnswers";
     private static String SEAT_GETSEATTOKEN_URL = "seat/getSeatToken";
     private static String SEAT_GETSEATMAP_URL = "seat/getSeatMap";
     private static String SEAT_CHOOSESEAT_URL = "seat/chooseSeat";
@@ -75,6 +76,10 @@ public class ServerUrlConstant {
 
     public static String getCourseTestGetquestionsintestUrl(String URL_FIGURE) {
         return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_GETQUESTIONSINTEST_URL;
+    }
+
+    public static String getCourseTestPostansweraUrl(String URL_FIGURE) {
+        return "http://" + URL_FIGURE + ":5000/" + COURSE_TEST_POSTANSWERA_URL;
     }
 
     public static String getUserRegisterStudentUrl(String URL_FIGURE) {

@@ -820,8 +820,10 @@ public class StudentHomeActivity extends AppCompatActivity
 //            Toast.makeText(getApplicationContext(), "断开连接，请检查网络！", Toast.LENGTH_SHORT).show();
         ownApp.setTestPreviewInfo(test_preview_info);
         ownApp.setTestIsFinished(isFinished);
-        startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
-
+        if (test_preview_info != null)
+            startActivity(new Intent(StudentHomeActivity.this, TestPreviewActivity.class));
+        else
+            Toast.makeText(StudentHomeActivity.this, "未知错误，请重试！", Toast.LENGTH_SHORT).show();
     }
 
 //    // 自定义接口，然后在onBindViewHolder中去为holder.itemView去设置相应的监听最后回调设置的监听
