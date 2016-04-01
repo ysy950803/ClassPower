@@ -50,6 +50,7 @@ import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_student.adapters.TestDoingFragmentAdapter;
 import com.ysy.classpower_student.adapters.TestDoingSpinnerAdapter;
 import com.ysy.classpower_student.fragments.TestDoingTypeOneFragment;
+import com.ysy.classpower_student.fragments.TestDoingTypeTwoFragment;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
@@ -233,10 +234,12 @@ public class TestDoingActivity extends AppCompatActivity {
                         Fragment type_one_fragment = new TestDoingTypeOneFragment();
                         type_one_fragment.setArguments(data);
                         fragments.add(type_one_fragment);
-                    } else if (question_type[j].equals("2")) {
-//                        Fragment list_fragment = new TestDoingTypeOneFragment();
-//                        list_fragment.setArguments(data);
-//                        fragments.add(list_fragment);
+                    } else if (question_type[j].equals("2")) { // 多选题
+                        String[] question_choices = readJsonByGson.getChoicesOfQuestionsInTest(j);
+                        data.putStringArray("question_choices", question_choices);
+                        Fragment type_two_fragment = new TestDoingTypeTwoFragment();
+                        type_two_fragment.setArguments(data);
+                        fragments.add(type_two_fragment);
                     }
                 }
                 TestDoingFragmentAdapter fragmentAdapter = new TestDoingFragmentAdapter(getSupportFragmentManager(), fragments);
@@ -434,12 +437,12 @@ public class TestDoingActivity extends AppCompatActivity {
                 if (ownApp.getQuestionStates() != null) {
                     if (ownApp.getQuestionStates(i) != null) {
                         boolean[] items_state = ownApp.getQuestionStates(i); // states of A,B,C,D...
-                        Log.d("TEST", Arrays.toString(items_state));
+//                        Log.d("TEST", Arrays.toString(items_state));
                         for (int j = 0, k = 0; j < items_state.length; ++j) {
                             if (items_state[j])
                                 my_answers_array.put(k, "" + (j + 1)); // "my_answers":[1,2]
                             else
-                                --k;
+                                --k; // 若某选项为false，则结合++k，下标不变，如此my_answer不会出现[null, 2]类似情况
                             ++k;
                         }
                     }
@@ -472,8 +475,8 @@ public class TestDoingActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                    if (s != null)
-                        Log.d("TEST", s);
+//                    if (s != null)
+//                        Log.d("TEST", s);
                     isPostAnswersSuccess = false;
                     waitDialog.dismiss();
                     Toast.makeText(TestDoingActivity.this, "提交失败，请手动重试！", Toast.LENGTH_SHORT).show();

@@ -15,7 +15,7 @@ public class OwnApp extends Application {
     private Bitmap mBitmap = null;
     private String mTestPreviewInfo = null;
     private boolean mTestIsFinished;
-    private String URL_FIGURE = "10.15.85.203";
+    private String URL_FIGURE = "10.15.85.196";
 //    private String[] questionInfo = null;
     private Bundle[] questionStates = null;
 

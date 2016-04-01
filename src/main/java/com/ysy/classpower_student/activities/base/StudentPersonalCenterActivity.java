@@ -225,6 +225,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
         });
 
+        assert choosePicAsAvatarBtn != null;
         choosePicAsAvatarBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,6 +235,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
         });
 
+        assert takePhotoAsAvatarBtn != null;
         takePhotoAsAvatarBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,6 +246,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
         });
 
+        assert confirmUpAvatarBtn != null;
         confirmUpAvatarBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -251,6 +254,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
             }
         });
 
+        assert giveUpAvatarButton != null;
         giveUpAvatarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -277,6 +281,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
                     waitDialog.dismiss();
                     Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     studentAvatar.setImageBitmap(bm);
+                    ownApp.setBitmap(bm);
                 }
 
                 @Override

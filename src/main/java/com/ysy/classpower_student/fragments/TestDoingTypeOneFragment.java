@@ -2,23 +2,17 @@ package com.ysy.classpower_student.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.inthecheesefactory.thecheeselibrary.fragment.support.v4.app.StatedFragment;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.test.TestDoingActivity;
-import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_utils.OwnApp;
 
 /**
@@ -46,7 +40,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ownApp = (OwnApp) getActivity().getApplication();
         data = getArguments();
-        view = inflater.inflate(R.layout.fragment_test_doing, container, false);
+        view = inflater.inflate(R.layout.fragment_test_doing_type_one, container, false);
         contentTextView = (TextView) view.findViewById(R.id.test_content_text_view);
         difficultyTextView = (TextView) view.findViewById(R.id.test_difficulty_content_text_view);
         linearLayout = (LinearLayout) view.findViewById(R.id.answer_container);
@@ -70,7 +64,7 @@ public class TestDoingTypeOneFragment extends StatedFragment {
             radioButtons[i] = new RadioButton(getActivity());
             radioButtons[i].setPadding(16, 0, 0, 0); // 设置文字距离按钮四周的距离
             radioButtons[i].setText(choices[i]);
-            radioButtons[i].setTag(i);
+//            radioButtons[i].setTag(i);
             radioGroup.addView(radioButtons[i], LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         }
         linearLayout.addView(radioGroup);
