@@ -45,7 +45,8 @@
             android:name="com.ysy.classpower_student.activities.home.StudentHomeActivity"
             android:label="@string/title_activity_student_home"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="com.ysy.classpower_student.activities.test.TestResultActivity"
             android:label="@string/title_activity_test_result"
@@ -117,7 +118,7 @@
         <activity
             android:name="com.ysy.classpower_student.activities.test.TestDoingActivity"
             android:label="@string/title_activity_test_doing"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

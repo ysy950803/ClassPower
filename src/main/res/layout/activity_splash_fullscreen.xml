@@ -58,6 +58,15 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <ImageView
+        android:id="@+id/app_logo_part_imgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/app_logo_part"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/textView40"
+        android:layout_toStartOf="@+id/textView40" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

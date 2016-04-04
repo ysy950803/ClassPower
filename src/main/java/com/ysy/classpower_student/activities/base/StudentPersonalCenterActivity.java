@@ -296,23 +296,25 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
 
     @Override
     protected void onResume() {
-        // 分段延时两次，保证动效后头像按正常大小显示
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                if (ownApp.getBitmap() != null)
-                    studentAvatar.setImageBitmap(ownApp.getBitmap());
-                else
-                    studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
-            }
-        }, 512);
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                if (ownApp.getBitmap() != null)
-                    studentAvatar.setImageBitmap(ownApp.getBitmap());
-                else
-                    studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
-            }
-        }, 1024);
+        if (studentAvatarBytes == null) {
+            // 分段延时两次，保证动效后头像按正常大小显示
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (ownApp.getBitmap() != null)
+                        studentAvatar.setImageBitmap(ownApp.getBitmap());
+                    else
+                        studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
+                }
+            }, 512);
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (ownApp.getBitmap() != null)
+                        studentAvatar.setImageBitmap(ownApp.getBitmap());
+                    else
+                        studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
+                }
+            }, 1024);
+        }
         super.onResume();
     }
 

@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
@@ -87,6 +91,8 @@ public class SplashFullscreenActivity extends AppCompatActivity {
         }
     };
 
+    private ImageView appLogoPart;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +103,12 @@ public class SplashFullscreenActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
+        appLogoPart = (ImageView) findViewById(R.id.app_logo_part_imgView);
+        AnimationSet animationSet = new AnimationSet(true);
+        RotateAnimation rotateAnimation = new RotateAnimation(135, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1.0f);
+        rotateAnimation.setDuration(1024);
+        animationSet.addAnimation(rotateAnimation);
+        appLogoPart.startAnimation(animationSet);
 
         // Set up the user interaction to manually show or hide the system UI.
 //        mContentView.setOnClickListener(new View.OnClickListener() {

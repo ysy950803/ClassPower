@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -39,6 +40,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
@@ -54,6 +56,7 @@ import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
 import com.ysy.classpower_student.adapters.StudentHomeTestsListAdapter;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.OwnApp;
+import com.ysy.classpower_utils.OwnMaterialSearchView;
 import com.ysy.classpower_utils.for_design.CircularImageView;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
 import com.ysy.classpower_utils.ListOnItemClickListener;
@@ -143,6 +146,9 @@ public class StudentHomeActivity extends AppCompatActivity
     private OwnApp ownApp;
 
     private ProgressDialog waitDialog;
+    private OwnMaterialSearchView searchView;
+
+    private String[] allStudents = new String[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +182,7 @@ public class StudentHomeActivity extends AppCompatActivity
         seatChooseLayout = (RelativeLayout) findViewById(R.id.seat_choose_layout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -238,6 +245,7 @@ public class StudentHomeActivity extends AppCompatActivity
         initSeatsData();
         // 确定选座按钮
         Button confirmSeatChooseButton = (Button) findViewById(R.id.confirm_seat_choose_button);
+        assert confirmSeatChooseButton != null;
         confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -256,6 +264,7 @@ public class StudentHomeActivity extends AppCompatActivity
         });
         // 重新选座按钮
         Button clearSeatChooseButton = (Button) findViewById(R.id.clear_seat_choose_button);
+        assert clearSeatChooseButton != null;
         clearSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,6 +276,9 @@ public class StudentHomeActivity extends AppCompatActivity
                     clearSeatChooseTips(mSeatId);
             }
         });
+
+        searchView = (OwnMaterialSearchView) findViewById(R.id.search_view);
+        searchView.setCursorDrawable(R.drawable.color_cursor_white);
 
     }
 
@@ -897,6 +909,8 @@ public class StudentHomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
         } else {
 //            super.onBackPressed();
             if ((System.currentTimeMillis() - exitTime) > 2000) {
@@ -915,20 +929,21 @@ public class StudentHomeActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.student_home, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search_student); //在菜单中找到对应控件的item
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setQueryHint("找同学"); //设置搜索框内的hint文字
-        MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() { //设置打开关闭动作监听
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                Toast.makeText(StudentHomeActivity.this, "找找同学啦！", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                return true;
-            }
-        });
+        searchView.setMenuItem(menuItem);
+//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+//        searchView.setQueryHint("找同学"); //设置搜索框内的hint文字
+//        MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() { //设置打开关闭动作监听
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem item) {
+//                Toast.makeText(StudentHomeActivity.this, "找找同学啦！", Toast.LENGTH_SHORT).show();
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem item) {
+//                return true;
+//            }
+//        });
         if (isSeatChooseOpen) { //根据选座界面是否打开来设置search按钮的隐藏与否
             menuItem.setVisible(true);
         } else
@@ -1180,8 +1195,8 @@ public class StudentHomeActivity extends AppCompatActivity
                             refreshTipsCardView.setVisibility(View.GONE);
                             seatChooseChildLayout.setVisibility(View.VISIBLE);
                             // 闭环成功节点，开始绘制座位图
-                            int COL = jsonByGson.getIntValue("col_num");
-                            int ROW = jsonByGson.getIntValue("row_num");
+                            final int COL = jsonByGson.getIntValue("col_num");
+                            final int ROW = jsonByGson.getIntValue("row_num");
                             setSeatInfo(COL, ROW, jsonByGson);
                             final String seat_id[][] = jsonByGson.getSeatInfo(COL, ROW, "seat_id");
                             final String seat_cur_stu[][] = jsonByGson.getSeatInfo(COL, ROW, "cur_stu");
@@ -1192,6 +1207,15 @@ public class StudentHomeActivity extends AppCompatActivity
                                     seatId = seat_id[column_num][row_num];
                                     studentSeatTextView.setText(seatId);
                                     if (!seat_cur_stu[column_num][row_num].equals("")) {
+                                        JSONObject obj = new JSONObject();
+                                        try {
+                                            obj.put("course_id", courseId);
+                                            obj.put("sub_id", subId);
+                                            obj.put("token", token);
+                                            obj.put("student_id", seat_cur_stu[column_num][row_num]);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                         new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + seat_cur_stu[column_num][row_num] + ".jpg", new BinaryHttpResponseHandler() {
                                             @Override
                                             public void onSuccess(int i, Header[] headers, byte[] bytes) {
@@ -1202,6 +1226,23 @@ public class StudentHomeActivity extends AppCompatActivity
                                             @Override
                                             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                                                 studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
+                                            }
+                                        });
+                                        new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseGetstudentinfoUrl(ownApp.getURL_FIGURE()), obj.toString(), new TextHttpResponseHandler() {
+                                            @Override
+                                            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                                studentNameTextView.setText("");
+                                                studentSexTextView.setText("");
+                                            }
+
+                                            @Override
+                                            public void onSuccess(int i, Header[] headers, String s) {
+                                                ReadJsonByGson read = new ReadJsonByGson(s);
+                                                studentNameTextView.setText(read.getArrayValue("student", "name"));
+                                                if (read.getArrayBoolValue("student", "gender"))
+                                                    studentSexTextView.setText("男");
+                                                else
+                                                    studentSexTextView.setText("女");
                                             }
                                         });
                                     } else {
@@ -1223,6 +1264,118 @@ public class StudentHomeActivity extends AppCompatActivity
                                 public void a() {
                                     // TODO Auto-generated method stub
 
+                                }
+                            });
+
+                            searchView.setOnQueryTextListener(new OwnMaterialSearchView.OnQueryTextListener() {
+                                @Override
+                                public boolean onQueryTextSubmit(String query) {
+                                    //Do some magic
+                                    for (int i = 0; i < COL; ++i) {
+                                        for (int j = 0; j < ROW; ++j) {
+                                            if (seat_cur_stu[i][j].equals(query))
+                                                studentSeatTextView.setText(seat_id[i][j]);
+                                        }
+                                    }
+                                    JSONObject obj = new JSONObject();
+                                    try {
+                                        obj.put("course_id", courseId);
+                                        obj.put("sub_id", subId);
+                                        obj.put("token", token);
+                                        obj.put("student_id", query);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + query + ".jpg", new BinaryHttpResponseHandler() {
+                                        @Override
+                                        public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                                            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                            studentAvatarImageView.setImageBitmap(bm);
+                                        }
+
+                                        @Override
+                                        public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                                            studentAvatarImageView.setImageResource(R.drawable.ic_account_circle_black_48dp);
+                                        }
+                                    });
+                                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseGetstudentinfoUrl(ownApp.getURL_FIGURE()), obj.toString(), new TextHttpResponseHandler() {
+                                        @Override
+                                        public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                            Toast.makeText(StudentHomeActivity.this, "网络错误，获取信息失败，请重试！", Toast.LENGTH_SHORT).show();
+                                            studentNameTextView.setText("");
+                                            studentSexTextView.setText("");
+                                            studentSeatTextView.setText("");
+                                        }
+
+                                        @Override
+                                        public void onSuccess(int i, Header[] headers, String s) {
+                                            ReadJsonByGson read = new ReadJsonByGson(s);
+                                            studentNameTextView.setText(read.getArrayValue("student", "name"));
+                                            if (read.getArrayBoolValue("student", "gender"))
+                                                studentSexTextView.setText("男");
+                                            else
+                                                studentSexTextView.setText("女");
+                                        }
+                                    });
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onQueryTextChange(String newText) {
+                                    //Do some magic
+//                                    String[] new_allStudents = new String[allStudents.length];
+                                    List<String> new_allStudents = new ArrayList<String>();
+                                    for (int j = 0, i = 0; j < allStudents.length; ++j) {
+                                        if (allStudents[j].contains(newText)) {
+                                            new_allStudents.add(i, allStudents[j]);
+                                            ++i;
+                                        }
+                                    }
+                                    String[] new_allStudents_str = new String[new_allStudents.size()];
+                                    if (new_allStudents_str.length == 0) {
+                                        String[] no_results = {"无结果"};
+                                        searchView.setSuggestions(no_results);
+                                    } else {
+                                        for (int i = 0; i < new_allStudents_str.length; ++i) {
+                                            new_allStudents_str[i] = new_allStudents.get(i);
+                                        }
+                                        searchView.setSuggestions(new_allStudents_str);
+                                    }
+                                    return false;
+                                }
+                            });
+                            searchView.setOnSearchViewListener(new OwnMaterialSearchView.SearchViewListener() {
+                                @Override
+                                public void onSearchViewShown() {
+                                    //Do some magic
+                                    Toast.makeText(StudentHomeActivity.this, "找找同学啦！", Toast.LENGTH_SHORT).show();
+                                    JSONObject object = new JSONObject();
+                                    try {
+                                        object.put("course_id", courseId);
+                                        object.put("sub_id", subId);
+                                        object.put("token", token);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseGetallstudentsUrl(ownApp.getURL_FIGURE()), object.toString(), new TextHttpResponseHandler() {
+                                        @Override
+                                        public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                            onSearchViewClosed();
+                                            Toast.makeText(StudentHomeActivity.this, "网络错误，无法搜索，请重试！", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onSuccess(int i, Header[] headers, String s) {
+                                            ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
+                                            allStudents = jsonByGson.getArray("students");
+//                                            searchView.setSuggestions(allStudents);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onSearchViewClosed() {
+                                    //Do some magic
                                 }
                             });
                         }

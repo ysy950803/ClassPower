@@ -464,7 +464,7 @@ public class TestDoingActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("TEST", post_answers_obj.toString());
+//        Log.d("TEST", post_answers_obj.toString());
         if (isSystemBackgroundPost) { // 后台提交数据
             new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseTestPostansweraUrl(ownApp.getURL_FIGURE()), post_answers_obj.toString(), new TextHttpResponseHandler() {
                 @Override
@@ -501,8 +501,8 @@ public class TestDoingActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                    if (s != null)
-                        Log.d("TEST", s);
+//                    if (s != null)
+//                        Log.d("TEST", s);
                     isPostAnswersSuccess = false;
                     waitDialog.dismiss();
                     Toast.makeText(TestDoingActivity.this, "提交失败，请重试！", Toast.LENGTH_SHORT).show();

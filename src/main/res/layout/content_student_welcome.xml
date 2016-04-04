@@ -14,12 +14,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/student_welcome_list_fragment"
-            android:name="com.ysy.classpower_student.fragments.StudentWelcomeListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_student_welcome_list" />
+        <!--<fragment-->
+            <!--android:id="@+id/student_welcome_list_fragment"-->
+            <!--android:name="com.ysy.classpower_student.fragments.StudentWelcomeListFragment"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--tools:layout="@layout/fragment_student_welcome_list" />-->
 
     </LinearLayout>
 

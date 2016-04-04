@@ -120,32 +120,32 @@
                     android:id="@+id/tests_empty_list_tips_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_above="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
                     android:layout_gravity="center"
                     android:text="加载中…"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@android:color/darker_gray"
-                    android:textSize="32dp"
-                    android:layout_above="@+id/tests_empty_list_tips_divider_textView"
-                    android:layout_centerHorizontal="true" />
+                    android:textSize="32dp" />
 
                 <TextView
                     android:id="@+id/tests_empty_list_tips_textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
                     android:layout_gravity="center_horizontal|bottom"
                     android:text="可以再刷新看看！"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@android:color/darker_gray"
-                    android:layout_below="@+id/tests_empty_list_tips_divider_textView"
-                    android:layout_centerHorizontal="true" />
+                    android:textColor="@android:color/darker_gray" />
 
                 <View
+                    android:id="@+id/tests_empty_list_tips_divider_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:id="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true" />
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
             </RelativeLayout>
 
@@ -171,8 +171,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/card_view_margin"
-                android:foreground="?attr/selectableItemBackground"
-                app:cardElevation="4dp">
+                android:foreground="?attr/selectableItemBackground">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -350,8 +349,7 @@
             android:layout_toEndOf="@+id/seat_choose_child_layout"
             android:layout_toRightOf="@+id/seat_choose_child_layout"
             android:foreground="?attr/selectableItemBackground"
-            android:visibility="gone"
-            app:cardElevation="4dp">
+            android:visibility="gone">
 
             <RelativeLayout
                 android:layout_width="match_parent"

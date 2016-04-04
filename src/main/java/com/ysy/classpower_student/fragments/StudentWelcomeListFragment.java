@@ -48,7 +48,6 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
 
     View view;
     private String token;
-    private FloatingActionButton addFab;
     private List<String> courseNameData;
     private List<String> courseIdData;
     private List<String> subIdData;
@@ -62,7 +61,6 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
     private StudentWelcomeListAdapter listAdapter = null;
     private LinearLayoutManager linearLayoutManager;
     private UltimateRecyclerView ultimateRecyclerView;
-    private ItemTouchHelper mItemTouchHelper;
     private AppBarLayout appBarLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -104,6 +102,7 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
 //                        linearLayoutManager.scrollToPosition(0);
 //                        ultimateRecyclerView.setAdapter(listAdapter);
 //                        listAdapter.notifyDataSetChanged();
+                        ultimateRecyclerView.setAdapter(listAdapter);
                     }
                 }, 1000);
             }
@@ -224,23 +223,24 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout))
-            ultimateRecyclerView.enableDefaultSwipeRefresh(false);
-        else
-            ultimateRecyclerView.enableDefaultSwipeRefresh(true);
+//        if (collapsingToolbarLayout.getHeight() + verticalOffset <  2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout))
+//            ultimateRecyclerView.enableDefaultSwipeRefresh(false);
+//        else
+//            ultimateRecyclerView.enableDefaultSwipeRefresh(true);
     }
 
-    @Override
-    public void onResume() {
-        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-        appBarLayout.addOnOffsetChangedListener(this);
-        super.onResume();
-    }
+//    @Override
+//    public void onResume() {
+//        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+//        collapsingToolbarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
+//        appBarLayout.addOnOffsetChangedListener(this);
+//        super.onResume();
+//    }
 
-    @Override
-    public void onPause() {
-        appBarLayout.removeOnOffsetChangedListener(this);
-        super.onPause();
-    }
+//    @Override
+//    public void onPause() {
+//        appBarLayout.removeOnOffsetChangedListener(this);
+//        super.onPause();
+//    }
+
 }

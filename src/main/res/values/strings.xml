@@ -196,4 +196,9 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_test_doing">测试</string>
 
+    <string name="lorem_1">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vehicula sem a malesuada rhoncus.
+        Pellentesque ut dolor a dui porttitor porta lacinia non libero.
+    </string>
+
 </resources>

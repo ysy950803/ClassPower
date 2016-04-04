@@ -112,6 +112,7 @@ public class ReadJsonByGson {
         String[] details_temp = new String[courses_array.size()];
         int temp_count = 0;
         for (int i = 0; i < courses_array.size(); ++i) {
+            temp_count = 0;
             course_object = (JsonObject) courses_array.get(i);
             courses_times_array = course_object.getAsJsonArray("times");
             for (int j = 0; j < courses_times_array.size(); ++j) {
@@ -389,6 +390,19 @@ public class ReadJsonByGson {
             JsonObject arrayObject = object.get(key).getAsJsonObject();
             return arrayObject.get(array_key).getAsBoolean();
         }
+    }
+
+    public String[] getArray(String key) {
+        JsonArray jsonArray = object.getAsJsonArray(key);
+        String[] details = new String[jsonArray.size()];
+        if (jsonArray.size() == 0)
+            details = new String[0];
+        else {
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                details[i] = jsonArray.get(i).getAsString();
+            }
+        }
+        return details;
     }
 
 }

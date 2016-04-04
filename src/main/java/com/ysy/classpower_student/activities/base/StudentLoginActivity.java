@@ -139,6 +139,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         });
 
         final RelativeLayout studentRegisterTipsLayout = (RelativeLayout) findViewById(R.id.student_register_tips_layout);
+        assert studentRegisterTipsLayout != null;
         studentRegisterTipsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,6 +158,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
 
         betaHiddenUrlEditorCount = 0;
         TextView betaHiddenUrlEditor = (TextView) findViewById(R.id.beta_hidden_url_editor);
+        assert betaHiddenUrlEditor != null;
         betaHiddenUrlEditor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
