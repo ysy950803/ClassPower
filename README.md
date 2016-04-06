@@ -10,4 +10,6 @@ ClassPower is an Android application comming into paying attention on the instan
 
 This app uses Java as the client development language, Python Eve framework and MongoDB database as the server.
 
-It takes advantage of the feature that Wi-Fi's covering area is limited, including fantastic functions such as roll calling, seat choosing on the spot, doing quizzes, student information management, which intends to improve the teaching quality greatly letting students learn knowledge efficiently, ask a question better, and letting teachers mobilize the atmosphere of classes easily, catch the key of the whole lesson in confidence.
+It takes advantage of the feature that Wi-Fi's covering area is limited, including fantastic functions such as roll calling, seat choosing on the spot, doing quizzes, student information management, which intends to improve the teaching quality greatly letting students learn knowledge efficiently, ask a question better, and letting teachers mobilize the atmosphere of classes easily, catching the key of the whole lesson in confidence.
+
+![Logo](https://github.com/ysy950803/ClassPower/blob/master/src/main/res/mipmap-xxhdpi/ic_launcher.png)
