@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <view
-    class="com.ysy.classpower_utils.OwnSearchViewLayout"
+    class="com.ysy.classpower_utils.search_view.OwnSearchViewLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/search_view_container"
     android:layout_width="match_parent"

@@ -15,9 +15,10 @@ public class OwnApp extends Application {
     private Bitmap mBitmap = null;
     private String mTestPreviewInfo = null;
     private boolean mTestIsFinished;
-    private String URL_FIGURE = "10.15.85.196";
+    private String URL_FIGURE = "42.96.197.43";
 //    private String[] questionInfo = null;
     private Bundle[] questionStates = null;
+    private String currentCourse = null;
 
     public Bitmap getBitmap() {
         return this.mBitmap;
@@ -90,4 +91,11 @@ public class OwnApp extends Application {
         return this.questionStates;
     }
 
+    public void setCurrentCourse(String currentCourse) {
+        this.currentCourse = currentCourse;
+    }
+
+    public String getCurrentCourse() {
+        return this.currentCourse;
+    }
 }

@@ -17,11 +17,9 @@ import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
 import android.view.ViewGroup;
@@ -40,7 +38,7 @@ import com.ysy.classpower_student.fragments.StudentWelcomeListFragment;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.OwnApp;
-import com.ysy.classpower_utils.OwnSearchViewLayout;
+import com.ysy.classpower_utils.search_view.OwnSearchViewLayout;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -50,8 +48,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import xyz.sahildave.widget.SearchViewLayout;
 
 public class StudentWelcomeActivity extends AppCompatActivity {
 
@@ -78,6 +74,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
     private String token;
     private ProgressDialog waitDialog;
+    private OwnSearchViewLayout searchViewLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +83,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 //        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        final OwnSearchViewLayout searchViewLayout = (OwnSearchViewLayout) findViewById(R.id.search_view_container);
+        searchViewLayout = (OwnSearchViewLayout) findViewById(R.id.search_view_container);
 
         SharedPreferences token_sp = getSharedPreferences("token", Context.MODE_PRIVATE);
         token = token_sp.getString("token", "");
@@ -181,19 +178,19 @@ public class StudentWelcomeActivity extends AppCompatActivity {
             public void onFinished(String searchKeyword) {
                 UltimateRecyclerView recyclerView = (UltimateRecyclerView) fragment.getView().findViewById(R.id.student_welcome_list_urv);
                 searchViewLayout.collapse();
-                Log.d("TEST_onFinished", searchKeyword);
+//                Log.d("TEST_onFinished", searchKeyword);
                 updateListBySearch(recyclerView, searchKeyword);
             }
         });
         searchViewLayout.setSearchBoxListener(new OwnSearchViewLayout.SearchBoxListener() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d("TEST_beforeTextChanged", s.toString() + "start" + start + "after" + after + "count" + count);
+//                Log.d("TEST_beforeTextChanged", s.toString() + "start" + start + "after" + after + "count" + count);
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("TEST_onTextChanged", s.toString() + "start" + start + "before" + before + "count" + count);
+//                Log.d("TEST_onTextChanged", s.toString() + "start" + start + "before" + before + "count" + count);
                 courseNameData = new ArrayList<>();
                 teacherData = new ArrayList<>();
                 RecyclerView recyclerView = (RecyclerView) searchStaticRecyclerFragment.getView().findViewById(R.id.search_static_recycler);
@@ -230,7 +227,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("TEST_afterTextChanged", s.toString());
+//                Log.d("TEST_afterTextChanged", s.toString());
             }
         });
 
@@ -336,15 +333,17 @@ public class StudentWelcomeActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setRefreshing(false);
-            Toast.makeText(StudentWelcomeActivity.this, "无结果，请重新搜索或者下拉刷新所有课程！", Toast.LENGTH_LONG).show();
+            searchViewLayout.setCollapsedHint("无结果，请重新搜索或者下拉刷新！");
+//            Toast.makeText(StudentWelcomeActivity.this, "无结果，请重新搜索或者下拉刷新所有课程！", Toast.LENGTH_LONG).show();
         } else {
             StudentWelcomeListAdapter listAdapter = new StudentWelcomeListAdapter(courseNameData, teacherData, dayData, weekData, periodData, roomNameData);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(listAdapter);
+            searchViewLayout.setCollapsedHint(searchKeyword);
             listAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                 @Override
-                public void onItemClick(View view, int position) {
+                public void onItemClick(View view, final int position) {
                     ConnectionDetector cd = new ConnectionDetector(StudentWelcomeActivity.this);
                     if (cd.isConnectingToInternet()) {
                         // 点击列表项时记录各种id，跳转后使用
@@ -388,6 +387,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                                 notificationsList_editor.putString("notificationsList", s);
                                 notificationsList_editor.commit();
 //                            view.setBackgroundResource(R.drawable.item_list_press);
+                                ownApp.setCurrentCourse(courseNameData.get(position));
                                 startActivity(new Intent(StudentWelcomeActivity.this, StudentHomeActivity.class));
                                 finish();
                             }

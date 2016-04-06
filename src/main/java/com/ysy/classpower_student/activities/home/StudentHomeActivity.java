@@ -11,13 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -40,7 +38,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
@@ -54,9 +51,8 @@ import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
 import com.ysy.classpower_student.adapters.StudentHomeTestsListAdapter;
-import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.OwnApp;
-import com.ysy.classpower_utils.OwnMaterialSearchView;
+import com.ysy.classpower_utils.search_view.OwnMaterialSearchView;
 import com.ysy.classpower_utils.for_design.CircularImageView;
 import com.ysy.classpower_utils.EmptyListWithTipsAdapter;
 import com.ysy.classpower_utils.ListOnItemClickListener;
@@ -149,6 +145,7 @@ public class StudentHomeActivity extends AppCompatActivity
     private OwnMaterialSearchView searchView;
 
     private String[] allStudents = new String[0];
+    private CircularImageView navHeaderAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,7 +202,7 @@ public class StudentHomeActivity extends AppCompatActivity
         LinearLayout navHeaderStudentHomeLayout = (LinearLayout) navHeaderStudentHomeView.findViewById(R.id.nav_header_student_home_layout);
         TextView navHeaderName = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_name_textView);
         TextView navHeaderEmail = (TextView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_email_textView);
-        final CircularImageView navHeaderAvatar = (CircularImageView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_avatar_imageView);
+        navHeaderAvatar = (CircularImageView) navHeaderStudentHomeView.findViewById(R.id.student_home_nav_header_avatar_imageView);
         navHeaderStudentHomeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,7 +227,7 @@ public class StudentHomeActivity extends AppCompatActivity
 
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                navHeaderAvatar.setImageResource(R.drawable.ic_account_circle_black_48dp);
+                navHeaderAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
             }
 
         });
@@ -338,7 +335,7 @@ public class StudentHomeActivity extends AppCompatActivity
         new PostJsonAndGetCallback(new AsyncHttpClient(), getApplicationContext(), ServerUrlConstant.getCourseNtfcGetntfcsUrl(ownApp.getURL_FIGURE()), json, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-                if (s.contains("error_code")) {
+                if (s != null && s.contains("error_code")) {
                     ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                     if (jsonByGson.getValue("error_code").equals(ErrorCodeConstant.TOKEN_EXPIRED)) { // token过期，闭环处理
                         updateToken(0);
@@ -360,6 +357,7 @@ public class StudentHomeActivity extends AppCompatActivity
                     EmptyListWithTipsAdapter emptyListAdapter = new EmptyListWithTipsAdapter(emptyListData);
                     notificationsURV.setAdapter(emptyListAdapter);
                 } else {
+//                    Log.d("TEST_OnTopCount", ntfcsListOnTopCount + "");
                     emptyTipsLayout.setVisibility(View.GONE);
                     emptyTipsTextView.setText("加载中…");
                     StudentHomeNotificationsListAdapter notificationsListAdapter = new StudentHomeNotificationsListAdapter(ntfcsListByData, ntfcsListContentData,
@@ -368,7 +366,7 @@ public class StudentHomeActivity extends AppCompatActivity
                     notificationsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-
+//                            Log.d("TEST_position", position + "");
                         }
 
                         @Override
@@ -388,116 +386,7 @@ public class StudentHomeActivity extends AppCompatActivity
     private void initNotificationsData(int switch_num, String json) {
         if (switch_num == 0 && json == null) {
             SharedPreferences notificationsList_sp = getSharedPreferences("notificationsList", MODE_PRIVATE);
-            String list_json = notificationsList_sp.getString("notifications_list", "{}");
-            list_json = "{\n" +
-                    "  \"msg\": \"Success\",\n" +
-                    "    \"notifications\": [\n" +
-                    "    {\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:59\",\n" +
-                    "      \"ntfc_id\": \"56cad733b902a4154cec1ff6\",\n" +
-                    "      \"on_top\": true,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:39:02\",\n" +
-                    "      \"ntfc_id\": \"56cad736b902a4154cec2001\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "\t{\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:54\",\n" +
-                    "      \"ntfc_id\": \"56cad72eb902a4154cec1fed\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"by\": \"test\",\n" +
-                    "      \"content\": \"test_notification_modified\",\n" +
-                    "      \"created_on\": \"2016-02-22 17:38:51\",\n" +
-                    "      \"ntfc_id\": \"56cad72bb902a4154cec1fe6\",\n" +
-                    "      \"on_top\": false,\n" +
-                    "      \"title\": \"adsgfgs\"\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}";
+            String list_json = notificationsList_sp.getString("notificationsList", "{}");
             if (list_json.equals("{}") || list_json.equals("[]")) {
                 isNotificationsListEmpty = true;
             } else {
@@ -514,8 +403,8 @@ public class StudentHomeActivity extends AppCompatActivity
                 String[] ntfcListCreatedOnInfo = jsonByGson.getNotificationsInfo("created_on");
                 String[] ntfcListIdInfo = jsonByGson.getNotificationsInfo("ntfc_id");
                 String[] ntfcListTitleInfo = jsonByGson.getNotificationsInfo("title");
-                if (jsonByGson.getNotificationsInfo("on_top_count")[0].equals("on_top_count")) {
-                    ntfcsListOnTopCount = Integer.valueOf(jsonByGson.getNotificationsInfo("on_top_count")[1]);
+                if (jsonByGson.getNotificationsInfo("on_top_count")[0].contains("on_top_count_")) {
+                    ntfcsListOnTopCount = Integer.valueOf(jsonByGson.getNotificationsInfo("on_top_count")[0].replace("on_top_count_", ""));
                 }
                 Collections.addAll(ntfcsListByData, ntfcListByInfo);
                 Collections.addAll(ntfcsListContentData, ntfcListContentInfo);
@@ -537,8 +426,8 @@ public class StudentHomeActivity extends AppCompatActivity
             String[] ntfcListCreatedOnInfo = jsonByGson.getNotificationsInfo("created_on");
             String[] ntfcListIdInfo = jsonByGson.getNotificationsInfo("ntfc_id");
             String[] ntfcListTitleInfo = jsonByGson.getNotificationsInfo("title");
-            if (jsonByGson.getNotificationsInfo("on_top_count")[0].equals("on_top_count")) {
-                ntfcsListOnTopCount = Integer.valueOf(jsonByGson.getNotificationsInfo("on_top_count")[1]);
+            if (jsonByGson.getNotificationsInfo("on_top_count")[0].contains("on_top_count_")) {
+                ntfcsListOnTopCount = Integer.valueOf(jsonByGson.getNotificationsInfo("on_top_count")[0].replace("on_top_count_", ""));
             }
             Collections.addAll(ntfcsListByData, ntfcListByInfo);
             Collections.addAll(ntfcsListContentData, ntfcListContentInfo);
@@ -1007,6 +896,7 @@ public class StudentHomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             isSeatChooseOpen = false;
             invalidateOptionsMenu();
+            ownApp.setCurrentCourse(null);
             startActivity(new Intent(StudentHomeActivity.this, StudentWelcomeActivity.class));
             this.finish();
         }
@@ -1024,6 +914,7 @@ public class StudentHomeActivity extends AppCompatActivity
     // 加载选座数据模块
     private void initSeatsData() {
         CardView personalInfoCardView = (CardView) findViewById(R.id.student_personal_info_cardView);
+        assert personalInfoCardView != null;
         personalInfoCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1625,4 +1516,12 @@ public class StudentHomeActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onResume() {
+        if (ownApp.getBitmap() != null)
+            navHeaderAvatar.setImageBitmap(ownApp.getBitmap());
+        else
+            navHeaderAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
+        super.onResume();
+    }
 }

@@ -142,7 +142,10 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
         studentClassContentTextView.setText(className);
         studentEmailContentTextView.setText(email);
         studentTelContentTextView.setText(tel);
-        studentLessonContentTextView.setText("");
+        if (ownApp.getCurrentCourse() != null)
+            studentLessonContentTextView.setText(ownApp.getCurrentCourse());
+        else
+            studentLessonContentTextView.setText("未知");
 
         JSONObject token_obj = new JSONObject();
         try {
@@ -191,7 +194,10 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
                         studentEmailContentTextView.setText(email);
                         studentTelContentTextView.setText(tel);
                         studentClassContentTextView.setText(className);
-                        studentLessonContentTextView.setText(""); // 当前课堂获取方法待定
+                        if (ownApp.getCurrentCourse() != null)
+                            studentLessonContentTextView.setText(ownApp.getCurrentCourse());
+                        else
+                            studentLessonContentTextView.setText("未知"); // 当前课堂获取方法待定
                     }
                 });
                 new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {

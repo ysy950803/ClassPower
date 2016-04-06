@@ -68,7 +68,7 @@ public class ReadJsonByGson {
             objectList.add(i, (JsonObject) notifications_array.get(i));
         }
         // 置顶冒泡排序 true > false，把on_top值为true的排头
-        for (int i = notifications_array.size() - 1; i > 0; --i) {
+        for (int i = notifications_array.size() - 1; i >= 0; --i) {
             JsonObject notifications_object_temp;
             // 获取置顶数目
             if (objectList.get(i).getAsJsonObject().get("on_top").toString().equals("true")) {
@@ -85,8 +85,8 @@ public class ReadJsonByGson {
         }
         String[] details = new String[notifications_array.size()];
         if (notification_details.equals("on_top_count")) { // 传递特定参数获取置顶数目，待优化
-            details[0] = "on_top_count";
-            details[1] = "" + on_top_count;
+            details[0] = "on_top_count_" + on_top_count;
+//            details[1] = "" + on_top_count;
         } else if (notification_details.equals("on_top")) {
             for (int i = 0; i < notifications_array.size(); ++i) {
 //                notification_object = (JsonObject) notifications_array.get(i);

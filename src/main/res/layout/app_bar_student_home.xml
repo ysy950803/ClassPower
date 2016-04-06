@@ -28,7 +28,7 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <com.ysy.classpower_utils.OwnMaterialSearchView
+        <com.ysy.classpower_utils.search_view.OwnMaterialSearchView
             android:id="@+id/search_view"
             style="@style/MaterialSearchViewStyle"
             android:layout_width="match_parent"

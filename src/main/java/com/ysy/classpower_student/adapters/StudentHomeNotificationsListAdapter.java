@@ -47,7 +47,7 @@ public class StudentHomeNotificationsListAdapter extends UltimateViewAdapter<Stu
     public void onBindViewHolder(final SimpleAdapterViewHolder holder, int position) {
         if (position < getItemCount() && (customHeaderView != null ? position <= byList.size() : position < byList.size()) && (customHeaderView != null ? position > 0 : true)) {
 
-            if (position <= onTopCount) {
+            if (position + 1 <= onTopCount) {
                 holder.listItemDetailsLayout.setBackgroundResource(R.color.orangered);
             } else
                 holder.listItemDetailsLayout.setBackgroundColor(getRandomColor());

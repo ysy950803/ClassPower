@@ -9,12 +9,10 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +28,7 @@ import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
 import com.ysy.classpower_utils.ConnectionDetector;
 import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.OwnApp;
+import com.ysy.classpower_utils.search_view.OwnSearchViewLayout;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 
@@ -86,10 +85,10 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
 
         listAdapter = new StudentWelcomeListAdapter(courseNameData, teacherData, dayData, weekData, periodData, roomNameData);
         linearLayoutManager = new LinearLayoutManager(getContext());
-
         ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.student_welcome_list_urv);
         ultimateRecyclerView.setLayoutManager(linearLayoutManager);
         ultimateRecyclerView.setAdapter(listAdapter);
+        ultimateRecyclerView.setRefreshing(false);
         ultimateRecyclerView.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -97,19 +96,21 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
                     @Override
                     public void run() {
 //                        RVAdapter.insert(moreNum++ + "  Refresh things", 0);
-                        ultimateRecyclerView.setRefreshing(false);
 //                        ultimateRecyclerView.scrollBy(0, -50);
 //                        linearLayoutManager.scrollToPosition(0);
 //                        ultimateRecyclerView.setAdapter(listAdapter);
 //                        listAdapter.notifyDataSetChanged();
                         ultimateRecyclerView.setAdapter(listAdapter);
+                        OwnSearchViewLayout searchViewLayout = (OwnSearchViewLayout) getActivity().findViewById(R.id.search_view_container);
+                        searchViewLayout.setCollapsedHint("课表太长？赶紧找找课堂吧！");
+                        ultimateRecyclerView.setRefreshing(false);
                     }
                 }, 1000);
             }
         });
         listAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(View view, final int position) {
                 ConnectionDetector cd = new ConnectionDetector(getContext());
                 if (cd.isConnectingToInternet()) {
                     // 点击列表项时记录各种id，跳转后使用
@@ -142,6 +143,7 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
                         public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                             waitDialog.dismiss();
 //                            view.setBackgroundResource(0);
+//                            Log.d("TEST", s + "/" + throwable);
                             Toast.makeText(getContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
                         }
 
@@ -153,6 +155,7 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
                             notificationsList_editor.putString("notificationsList", s);
                             notificationsList_editor.commit();
 //                            view.setBackgroundResource(R.drawable.item_list_press);
+                            ownApp.setCurrentCourse(courseNameData.get(position));
                             startActivity(new Intent(getActivity(), StudentHomeActivity.class));
                             getActivity().finish();
                         }
@@ -191,7 +194,8 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
         SharedPreferences currentWeek_sp = getContext().getSharedPreferences("currentWeek", Context.MODE_PRIVATE);
         String currentWeek = currentWeek_sp.getString("currentWeek", "1");
         SharedPreferences loginJson_sp = getContext().getSharedPreferences("loginJson", Context.MODE_PRIVATE);
-        ReadJsonByGson jsonByGson = new ReadJsonByGson(loginJson_sp.getString("loginJson", "{}"));
+        String login_json = loginJson_sp.getString("loginJson", "{}");
+        ReadJsonByGson jsonByGson = new ReadJsonByGson(login_json);
         courseNameData = new ArrayList<>();
         courseIdData = new ArrayList<>();
         subIdData = new ArrayList<>();
@@ -201,24 +205,26 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
         periodData = new ArrayList<>();
         roomNameData = new ArrayList<>();
         roomIdData = new ArrayList<>();
-        String[] courseNameInfo = jsonByGson.getCoursesBasicInfo("course_name");
-        String[] courseIdInfo = jsonByGson.getCoursesBasicInfo("course_id");
-        String[] subIdInfo = jsonByGson.getCoursesBasicInfo("sub_id");
-        String[] teacherInfo = jsonByGson.getCoursesTeachersInfo();
-        String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo(currentWeek); // 参数：week
-        String[] weekInfo = jsonByGson.getCoursesTimesWeeksInfo();
-        String[] periodInfo = jsonByGson.getCoursesTimesPeriodInfo(currentWeek, "1");
-        String[] roomNameInfo = jsonByGson.getCoursesTimesRoomNameInfo(currentWeek, "1");
-        String[] roomIdInfo = jsonByGson.getCoursesTimesRoomIdInfo(currentWeek, "1");
-        Collections.addAll(courseNameData, courseNameInfo);
-        Collections.addAll(courseIdData, courseIdInfo);
-        Collections.addAll(subIdData, subIdInfo);
-        Collections.addAll(teacherData, teacherInfo);
-        Collections.addAll(dayData, dayInfo);
-        Collections.addAll(weekData, weekInfo);
-        Collections.addAll(periodData, periodInfo);
-        Collections.addAll(roomNameData, roomNameInfo);
-        Collections.addAll(roomIdData, roomIdInfo);
+        if (!login_json.equals("\"courses\": []")) {
+            String[] courseNameInfo = jsonByGson.getCoursesBasicInfo("course_name");
+            String[] courseIdInfo = jsonByGson.getCoursesBasicInfo("course_id");
+            String[] subIdInfo = jsonByGson.getCoursesBasicInfo("sub_id");
+            String[] teacherInfo = jsonByGson.getCoursesTeachersInfo();
+            String[] dayInfo = jsonByGson.getCoursesTimesDaysInfo(currentWeek); // 参数：week
+            String[] weekInfo = jsonByGson.getCoursesTimesWeeksInfo();
+            String[] periodInfo = jsonByGson.getCoursesTimesPeriodInfo(currentWeek, "1");
+            String[] roomNameInfo = jsonByGson.getCoursesTimesRoomNameInfo(currentWeek, "1");
+            String[] roomIdInfo = jsonByGson.getCoursesTimesRoomIdInfo(currentWeek, "1");
+            Collections.addAll(courseNameData, courseNameInfo);
+            Collections.addAll(courseIdData, courseIdInfo);
+            Collections.addAll(subIdData, subIdInfo);
+            Collections.addAll(teacherData, teacherInfo);
+            Collections.addAll(dayData, dayInfo);
+            Collections.addAll(weekData, weekInfo);
+            Collections.addAll(periodData, periodInfo);
+            Collections.addAll(roomNameData, roomNameInfo);
+            Collections.addAll(roomIdData, roomIdInfo);
+        }
     }
 
     @Override

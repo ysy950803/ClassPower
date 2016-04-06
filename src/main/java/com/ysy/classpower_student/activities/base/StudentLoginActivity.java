@@ -125,6 +125,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         mProgressView = findViewById(R.id.login_progress);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -412,7 +413,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
         majorName_editor.putString("majorName", majorName);
 
         loginJson_editor.putString("loginJson", loginJson);
-//        Log.d("LoginJson", loginJson);
+//        Log.d("TEST_LoginJson", loginJson);
 
         currentWeek_editor.commit();
         loginJson_editor.commit();
