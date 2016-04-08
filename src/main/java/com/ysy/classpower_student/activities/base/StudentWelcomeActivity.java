@@ -36,6 +36,7 @@ import com.ysy.classpower_student.adapters.StudentWelcomeListAdapter;
 import com.ysy.classpower_student.fragments.SearchStaticRecyclerFragment;
 import com.ysy.classpower_student.fragments.StudentWelcomeListFragment;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.ListOnItemClickListener;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.search_view.OwnSearchViewLayout;
@@ -81,6 +82,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_welcome);
 //        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        DestroyAllActivities.getInstance().addActivity(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         searchViewLayout = (OwnSearchViewLayout) findViewById(R.id.search_view_container);

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
+import com.ysy.classpower_utils.DestroyAllActivities;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -96,8 +97,8 @@ public class SplashFullscreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_splash_fullscreen);
+        DestroyAllActivities.getInstance().addActivity(this);
 
         mVisible = false;
         mControlsView = findViewById(R.id.fullscreen_content_controls);

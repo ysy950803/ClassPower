@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
 import com.ysy.classpower_common.activities.TestDetailsActivity;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
@@ -47,7 +48,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     private String expiresOn = "";
     private String state = "";
 
-    public static int timeNumber = 60;
+    public static int timeNumber = 180;
     public static boolean isOpenFromTestResult;
 
     private OwnApp ownApp;
@@ -57,10 +58,11 @@ public class TestPreviewActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_test_preview);
+        DestroyAllActivities.getInstance().addActivity(this);
         setupActionBar();
         ownApp = (OwnApp) getApplication();
 
-        timeNumber = 60;
+        timeNumber = 180;
         isOpenFromTestResult = false;
 
         testBeginButton = (Button) findViewById(R.id.test_begin_button);
@@ -226,7 +228,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     @Override
     protected void onResume() {
         Log.d("TEST", "Time_Number" + timeNumber);
-        if (timeNumber < 60 && timeNumber > 0) {
+        if (timeNumber < 180 && timeNumber > 0) {
             if (!isOpenFromTestResult) {
                 stopTime();
                 startTime();

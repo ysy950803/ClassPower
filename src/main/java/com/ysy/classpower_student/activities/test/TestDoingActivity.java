@@ -51,6 +51,7 @@ import com.ysy.classpower_student.adapters.TestDoingFragmentAdapter;
 import com.ysy.classpower_student.adapters.TestDoingSpinnerAdapter;
 import com.ysy.classpower_student.fragments.TestDoingTypeOneFragment;
 import com.ysy.classpower_student.fragments.TestDoingTypeTwoFragment;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
@@ -93,6 +94,7 @@ public class TestDoingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_doing);
+        DestroyAllActivities.getInstance().addActivity(this);
         ownApp = (OwnApp) getApplication();
         SharedPreferences token_sp = getSharedPreferences("token", MODE_PRIVATE);
         SharedPreferences courseId_sp = getSharedPreferences("courseId", MODE_PRIVATE);

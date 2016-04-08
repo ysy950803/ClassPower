@@ -16,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -26,14 +27,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kenumir.materialsettings.storage.PreferencesStorageInterface;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -51,6 +55,7 @@ import com.ysy.classpower_student.activities.base.StudentWelcomeActivity;
 import com.ysy.classpower_student.activities.test.TestPreviewActivity;
 import com.ysy.classpower_student.adapters.StudentHomeNotificationsListAdapter;
 import com.ysy.classpower_student.adapters.StudentHomeTestsListAdapter;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.search_view.OwnMaterialSearchView;
 import com.ysy.classpower_utils.for_design.CircularImageView;
@@ -151,6 +156,7 @@ public class StudentHomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_home);
+        DestroyAllActivities.getInstance().addActivity(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ownApp = (OwnApp) getApplication();
@@ -246,8 +252,8 @@ public class StudentHomeActivity extends AppCompatActivity
         confirmSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
-                String mSeatId = mSeatId_sp.getString("mSeat_id_" + subId + "_" + courseId, "");
+                SharedPreferences mSeatId_sp = getSharedPreferences(userId + "mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                String mSeatId = mSeatId_sp.getString(userId + "mSeat_id_" + subId + "_" + courseId, "");
                 if (isSeatChooseEmpty) {
                     Toast.makeText(StudentHomeActivity.this, "你还没有选择任何一个座位！", Toast.LENGTH_SHORT).show();
                 } else {
@@ -265,12 +271,17 @@ public class StudentHomeActivity extends AppCompatActivity
         clearSeatChooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
-                String mSeatId = mSeatId_sp.getString("mSeat_id_" + subId + "_" + courseId, "");
+                SharedPreferences mSeatId_sp = getSharedPreferences(userId + "mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                String mSeatId = mSeatId_sp.getString(userId + "mSeat_id_" + subId + "_" + courseId, "");
                 if (mSeatId.equals("")) {
                     Toast.makeText(StudentHomeActivity.this, "你还没选到座位哦，不能释放座位！", Toast.LENGTH_SHORT).show();
-                } else
-                    clearSeatChooseTips(mSeatId);
+                } else {
+                    boolean isResetTips = new PreferencesStorageInterface(StudentHomeActivity.this).load("reset_all_tips", true);
+                    if (isResetTips)
+                        clearSeatChooseTips(mSeatId);
+                    else
+                        clearSeatChoose(mSeatId);
+                }
             }
         });
 
@@ -387,7 +398,7 @@ public class StudentHomeActivity extends AppCompatActivity
         if (switch_num == 0 && json == null) {
             SharedPreferences notificationsList_sp = getSharedPreferences("notificationsList", MODE_PRIVATE);
             String list_json = notificationsList_sp.getString("notificationsList", "{}");
-            if (list_json.equals("{}") || list_json.equals("[]")) {
+            if (list_json.contains("{}") || list_json.contains("[]")) {
                 isNotificationsListEmpty = true;
             } else {
                 isNotificationsListEmpty = false;
@@ -1303,9 +1314,9 @@ public class StudentHomeActivity extends AppCompatActivity
             @Override
             public void onSuccess(int i, Header[] headers, String s) {
                 waitDialog.dismiss();
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences mSeatId_sp = getSharedPreferences(userId + "mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
                 SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
-                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, "");
+                mSeatId_editor.putString(userId + "mSeat_id_" + subId + "_" + courseId, "");
                 mSeatId_editor.commit();
                 Toast.makeText(StudentHomeActivity.this, "成功释放已选座位，你现在可以重新选座了！", Toast.LENGTH_SHORT).show();
                 refreshSeats(true);
@@ -1357,9 +1368,9 @@ public class StudentHomeActivity extends AppCompatActivity
                 waitDialog.dismiss();
                 // 选座成功获取seat_id
                 Toast.makeText(StudentHomeActivity.this, "你已成功选座！\n（座位号：" + seatId + "）", Toast.LENGTH_SHORT).show();
-                SharedPreferences mSeatId_sp = getSharedPreferences("mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
+                SharedPreferences mSeatId_sp = getSharedPreferences(userId + "mSeat_id_" + subId + "_" + courseId, MODE_PRIVATE);
                 SharedPreferences.Editor mSeatId_editor = mSeatId_sp.edit();
-                mSeatId_editor.putString("mSeat_id_" + subId + "_" + courseId, seatId);
+                mSeatId_editor.putString(userId + "mSeat_id_" + subId + "_" + courseId, seatId);
                 mSeatId_editor.commit();
                 refreshSeats(true);
             }
@@ -1367,12 +1378,21 @@ public class StudentHomeActivity extends AppCompatActivity
     }
 
     private void clearSeatChooseTips(final String mSeatId) {
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialog_layout = inflater.inflate(R.layout.clear_seat_choose_dialog_layout, (ViewGroup) findViewById(R.id.clear_seat_choose_dialog_layout));
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
-        builder.setTitle("即将释放之前已选座位").setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）").setCancelable(false)
+        final CheckBox checkBox = (CheckBox) dialog_layout.findViewById(R.id.clear_seat_choose_checkbox);
+        builder.setTitle("即将释放之前已选座位")
+//                .setMessage("释放之后，可以重新选座。\n（点击确定可释放座位）")
+                .setView(dialog_layout)
+                .setCancelable(false)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         clearSeatChoose(mSeatId);
+                        if (checkBox.isChecked()) {
+                            new PreferencesStorageInterface(StudentHomeActivity.this).save("reset_all_tips", false);
+                        }
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

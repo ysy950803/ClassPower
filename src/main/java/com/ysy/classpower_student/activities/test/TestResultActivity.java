@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ysy.classpower.R;
 import com.ysy.classpower_student.activities.home.StudentHomeActivity;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
 import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
@@ -22,6 +23,7 @@ public class TestResultActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_result);
+        DestroyAllActivities.getInstance().addActivity(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupActionBar();

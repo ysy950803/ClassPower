@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clear_seat_choose_dialog_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="18dp">
+
+        <TextView
+            android:id="@+id/clear_seat_choose_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="释放之后，可以重新选座。\n（点击确定可释放座位）"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+        <CheckBox
+            android:layout_marginTop="4dp"
+            android:id="@+id/clear_seat_choose_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="不再提醒" />
+
+    </LinearLayout>
+
+</LinearLayout>

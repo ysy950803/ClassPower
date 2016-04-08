@@ -29,6 +29,7 @@ import com.ysy.classpower_common.adapters.TestDetailsFragmentAdapter;
 import com.ysy.classpower_common.fragments.TestDetailsListFragment;
 import com.ysy.classpower_common.fragments.TestDetailsStudentFragment;
 import com.ysy.classpower_common.fragments.TestDetailsSummaryFragment;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.DividerItemDecoration;
 import com.ysy.classpower_utils.swipe_back.SwipeBackActivity;
 
@@ -41,6 +42,7 @@ public class TestDetailsActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_details);
+        DestroyAllActivities.getInstance().addActivity(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

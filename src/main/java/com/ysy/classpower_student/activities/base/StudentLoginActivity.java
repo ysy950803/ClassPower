@@ -42,6 +42,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.for_design.MaterialButtonRectangle;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
@@ -92,6 +93,7 @@ public class StudentLoginActivity extends AppCompatActivity implements LoaderMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_login);
+        DestroyAllActivities.getInstance().exit();
         ownApp = (OwnApp) getApplication();
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);

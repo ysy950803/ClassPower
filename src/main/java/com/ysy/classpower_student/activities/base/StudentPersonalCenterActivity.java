@@ -12,7 +12,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -23,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +31,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_student.activities.home.SettingsActivity;
-import com.ysy.classpower_student.activities.home.StudentHomeActivity;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.for_design.CardTurnAnimation;
 import com.ysy.classpower_utils.for_design.CircularImageView;
@@ -83,6 +81,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_personal_center);
+        DestroyAllActivities.getInstance().addActivity(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupActionBar();
@@ -203,7 +202,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
                 new AsyncHttpClient().get(ServerUrlConstant.getUserAvatarUrl(ownApp.getURL_FIGURE()) + "/" + userId + ".jpg", new BinaryHttpResponseHandler() {
                     @Override
                     public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                        Log.d("HLength/BLength", headers.length + "/" + bytes.length);
+//                        Log.d("HLength/BLength", headers.length + "/" + bytes.length);
 //                        for (int j = 0; j < headers.length; ++j) {
 //                            Log.d("HContent" + j, headers[j] + "");
 //                        }
@@ -442,6 +441,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
                 public void onSuccess(int i, Header[] headers, String s) {
                     waitDialog.dismiss();
                     studentAvatar.setImageBitmap(photo);
+                    ownApp.setBitmap(photo);
                     Toast.makeText(getApplicationContext(), "头像上传成功！", Toast.LENGTH_SHORT).show();
                 }
             });

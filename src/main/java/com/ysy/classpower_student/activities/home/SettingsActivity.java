@@ -1,140 +1,29 @@
 package com.ysy.classpower_student.activities.home;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.support.v7.app.ActionBar;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 
-import com.ysy.classpower.R;
-
-import java.util.List;
+import com.kenumir.materialsettings.items.DividerItem;
+import com.kenumir.materialsettings.items.HeaderItem;
+import com.kenumir.materialsettings.items.TextItem;
+import com.kenumir.materialsettings.storage.PreferencesStorageInterface;
+import com.kenumir.materialsettings.storage.StorageInterface;
+import com.ysy.classpower_student.activities.base.StudentLoginActivity;
+import com.ysy.classpower_utils.DataCleanManager;
+import com.ysy.classpower_utils.DestroyAllActivities;
+import com.ysy.classpower_utils.for_design.OwnMaterialSettings;
 
 /**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
+ * Created by 姚圣禹 on 2016/4/8.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity {
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+public class SettingsActivity extends OwnMaterialSettings {
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else if (preference instanceof RingtonePreference) {
-                // For ringtone preferences, look up the correct display value
-                // using RingtoneManager.
-                if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent);
-
-                } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
-
-                    if (ringtone == null) {
-                        // Clear the summary if there was a lookup error.
-                        preference.setSummary(null);
-                    } else {
-                        // Set the summary to reflect the new ringtone display
-                        // name.
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
-                    }
-                }
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
-        }
-    };
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupActionBar();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) { //覆盖整个Activity的返回按钮
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            onBackPressed(); //调用onKeyDown内部方法
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -143,122 +32,119 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
+    public StorageInterface initStorageInterface() {
+//        Log.d("TEST", this.getPackageName());
+        return new PreferencesStorageInterface(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
-        }
-
-//        @Override
-//        public boolean onOptionsItemSelected(MenuItem item) { //被覆盖
-//            int id = item.getItemId();
-//            if (id == android.R.id.home) {
-//                startActivity(new Intent(getActivity(), SettingsActivity.class));
-//                return true;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupActionBar();
+        DestroyAllActivities.getInstance().addActivity(this);
+//        addItem(new HeaderItem(this).setTitle("Sample title 1"));
+//        addItem(new CheckboxItem(this, "key1").setTitle("Checkbox item 1").setSubtitle("Subtitle text 1").setOnCheckedChangeListener(new CheckboxItem.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChange(CheckboxItem cbi, boolean isChecked) {
+//                Toast.makeText(SettingsActivity.this, "CHECKED: " + isChecked, Toast.LENGTH_SHORT).show();
 //            }
-//            return super.onOptionsItemSelected(item);
-//        }
+//        }));
+//        addItem(new DividerItem(this));
+//        addItem(new SwitcherItem(this, "key1a").setTitle("Switcher item 3 - no subtitle"));
+//        addItem(new DividerItem(this));
+//        addItem(new SwitcherItem(this, "key1b").setTitle("Switcher item 3").setSubtitle("With subtitle"));
+//        addItem(new DividerItem(this));
+//        addItem(new CheckboxItem(this, "key2").setTitle("Checkbox item 2").setSubtitle("Subtitle text 2 with long text and more txt and more and more ;-)").setDefaultValue(true));
+//        addItem(new DividerItem(this));
+//        addItem(new CheckboxItem(this, "key1c").setTitle("Checkbox item 3 - no subtitle"));
+//        addItem(new DividerItem(this));
+//        addItem(new TextItem(this, "key3").setTitle("Simple text item 1").setSubtitle("Subtitle of simple text item 1").setOnclick(new TextItem.OnClickListener() {
+//            @Override
+//            public void onClick(TextItem v) {
+//                Toast.makeText(SettingsActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+//            }
+//        }));
+        addItem(new HeaderItem(this).setTitle("默认"));
+        addItem(new TextItem(this, "reset_all_tips").setTitle("重置设置").setSubtitle("重置“不再提醒”等类似提示").setOnclick(new TextItem.OnClickListener() {
+            @Override
+            public void onClick(TextItem v) {
+                Toast.makeText(SettingsActivity.this, "重置成功，相关提示将恢复显示。", Toast.LENGTH_SHORT).show();
+                getStorageInterface().save("reset_all_tips", true);
+            }
+        }));
+        addItem(new DividerItem(this));
+        addItem(new HeaderItem(this).setTitle("清理"));
+        String totalCache = "未知";
+        try {
+            totalCache = DataCleanManager.getTotalCacheSize(getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        addItem(new TextItem(this, "logout").setTitle("清除缓存").setSubtitle(totalCache).setOnclick(new TextItem.OnClickListener() {
+            @Override
+            public void onClick(TextItem item) {
+                DataCleanManager.clearAllCache(getApplicationContext());
+                String totalCache = "未知";
+                try {
+                    totalCache = DataCleanManager.getTotalCacheSize(getApplicationContext());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                item.setSubtitle(totalCache);
+            }
+        }));
+        addItem(new DividerItem(this));
+//        addItem(new TextItem(this, "key5a").setTitle("Simple text item with icon - no subtitle").setIcon(R.drawable.ic_check_circle_black_24dp));
+//        addItem(new DividerItem(this));
+//        addItem(new TextItem(this, "key5b").setTitle("Simple text item with icon - no subtitle").setSubtitle("Subtitle of item with icon").setIcon(R.drawable.ic_check_circle_black_24dp));
+        addItem(new HeaderItem(this).setTitle("账户"));
+        addItem(new TextItem(this, "logout").setTitle("注销用户").setSubtitle("退出当前账号，返回登录页面").setOnclick(new TextItem.OnClickListener() {
+            @Override
+            public void onClick(TextItem item) {
+                logoutTips();
+            }
+        }));
     }
 
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
+    private void logoutTips() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setTitle("提示").setMessage("确定要注销当前用户吗？").setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(SettingsActivity.this, StudentLoginActivity.class));
+                        finish();
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        final android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        }
-
-//        @Override
-//        public boolean onOptionsItemSelected(MenuItem item) { //被覆盖
-//            int id = item.getItemId();
-//            if (id == android.R.id.home) {
-//                startActivity(new Intent(getActivity(), SettingsActivity.class));
-//                return true;
-//            }
-//            return super.onOptionsItemSelected(item);
-//        }
+        //设置透明度
+        Window window = alert.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.alpha = 0.75f;
+        window.setAttributes(lp);
     }
 
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        scrollToFinishActivity();
+    }
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) { //覆盖整个Activity的返回按钮
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+//            onBackPressed(); //调用onKeyDown内部方法
+            scrollToFinishActivity();
+            return true;
         }
-
-//        @Override
-//        public boolean onOptionsItemSelected(MenuItem item) { //被覆盖
-//            int id = item.getItemId();
-//            if (id == android.R.id.home) {
-//                startActivity(new Intent(getActivity(), SettingsActivity.class));
-//                return true;
-//            }
-//            return super.onOptionsItemSelected(item);
-//        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -34,10 +34,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.ysy.classpower_student.activities.home.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.ysy.classpower_student.activities.test.TestPreviewActivity"
             android:label="@string/title_activity_test"
             android:screenOrientation="portrait" />
@@ -118,7 +114,13 @@
         <activity
             android:name="com.ysy.classpower_student.activities.test.TestDoingActivity"
             android:label="@string/title_activity_test_doing"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.ysy.classpower_student.activities.home.SettingsActivity"
+            android:label="@string/action_settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/OwnMaterialSettingsTheme" />
     </application>
 
 </manifest>

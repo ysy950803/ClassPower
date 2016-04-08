@@ -22,6 +22,7 @@ import com.ysy.classpower.R;
 import com.ysy.classpower_common.constant.ErrorCodeConstant;
 import com.ysy.classpower_common.constant.ServerUrlConstant;
 import com.ysy.classpower_utils.ConnectionDetector;
+import com.ysy.classpower_utils.DestroyAllActivities;
 import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.json_processor.PostJsonAndGetCallback;
 import com.ysy.classpower_utils.json_processor.ReadJsonByGson;
@@ -83,6 +84,7 @@ public class StudentRegisterActivity extends SwipeBackActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_register);
         setupActionBar();
+        DestroyAllActivities.getInstance().addActivity(this);
 
         ownApp = (OwnApp) getApplication();
 
