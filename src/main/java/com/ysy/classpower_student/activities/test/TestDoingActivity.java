@@ -172,6 +172,9 @@ public class TestDoingActivity extends AppCompatActivity {
         JSONObject object = new JSONObject();
         try {
             object.put("test_id", testId);
+            object.put("token", token); // new
+            object.put("course_id", courseId); // new
+            object.put("sub_id", subId); // new
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -185,6 +188,7 @@ public class TestDoingActivity extends AppCompatActivity {
             @Override
             public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
                 waitDialog.dismiss();
+                Log.d("TEST", s + "\n" + throwable);
                 Toast.makeText(getApplicationContext(), "网络错误，请重试！", Toast.LENGTH_SHORT).show();
                 finish();
             }

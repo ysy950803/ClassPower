@@ -46,6 +46,9 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
     private String beginsOn = "";
     private String expiresOn = "";
+    private String timeLimit = "";
+    private String totalNumber = "";
+    private String totalCorrect = "";
     private String state = "";
 
     public static int timeNumber = 180;
@@ -123,6 +126,8 @@ public class TestPreviewActivity extends SwipeBackActivity {
         }
         beginsOn = jsonByGson.getValue("begins_on");
         expiresOn = jsonByGson.getValue("expires_on");
+        timeLimit = jsonByGson.getValue("time_limit");
+        totalNumber = jsonByGson.getValue("total_number");
 //        beginsOn = "TEST_TIME";
 //        expiresOn = "TEST_TIME";
         if (ownApp.getTestIsFinished())
@@ -139,11 +144,12 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
             beginTimeContentTextView.setText(beginsOn);
             endTimeContentTextView.setText(expiresOn);
-            testCountContentTextView.setText("2");
+            testCountContentTextView.setText(totalNumber);
             testStateContentTextView.setText(state);
-            limitTimeContentTextView.setText("3分钟");
-            additionalInfoContentTextView.setText("测试");
+            limitTimeContentTextView.setText(timeLimit + "分钟");
+            additionalInfoContentTextView.setText("无");
         } else {
+            totalCorrect = jsonByGson.getValue("total_correct");
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
             testDetailsButton.setVisibility(View.VISIBLE);
@@ -153,10 +159,10 @@ public class TestPreviewActivity extends SwipeBackActivity {
 
             beginTimeContentTextView.setText(beginsOn);
             endTimeContentTextView.setText(expiresOn);
-            testCountContentTextView.setText("2");
-            accuracyRateContentTextView.setText("1/2");
+            testCountContentTextView.setText(totalNumber);
+            accuracyRateContentTextView.setText(totalCorrect + "/" + totalNumber);
             testStateContentTextView.setText(state);
-            limitTimeContentTextView.setText("无");
+            limitTimeContentTextView.setText(timeLimit + "分钟");
             additionalInfoContentTextView.setText("无");
         }
 //        else if (StudentHomeActivity.STUDENT_TEST_STATE.equals("WILL")) {
@@ -200,20 +206,21 @@ public class TestPreviewActivity extends SwipeBackActivity {
         if (timeNumber <= 0) { //由于有mHandler，所以此处可以动态判断
             startActivity(new Intent(TestPreviewActivity.this, TestDoingActivity.class));
             stopTime();
-            testBeginButton.setVisibility(View.GONE);
-            checkAnswerButton.setVisibility(View.VISIBLE);
-            testDetailsButton.setVisibility(View.VISIBLE);
-            accuracyRateTextView.setVisibility(View.VISIBLE);
-            accuracyRateContentTextView.setVisibility(View.VISIBLE);
-            sixthDividerView.setVisibility(View.VISIBLE);
-
-            beginTimeContentTextView.setText(beginsOn);
-            endTimeContentTextView.setText(expiresOn);
-            testCountContentTextView.setText("2");
-            accuracyRateContentTextView.setText("1/2");
-            testStateContentTextView.setText(state);
-            limitTimeContentTextView.setText("无");
-            additionalInfoContentTextView.setText("无");
+//            testBeginButton.setVisibility(View.GONE);
+//            checkAnswerButton.setVisibility(View.VISIBLE);
+//            testDetailsButton.setVisibility(View.VISIBLE);
+//            accuracyRateTextView.setVisibility(View.VISIBLE);
+//            accuracyRateContentTextView.setVisibility(View.VISIBLE);
+//            sixthDividerView.setVisibility(View.VISIBLE);
+//
+//            beginTimeContentTextView.setText(beginsOn);
+//            endTimeContentTextView.setText(expiresOn);
+//            testCountContentTextView.setText("2");
+//            accuracyRateContentTextView.setText("1/2");
+//            testStateContentTextView.setText(state);
+//            limitTimeContentTextView.setText("无");
+//            additionalInfoContentTextView.setText("无");
+            this.finish();
         }
     }
 
@@ -234,23 +241,26 @@ public class TestPreviewActivity extends SwipeBackActivity {
                 startTime();
             }
         }
-        if (timeNumber <= 0 || isOpenFromTestResult) {
+        if (timeNumber <= 0) {
             timer = null;
-            setSwipeBackEnable(true);
-            testBeginButton.setVisibility(View.GONE);
-            checkAnswerButton.setVisibility(View.VISIBLE);
-            testDetailsButton.setVisibility(View.VISIBLE);
-            accuracyRateTextView.setVisibility(View.VISIBLE);
-            accuracyRateContentTextView.setVisibility(View.VISIBLE);
-            sixthDividerView.setVisibility(View.VISIBLE);
-
-            beginTimeContentTextView.setText(beginsOn);
-            endTimeContentTextView.setText(expiresOn);
-            testCountContentTextView.setText("2");
-            accuracyRateContentTextView.setText("1/2");
-            testStateContentTextView.setText(state);
-            limitTimeContentTextView.setText("无");
-            additionalInfoContentTextView.setText("无");
+//            setSwipeBackEnable(true);
+//            testBeginButton.setVisibility(View.GONE);
+//            checkAnswerButton.setVisibility(View.VISIBLE);
+//            testDetailsButton.setVisibility(View.VISIBLE);
+//            accuracyRateTextView.setVisibility(View.VISIBLE);
+//            accuracyRateContentTextView.setVisibility(View.VISIBLE);
+//            sixthDividerView.setVisibility(View.VISIBLE);
+//
+//            beginTimeContentTextView.setText(beginsOn);
+//            endTimeContentTextView.setText(expiresOn);
+//            testCountContentTextView.setText("2");
+//            accuracyRateContentTextView.setText("1/2");
+//            testStateContentTextView.setText(state);
+//            limitTimeContentTextView.setText("无");
+//            additionalInfoContentTextView.setText("无");
+            this.finish();
+        } else if (isOpenFromTestResult) {
+            timer = null;
         }
         super.onResume();
     }

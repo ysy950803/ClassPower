@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -363,6 +364,7 @@ public class StudentWelcomeActivity extends AppCompatActivity {
                             obj.put("token", token);
                             obj.put("course_id", courseIdData.get(position));
                             obj.put("sub_id", subIdData.get(position));
+                            obj.put("page", 0); // new args
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

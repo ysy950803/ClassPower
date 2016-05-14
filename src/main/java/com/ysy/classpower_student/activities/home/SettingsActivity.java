@@ -17,12 +17,15 @@ import com.kenumir.materialsettings.storage.StorageInterface;
 import com.ysy.classpower_student.activities.base.StudentLoginActivity;
 import com.ysy.classpower_utils.DataCleanManager;
 import com.ysy.classpower_utils.DestroyAllActivities;
+import com.ysy.classpower_utils.OwnApp;
 import com.ysy.classpower_utils.for_design.OwnMaterialSettings;
 
 /**
  * Created by 姚圣禹 on 2016/4/8.
  */
 public class SettingsActivity extends OwnMaterialSettings {
+
+    private OwnApp ownApp;
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -43,6 +46,8 @@ public class SettingsActivity extends OwnMaterialSettings {
         super.onCreate(savedInstanceState);
         setupActionBar();
         DestroyAllActivities.getInstance().addActivity(this);
+
+        ownApp = (OwnApp) getApplication();
 //        addItem(new HeaderItem(this).setTitle("Sample title 1"));
 //        addItem(new CheckboxItem(this, "key1").setTitle("Checkbox item 1").setSubtitle("Subtitle text 1").setOnCheckedChangeListener(new CheckboxItem.OnCheckedChangeListener() {
 //            @Override
@@ -113,6 +118,7 @@ public class SettingsActivity extends OwnMaterialSettings {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        ownApp.setBitmap(null);
                         startActivity(new Intent(SettingsActivity.this, StudentLoginActivity.class));
                         finish();
                     }

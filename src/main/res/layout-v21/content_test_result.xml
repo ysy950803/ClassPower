@@ -51,12 +51,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/item_will_press"
-            android:text="答案解析" />
+            android:text="回顾与分析" />
 
         <TextView
+            android:id="@+id/test_result_details_answer_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/large_text" />
+            android:text="正在加載..." />
 
     </LinearLayout>
 

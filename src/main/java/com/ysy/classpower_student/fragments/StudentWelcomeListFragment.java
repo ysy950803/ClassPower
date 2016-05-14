@@ -128,6 +128,7 @@ public class StudentWelcomeListFragment extends Fragment implements AppBarLayout
                         obj.put("token", token);
                         obj.put("course_id", courseIdData.get(position));
                         obj.put("sub_id", subIdData.get(position));
+                        obj.put("page", 0); // new args
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

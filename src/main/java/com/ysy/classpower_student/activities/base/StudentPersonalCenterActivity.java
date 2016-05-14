@@ -208,11 +208,13 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
 //                        }
                         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         studentAvatar.setImageBitmap(bm);
+                        ownApp.setBitmap(bm);
                     }
 
                     @Override
                     public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                         studentAvatar.setImageResource(R.drawable.ic_account_circle_white_48dp);
+                        ownApp.setBitmap(null);
                     }
                 });
             }
