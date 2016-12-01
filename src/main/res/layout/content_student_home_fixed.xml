@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ysy.classpower_student.activities.home.StudentHomeActivity"
+    tools:showIn="@layout/app_bar_student_home">
+
+    <LinearLayout
+        android:id="@+id/notification_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="通知"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+        <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+            android:id="@+id/student_home_notifications_list_urv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:recyclerviewClipToPadding="true">
+
+            <RelativeLayout
+                android:id="@+id/empty_tips_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/empty_list_tips_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="32dp" />
+
+                <TextView
+                    android:id="@+id/empty_list_tips_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:text="可以再刷新看看！"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/darker_gray" />
+
+                <View
+                    android:id="@+id/empty_list_tips_divider_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </RelativeLayout>
+
+        </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/test_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/test_title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="测试"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <View
+            android:id="@+id/View"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
+
+        <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+            android:id="@+id/student_home_tests_list_urv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:recyclerviewClipToPadding="true">
+
+            <RelativeLayout
+                android:id="@+id/tests_empty_tips_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tests_empty_list_tips_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="32dp" />
+
+                <TextView
+                    android:id="@+id/tests_empty_list_tips_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:text="可以再刷新看看！"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/darker_gray" />
+
+                <View
+                    android:id="@+id/tests_empty_list_tips_divider_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </RelativeLayout>
+
+        </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/seat_choose_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:context=".StudentHomeActivity">
+
+        <RelativeLayout
+            android:id="@+id/seat_choose_child_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/student_personal_info_cardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/card_view_margin"
+                android:foreground="?attr/selectableItemBackground">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@android:color/transparent"
+                    android:paddingRight="4dp">
+
+                    <com.ysy.classpower_seatchoose.view.SSThumbView
+                        android:id="@+id/ss_ssthumview"
+                        android:layout_width="@dimen/ss_seat_thum_size_w"
+                        android:layout_height="@dimen/ss_seat_thum_size_h"
+                        android:layout_centerVertical="true"
+                        android:visibility="invisible" />
+
+                    <com.ysy.classpower_utils.for_design.CircularImageView
+                        android:id="@+id/student_avatar_imageView"
+                        android:layout_width="90.0dip"
+                        android:layout_height="90.0dip"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/ic_account_circle_black_48dp"
+                        app:civ_border="true"
+                        app:civ_borderColor="@color/transparent"
+                        app:civ_borderWidth="4dp" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_toEndOf="@+id/ss_ssthumview"
+                        android:layout_toRightOf="@+id/ss_ssthumview"
+                        android:text="座位"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@android:color/holo_blue_dark" />
+
+                    <View
+                        android:id="@+id/View1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/textView12"
+                        android:layout_toEndOf="@+id/ss_ssthumview"
+                        android:layout_toRightOf="@+id/ss_ssthumview"
+                        android:background="@android:color/darker_gray" />
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/textView12"
+                        android:layout_alignStart="@+id/textView12"
+                        android:layout_below="@+id/View1"
+                        android:text="姓名"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@android:color/holo_red_light" />
+
+                    <View
+                        android:id="@+id/View2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/textView11"
+                        android:layout_toEndOf="@+id/ss_ssthumview"
+                        android:layout_toRightOf="@+id/ss_ssthumview"
+                        android:background="@android:color/darker_gray" />
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/View2"
+                        android:layout_toEndOf="@+id/ss_ssthumview"
+                        android:layout_toRightOf="@+id/ss_ssthumview"
+                        android:text="性别"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@android:color/holo_green_dark" />
+
+                    <View
+                        android:id="@+id/View3"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/textView13"
+                        android:layout_toEndOf="@+id/ss_ssthumview"
+                        android:layout_toRightOf="@+id/ss_ssthumview"
+                        android:background="@android:color/darker_gray" />
+
+                    <TextView
+                        android:id="@+id/student_seat_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/View1"
+                        android:layout_alignEnd="@+id/View1"
+                        android:layout_alignRight="@+id/View1"
+                        android:text="        "
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:id="@+id/student_name_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/View2"
+                        android:layout_alignEnd="@+id/View1"
+                        android:layout_alignRight="@+id/View1"
+                        android:text="        "
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:id="@+id/student_sex_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/View3"
+                        android:layout_alignEnd="@+id/View2"
+                        android:layout_alignRight="@+id/View2"
+                        android:text="        "
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <com.ysy.classpower_utils.for_design.RippleView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/clear_confirm_seat_choose_layout"
+                android:layout_below="@+id/student_personal_info_cardView">
+
+                <com.ysy.classpower_seatchoose.view.SSView
+                    android:id="@+id/mSSView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/clear_confirm_seat_choose_layout"
+                    android:layout_below="@+id/student_personal_info_cardView" />
+
+            </com.ysy.classpower_utils.for_design.RippleView>
+
+            <LinearLayout
+                android:id="@+id/clear_confirm_seat_choose_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/clear_seat_choose_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_will_press"
+                    android:text="重新选座" />
+
+                <Button
+                    android:id="@+id/confirm_seat_choose_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_done_press"
+                    android:text="确认选座" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/student_home_refresh_tips_cardView"
+            android:layout_width="match_parent"
+            android:layout_height="192dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/seat_choose_child_layout"
+            android:layout_toRightOf="@+id/seat_choose_child_layout"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/student_home_refresh_little_tips_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="加载中…"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/student_home_refresh_tips_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/student_home_refresh_little_tips_textView"
+                    android:layout_centerHorizontal="true"
+                    android:text="加载中…"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="24dp" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

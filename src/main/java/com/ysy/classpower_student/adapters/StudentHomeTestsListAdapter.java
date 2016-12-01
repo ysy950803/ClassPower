@@ -23,6 +23,7 @@ public class StudentHomeTestsListAdapter extends UltimateViewAdapter<StudentHome
 
     private List<String> beginsOnList;
     private List<String> expiresOnList;
+    private List<Boolean> testStateList;
 
     private ListOnItemClickListener mOnItemClickListener;
 
@@ -30,9 +31,10 @@ public class StudentHomeTestsListAdapter extends UltimateViewAdapter<StudentHome
         this.mOnItemClickListener = mOnItemClickListener;
     }
 
-    public StudentHomeTestsListAdapter(List<String> beginsOnList, List<String> expiresOnList) {
+    public StudentHomeTestsListAdapter(List<String> beginsOnList, List<String> expiresOnList, List<Boolean> testStateList) {
         this.beginsOnList = beginsOnList;
         this.expiresOnList = expiresOnList;
+        this.testStateList = testStateList;
     }
 
     @Override
@@ -62,7 +64,11 @@ public class StudentHomeTestsListAdapter extends UltimateViewAdapter<StudentHome
     public void onBindViewHolder(final StudentHomeTestsListAdapter.SimpleAdapterViewHolder holder, int position) {
         if (position < getItemCount() && (customHeaderView != null ? position <= beginsOnList.size() : position < beginsOnList.size()) && (customHeaderView != null ? position > 0 : true)) {
 
-            holder.beginsOnTextView.setBackgroundColor(getRandomColor());
+            if (testStateList.get(customHeaderView != null ? position - 1 : position)) {
+                holder.beginsOnTextView.setBackgroundResource(R.color.orange);
+            } else {
+                holder.beginsOnTextView.setBackgroundResource(R.color.green);
+            }
             holder.beginsOnTextView.setText(beginsOnList.get(customHeaderView != null ? position - 1 : position));
             holder.expiresOnTextView.setText(expiresOnList.get(customHeaderView != null ? position - 1 : position));
             holder.titleTextView.setText("测试" + (position + 1));
@@ -137,16 +143,16 @@ public class StudentHomeTestsListAdapter extends UltimateViewAdapter<StudentHome
         }
     }
 
-    private int getRandomColor() {
-        SecureRandom rgen = new SecureRandom();
-        if (Color.HSVToColor(150, new float[]{
-                rgen.nextInt(359), 1, 1
-        }) == (R.color.orangered)) { // 置顶item的颜色为深红，且唯一
-            return R.color.limegreen;
-        } else {
-            return Color.HSVToColor(150, new float[]{
-                    rgen.nextInt(359), 1, 1
-            });
-        }
-    }
+//    private int getRandomColor() {
+//        SecureRandom rgen = new SecureRandom();
+//        if (Color.HSVToColor(150, new float[]{
+//                rgen.nextInt(359), 1, 1
+//        }) == (R.color.orangered)) { // 置顶item的颜色为深红，且唯一
+//            return R.color.limegreen;
+//        } else {
+//            return Color.HSVToColor(150, new float[]{
+//                    rgen.nextInt(359), 1, 1
+//            });
+//        }
+//    }
 }

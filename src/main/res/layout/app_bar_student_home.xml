@@ -8,7 +8,7 @@
     tools:context="com.ysy.classpower_student.activities.home.StudentHomeActivity">
 
     <include
-        layout="@layout/content_student_home"
+        layout="@layout/content_student_home_fixed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize" />

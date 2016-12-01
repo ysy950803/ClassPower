@@ -64,7 +64,10 @@ public class ReadJsonByGson {
         String[] details = new String[tests_array.size()];
         for (int i = 0; i < tests_array.size(); ++i) {
             test_object = tests_array.get(i).getAsJsonObject();
-            details[i] = test_object.get(test_details).getAsString();
+            if (test_object.get(test_details).isJsonNull())
+                details[i] = "0";
+            else
+                details[i] = test_object.get(test_details).getAsString();
         }
         return details;
     }

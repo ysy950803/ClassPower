@@ -356,7 +356,7 @@ public class StudentPersonalCenterActivity extends SwipeBackActivity {
     }
 
     private void startCrop(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");//调用Android系统自带的一个图片剪裁页面,
+        Intent intent = new Intent("com.android.camera.action.CROP"); // 调用Android系统自带的一个图片剪裁页面,
         intent.setDataAndType(uri, IMAGE_UNSPECIFIED);
         intent.putExtra("crop", "true");//进行修剪
         // aspectX aspectY 是宽高的比例

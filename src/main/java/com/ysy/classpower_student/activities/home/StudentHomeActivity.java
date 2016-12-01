@@ -560,7 +560,7 @@ public class StudentHomeActivity extends AppCompatActivity
                                 Collections.addAll(testsListTestIdData, testsListTestIdInfo);
                                 testsEmptyTipsLayout.setVisibility(View.GONE);
                                 testsEmptyListTipsTextView.setText("加载中…");
-                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData, testsListStateData);
                                 testsURV.setAdapter(testsListAdapter);
                                 testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                                     @Override
@@ -595,25 +595,25 @@ public class StudentHomeActivity extends AppCompatActivity
                     testsListBeginsOnData = new ArrayList<>();
                     testsListExpiresOnData = new ArrayList<>();
                     testsListTimeLimitData = new ArrayList<>();
-                    testsListTotalNumberData = new ArrayList<>();
+//                    testsListTotalNumberData = new ArrayList<>();
                     testsListStateData = new ArrayList<>();
                     testsListTestIdData = new ArrayList<>();
                     final String[] testsListBeginsOnInfo = jsonByGson.getAllTestsInfo("begins_on");
                     final String[] testsListExpiresOnInfo = jsonByGson.getAllTestsInfo("expires_on");
                     final String[] testsListTimeLimitInfo = jsonByGson.getAllTestsInfo("time_limit");
-                    final String[] testsListTotalNumberInfo = jsonByGson.getAllTestsInfo("total_number");
+//                    final String[] testsListTotalNumberInfo = jsonByGson.getAllTestsInfo("total_number");
                     String[] testsListTestIdInfo = jsonByGson.getAllTestsInfo("test_id");
                     Collections.addAll(testsListBeginsOnData, testsListBeginsOnInfo);
                     Collections.addAll(testsListExpiresOnData, testsListExpiresOnInfo);
                     Collections.addAll(testsListTimeLimitData, testsListTimeLimitInfo);
-                    Collections.addAll(testsListTotalNumberData, testsListTotalNumberInfo);
+//                    Collections.addAll(testsListTotalNumberData, testsListTotalNumberInfo);
                     Collections.addAll(testsListTestIdData, testsListTestIdInfo);
                     for (int j = 0; j < testsListBeginsOnInfo.length; ++j)
                         testsListStateData.add(j, false);
 
                     testsEmptyTipsLayout.setVisibility(View.GONE);
                     testsEmptyListTipsTextView.setText("加载中…");
-                    StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                    StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData, testsListStateData);
                     testsURV.setAdapter(testsListAdapter);
                     testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                         @Override
@@ -623,7 +623,7 @@ public class StudentHomeActivity extends AppCompatActivity
                                 obj.put("begins_on", testsListBeginsOnData.get(position));
                                 obj.put("expires_on", testsListExpiresOnData.get(position));
                                 obj.put("time_limit", testsListTimeLimitData.get(position));
-                                obj.put("total_number", testsListTotalNumberData.get(position));
+//                                obj.put("total_number", testsListTotalNumberData.get(position));
                                 obj.put("test_id", testsListTestIdData.get(position));
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -668,22 +668,23 @@ public class StudentHomeActivity extends AppCompatActivity
                             if (!s.contains("\"tests\": []")) { // unfinished 非空 finished 非空
                                 ReadJsonByGson jsonByGson = new ReadJsonByGson(s);
                                 testsListTotalCorrectData = new ArrayList<>();
+                                testsListTotalNumberData = new ArrayList<>();
                                 String[] testsListTotalCorrectInfo = jsonByGson.getAllTestsInfo("total_correct");
                                 String[] testsListBeginsOnInfo2 = jsonByGson.getAllTestsInfo("begins_on");
                                 String[] testsListExpiresOnInfo2 = jsonByGson.getAllTestsInfo("expires_on");
                                 String[] testsListTimeLimitInfo2 = jsonByGson.getAllTestsInfo("time_limit");
-                                String[] testsListTotalNumberInfo2 = jsonByGson.getAllTestsInfo("total_number");
+                                String[] testsListTotalNumberInfo = jsonByGson.getAllTestsInfo("total_number");
                                 String[] testsListTestIdInfo2 = jsonByGson.getAllTestsInfo("test_id");
                                 for (int j = testsListBeginsOnInfo.length; j < (testsListBeginsOnInfo2.length + testsListBeginsOnInfo.length); ++j) {
                                     testsListBeginsOnData.add(j, testsListBeginsOnInfo2[j - testsListBeginsOnInfo.length]);
                                     testsListExpiresOnData.add(j, testsListExpiresOnInfo2[j - testsListBeginsOnInfo.length]);
                                     testsListTimeLimitData.add(j, testsListTimeLimitInfo2[j - testsListTimeLimitInfo.length]);
-                                    testsListTotalNumberData.add(j, testsListTotalNumberInfo2[j - testsListTotalNumberInfo.length]);
                                     testsListTestIdData.add(j, testsListTestIdInfo2[j - testsListBeginsOnInfo.length]);
                                     testsListStateData.add(j, true);
                                 }
+                                Collections.addAll(testsListTotalNumberData, testsListTotalNumberInfo);
                                 Collections.addAll(testsListTotalCorrectData, testsListTotalCorrectInfo);
-                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData);
+                                StudentHomeTestsListAdapter testsListAdapter = new StudentHomeTestsListAdapter(testsListBeginsOnData, testsListExpiresOnData, testsListStateData);
                                 testsURV.setAdapter(testsListAdapter);
                                 testsListAdapter.setListOnItemClickListener(new ListOnItemClickListener() {
                                     @Override
@@ -693,9 +694,11 @@ public class StudentHomeActivity extends AppCompatActivity
                                             obj.put("begins_on", testsListBeginsOnData.get(position));
                                             obj.put("expires_on", testsListExpiresOnData.get(position));
                                             obj.put("time_limit", testsListTimeLimitData.get(position));
-                                            obj.put("total_number", testsListTotalNumberData.get(position));
                                             obj.put("test_id", testsListTestIdData.get(position));
-                                            obj.put("total_correct", testsListTotalCorrectData.get(position - testsListBeginsOnInfo.length));
+                                            if (position - testsListBeginsOnInfo.length >= 0) {
+                                                obj.put("total_number", testsListTotalNumberData.get(position - testsListBeginsOnInfo.length));
+                                                obj.put("total_correct", testsListTotalCorrectData.get(position - testsListBeginsOnInfo.length));
+                                            }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }

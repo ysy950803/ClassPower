@@ -41,7 +41,7 @@ public class TestPreviewActivity extends SwipeBackActivity {
     private TextView accuracyRateContentTextView;
     private View sixthDividerView;
     private Button checkAnswerButton;
-    private Button testDetailsButton;
+//    private Button testDetailsButton;
     private TextView additionalInfoContentTextView;
 
     private String beginsOn = "";
@@ -99,14 +99,14 @@ public class TestPreviewActivity extends SwipeBackActivity {
             }
         });
 
-        testDetailsButton = (Button) findViewById(R.id.end_test_button);
-        testDetailsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(TestPreviewActivity.this, TestDetailsActivity.class));
-//                finish();
-            }
-        });
+//        testDetailsButton = (Button) findViewById(R.id.end_test_button);
+//        testDetailsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(TestPreviewActivity.this, TestDetailsActivity.class));
+////                finish();
+//            }
+//        });
 
         beginTimeContentTextView = (TextView) findViewById(R.id.begin_time_content_text_view);
         endTimeContentTextView = (TextView) findViewById(R.id.end_time_content_text_view);
@@ -127,7 +127,6 @@ public class TestPreviewActivity extends SwipeBackActivity {
         beginsOn = jsonByGson.getValue("begins_on");
         expiresOn = jsonByGson.getValue("expires_on");
         timeLimit = jsonByGson.getValue("time_limit");
-        totalNumber = jsonByGson.getValue("total_number");
 //        beginsOn = "TEST_TIME";
 //        expiresOn = "TEST_TIME";
         if (ownApp.getTestIsFinished())
@@ -137,22 +136,23 @@ public class TestPreviewActivity extends SwipeBackActivity {
         if (!ownApp.getTestIsFinished()) {
             testBeginButton.setVisibility(View.VISIBLE);
             checkAnswerButton.setVisibility(View.GONE);
-            testDetailsButton.setVisibility(View.GONE);
+//            testDetailsButton.setVisibility(View.GONE);
             accuracyRateTextView.setVisibility(View.GONE);
             accuracyRateContentTextView.setVisibility(View.GONE);
             sixthDividerView.setVisibility(View.GONE);
 
             beginTimeContentTextView.setText(beginsOn);
             endTimeContentTextView.setText(expiresOn);
-            testCountContentTextView.setText(totalNumber);
+            testCountContentTextView.setText("");
             testStateContentTextView.setText(state);
             limitTimeContentTextView.setText(timeLimit + "分钟");
             additionalInfoContentTextView.setText("无");
         } else {
+            totalNumber = jsonByGson.getValue("total_number");
             totalCorrect = jsonByGson.getValue("total_correct");
             testBeginButton.setVisibility(View.GONE);
             checkAnswerButton.setVisibility(View.VISIBLE);
-            testDetailsButton.setVisibility(View.VISIBLE);
+//            testDetailsButton.setVisibility(View.VISIBLE);
             accuracyRateTextView.setVisibility(View.VISIBLE);
             accuracyRateContentTextView.setVisibility(View.VISIBLE);
             sixthDividerView.setVisibility(View.VISIBLE);

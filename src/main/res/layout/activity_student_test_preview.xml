@@ -240,13 +240,13 @@
         android:layout_alignRight="@+id/additional_info_content_text_view"
         android:layout_alignEnd="@+id/additional_info_content_text_view" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="测试详情"
-        android:visibility="gone"
-        android:id="@+id/end_test_button"
-        android:layout_above="@+id/check_answer_button"
-        android:layout_centerHorizontal="true" />
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="测试详情"-->
+        <!--android:visibility="gone"-->
+        <!--android:id="@+id/end_test_button"-->
+        <!--android:layout_above="@+id/check_answer_button"-->
+        <!--android:layout_centerHorizontal="true" />-->
 
 </RelativeLayout>
